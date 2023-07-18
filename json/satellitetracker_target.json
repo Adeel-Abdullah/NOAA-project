@@ -1,0 +1,117 @@
+{
+    "SatelliteTrackerSettings": {
+        "aosSpeech": "${name} is visible for ${duration} minutes. Max elevation, ${elevation} degrees.",
+        "autoTarget": 1,
+        "azElUnits": 1,
+        "azimuthOffset": 0,
+        "dateFormat": "yyyy/MM/dd",
+        "defaultFrequency": 100000000,
+        "deviceSettings": [
+            {
+                "deviceSettings": [
+                    {
+                        "deviceSetIndex": 0,
+                        "doppler": [
+                            "0"
+                        ],
+                        "frequency": 0,
+                        "presetDescription": "NOAA 18",
+                        "presetFrequency": 137890000,
+                        "presetGroup": "RTL SDR",
+                        "startOnAOS": 1,
+                        "startStopFileSinks": 1,
+                        "stopOnLOS": 1
+                    }
+                ],
+                "satellite": "NOAA 18"
+            },
+            {
+                "deviceSettings": [
+                    {
+                        "deviceSetIndex": 0,
+                        "doppler": [
+                            "0",
+                            "1"
+                        ],
+                        "frequency": 0,
+                        "presetDescription": "NOAA 19",
+                        "presetFrequency": 137078000,
+                        "presetGroup": "RTL SDR",
+                        "startOnAOS": 1,
+                        "startStopFileSinks": 1,
+                        "stopOnLOS": 1
+                    }
+                ],
+                "satellite": "NOAA 19"
+            },
+            {
+                "deviceSettings": [
+                    {
+                        "deviceSetIndex": 0,
+                        "frequency": 0,
+                        "presetDescription": "NOAA 15",
+                        "presetFrequency": 137620000,
+                        "presetGroup": "RTL SDR",
+                        "startOnAOS": 1,
+                        "startStopFileSinks": 1,
+                        "stopOnLOS": 1
+                    }
+                ],
+                "satellite": "NOAA 15"
+            }
+        ],
+        "dopplerPeriod": 10,
+        "drawOnMap": 1,
+        "elevationOffset": 0,
+        "groundTrackPoints": 100,
+        "heightAboveSeaLevel": 10,
+        "latitude": 24.958951950073242,
+        "longitude": 67.2225341796875,
+        "losSpeech": "${name} is no longer visible.",
+        "minAOSElevation": 5,
+        "minPassElevation": 15,
+        "passFinishTime": "23:59:59",
+        "passStartTime": "00:00:00",
+        "predictionPeriod": 5,
+        "reverseAPIAddress": "127.0.0.1",
+        "reverseAPIFeatureIndex": 0,
+        "reverseAPIFeatureSetIndex": 0,
+        "reverseAPIPort": 8888,
+        "rgbColor": -2025117,
+        "rollupState": {
+            "childrenStates": [
+                {
+                    "isHidden": 0,
+                    "objectName": "settingsContainer"
+                },
+                {
+                    "isHidden": 0,
+                    "objectName": "chartContainer"
+                },
+                {
+                    "isHidden": 0,
+                    "objectName": "dataContainer"
+                }
+            ],
+            "version": 0
+        },
+        "rotatorMaxAzimuth": 450,
+        "rotatorMaxElevation": 180,
+        "satellites": [
+            "NOAA 15",
+            "NOAA 18",
+            "NOAA 19"
+        ],
+        "target": "NOAA 18",
+        "title": "Satellite Tracker",
+        "tles": [
+            "https://db.satnogs.org/api/tle/",
+            "https://www.amsat.org/tle/current/nasabare.txt",
+            "https://www.celestrak.com/NORAD/elements/goes.txt"
+        ],
+        "updatePeriod": 1,
+        "useReverseAPI": 0,
+        "utc": 0
+    },
+    "featureType": "SatelliteTracker"
+}

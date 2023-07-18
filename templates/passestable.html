@@ -1,0 +1,24 @@
+{% extends "dashboard.html" %}
+{% block table%}
+<table>
+    <thead>
+        <tr>
+            <th>AOS</th>
+            <th>LOS</th>
+            <th>Max Elevation</th>
+            <th>Scheduled to Receive</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+        {% for passes in passdata%}
+        <tr>
+            <td>{{passes.AOS}}</td>
+            <td>{{passes.LOS}}</td>
+            <td>{{passes.maxElevation}}</td>
+            <td>{{passes.ScheduledToReceive}}</td>
+        </tr>
+        {%endfor%}
+    </tbody>
+</table>
+{% endblock %}

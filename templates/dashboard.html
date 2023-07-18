@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- <link rel="stylesheet" href="mystyle.css"> -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='mystyle.css') }}"/>
+  
+  <title>Software Status Dashboard</title>
+  
+</head>
+<body>
+  <h1>Software Dashboard</h1>
+  <div class="dashboard"> 
+    <div class="left-column">
+      <div class="status-container">
+        <h2> SDRangel Status</h2>
+
+        {% if SDRstatus == "OK"%}
+        <div id="status1" class="status active">Active</div>
+        {% else %}
+        <div id="status1" class="status inactive">Inactive</div>
+        {% endif %}
+        <h2> RTL SDR Status</h2>
+        {% if RTLstatus == "OK"%}
+        <div id="status2" class="status active">Active</div>
+        {% else %}
+        <div id="status2" class="status inactive">Inactive</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="right-column">
+      <form class="poptable" action="/NOAA15" method="post">
+      <button class="button">NOAA 15</button>
+      </form>
+      <form class="poptable" action="/NOAA18" method="post">
+      <button class="button">NOAA 18</button>
+      </form>
+      <form class="poptable" action="/NOAA19" method="post">
+      <button class="button">NOAA 19</button>
+      </form>
+      {% block table %}
+      
+      {% endblock %}
+    </div>
+  </div>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"> type="text/javascript"</script>
+  <script type="text/javascript" src="{{ url_for('static', filename='myjs.js') }}"></script>
+
+</body>
+
+</html>
