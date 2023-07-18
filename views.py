@@ -6,32 +6,41 @@ from datetime import datetime
 from sqlalchemy import and_,func
 from tzlocal import get_localzone
 
+per_page = 10
+
+
 @app.route("/")
 def index():
     return render_template("dashboard.html", SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 # SDRstatus=get_instance()['appname'], RTLstatus = check_rtlstatus())
 
-@app.route("/NOAA15", methods=['GET', 'POST'])
-def popNOAA15():
+@app.route("/NOAA15", methods=['GET', 'POST'], defaults={"page": 1})
+@app.route("/NOAA15/<int:page>", methods=['GET', 'POST'])
+def popNOAA15(page):
+    page = page
     data = PassData.query.filter(
         and_(PassData.SatetlliteName == "NOAA 15"),
-        func.date(PassData.AOS) >= datetime.today().date()).all()
+        func.date(PassData.AOS) >= datetime.today().date()).paginate(page=page,per_page=per_page,error_out=False)
     # data = parse_table(data)
     return render_template('passestable.html', passdata = data, SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 
-@app.route("/NOAA18", methods=['GET', 'POST'])
-def popNOAA18():
+@app.route("/NOAA18", methods=['GET', 'POST'], defaults={"page": 1})
+@app.route("/NOAA18/<int:page>", methods=['GET', 'POST'])
+def popNOAA18(page):
+    page = page
     data = PassData.query.filter(
     and_(PassData.SatetlliteName == "NOAA 18"),
-    func.date(PassData.AOS) >= datetime.today().date()).all()
+    func.date(PassData.AOS) >= datetime.today().date()).paginate(page=page,per_page=per_page,error_out=False)
     # data = parse_table(data)
     return render_template('passestable.html', passdata = data, SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 
-@app.route("/NOAA19", methods=['GET', 'POST'])
-def popNOAA19():
+@app.route("/NOAA19", methods=['GET', 'POST'], defaults={"page": 1})
+@app.route("/NOAA19/<int:page>", methods=['GET', 'POST'])
+def popNOAA19(page):
+    page = page
     data = data = PassData.query.filter(
         and_(PassData.SatetlliteName == "NOAA 19"),
-        func.date(PassData.AOS) >= datetime.today().date()).all()
+        func.date(PassData.AOS) >= datetime.today().date()).paginate(page=page,per_page=per_page,error_out=False)
     # data = parse_table(data)
     # SDRstatus = 
     return render_template('passestable.html', passdata = data,SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
