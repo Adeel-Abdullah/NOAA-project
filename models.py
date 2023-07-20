@@ -8,6 +8,11 @@ class Satellite(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement= True)
     Name = db.Column(db.String(50), unique = True)
     Passes = db.relationship('PassData', backref = 'Passes')
+    """_summary_
+    Norad ID integer
+    operating frequency float 4 decimal
+    
+    """
     
     def __repr__(self):
         return f'{self.Name}'

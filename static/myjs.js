@@ -33,3 +33,57 @@ $("#status2").each(function CheckRTL() {
   });
   setTimeout(CheckRTL, 15000);
 });
+
+
+function get_all_val(ele, attr_lookup )
+{
+  var get_checked = [];
+  var get_unchecked = [];
+  ele.each(function(index, v1)
+  {
+    if($(this).prop("checked")){
+      get_checked.push($(this).attr(attr_lookup));
+    }
+    else{
+      get_unchecked.push($(this).attr(attr_lookup));
+    }
+  });
+  
+  let get_obj= {
+    checked: get_checked,
+    unchecked: get_unchecked,
+  }
+  return get_obj;
+}
+
+$(btn_get_val).click(function(event)
+{
+  event.preventDefault();
+  var ele = $(".data_id");
+  var v1 = get_all_val(ele, 'option_id');
+  var v2 = JSON.stringify(v1);
+
+  $.ajax({
+    type: "POST",
+    contentType: "application/json",
+    url: "/schedulePasses",
+    data: v2,
+    dataType: "json"
+  });
+});
+
+$("#defaultCountdown").each(function StartTimer() {
+  var $this = $(this);
+  $.ajax({
+      type: "GET",
+      url: "/Countdown",
+      success: function(data) {
+        $this.countdown({until: data["AOS_time"]});
+        console.log(data["AOS_time"]);
+      }
+  });
+  
+});
+
+
+//countdown({until: liftoffTime})

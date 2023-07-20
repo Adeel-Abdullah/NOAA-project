@@ -10,7 +10,7 @@ from app import app, db
 from sdrangel_requests import *
 from tzlocal import get_localzone
 from datetime import datetime
- from sqlalchemy import and_,func
+from sqlalchemy import and_,func
 
 with app.app_context():
     db.create_all()
@@ -45,5 +45,18 @@ with app.app_context():
 #%%
 
 with app.app_context():
-    data = PassData.query.filter(PassData.SatetlliteName== "NOAA 18").all()
+    data = db.get_or_404(PassData, 17)
+    data.ScheduledToReceive=True
+    db.session.commit()
+    
+
+#%%
+
+with app.app_context():
+    data = PassData.query.filter(and_(PassData.AOS >= datetime.now(), 
+                                         PassData.ScheduledToReceive)).first()
     print(data)
+    
+    
+    
+    

@@ -1,6 +1,6 @@
-from flask import render_template, jsonify
+from flask import render_template, jsonify, request
 from models import Satellite, PassData
-from app import app
+from app import app, db
 from sdrangel_requests import *
 from datetime import datetime
 from sqlalchemy import and_,func
@@ -20,7 +20,7 @@ def popNOAA15(page):
     page = page
     data = PassData.query.filter(
         and_(PassData.SatetlliteName == "NOAA 15"),
-        func.date(PassData.AOS) >= datetime.today().date()).paginate(page=page,per_page=per_page,error_out=False)
+        PassData.AOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
     # data = parse_table(data)
     return render_template('passestable.html', passdata = data, SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 
@@ -29,8 +29,8 @@ def popNOAA15(page):
 def popNOAA18(page):
     page = page
     data = PassData.query.filter(
-    and_(PassData.SatetlliteName == "NOAA 18"),
-    func.date(PassData.AOS) >= datetime.today().date()).paginate(page=page,per_page=per_page,error_out=False)
+        and_(PassData.SatetlliteName == "NOAA 18"),
+        PassData.AOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
     # data = parse_table(data)
     return render_template('passestable.html', passdata = data, SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 
@@ -38,12 +38,18 @@ def popNOAA18(page):
 @app.route("/NOAA19/<int:page>", methods=['GET', 'POST'])
 def popNOAA19(page):
     page = page
-    data = data = PassData.query.filter(
+    data = PassData.query.filter(
         and_(PassData.SatetlliteName == "NOAA 19"),
-        func.date(PassData.AOS) >= datetime.today().date()).paginate(page=page,per_page=per_page,error_out=False)
+        PassData.AOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
     # data = parse_table(data)
     # SDRstatus = 
     return render_template('passestable.html', passdata = data,SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
+
+@app.route("/Countdown")
+def CountdownTimer():
+    data = PassData.query.filter(and_(PassData.AOS >= datetime.now(), 
+                                         PassData.ScheduledToReceive)).first()
+    return jsonify(AOS_time = data.AOS)
 
 @app.route("/statusRTL")
 def RTLstatus():
@@ -54,6 +60,25 @@ def RTLstatus():
 def SDRstatus():
     SDRstatus = get_instance()['status']
     return jsonify(SDRstatus=SDRstatus)
+
+@app.route("/schedulePasses", methods=['POST'])
+def schedulePasses():
+    scheduledPasses = []
+    unscheduledPasses = []
+    with app.app_context():
+        for pk in request.json['checked']:
+            d = db.get_or_404(PassData, pk)
+            d.ScheduledToReceive=True
+            scheduledPasses.append(d)
+            db.session.commit()
+            
+        for pk in request.json['unchecked']:
+            d = db.get_or_404(PassData, pk)
+            d.ScheduledToReceive=False
+            unscheduledPasses.append(d)
+            db.session.commit()
+    return jsonify(message="Scheduling Successful!")
+
 
 
 

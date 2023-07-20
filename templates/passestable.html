@@ -17,9 +17,9 @@
             <td>{{passes.LOS}}</td>
             <td>{{passes.maxElevation}}</td>
         {% if passes.ScheduledToReceive %}
-            <td><input type="checkbox" checked/></td>
+            <td><input class="data_id"  option_id="{{ passes.id }}" type="checkbox" checked/></td>
         {% else %}
-            <td><input type="checkbox" /></td>
+            <td><input class="data_id" option_id="{{ passes.id }}" type="checkbox" /></td>
         {% endif %}
         </tr>
         {%endfor%}
@@ -43,4 +43,6 @@
 
     </ul>
   </nav>
+<button id="btn_get_val"> Schedule Passes</button>
+
 {% endblock %}

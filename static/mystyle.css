@@ -23,6 +23,11 @@ body {
   justify-content: center;
 }
 
+#defaultCountdown { 
+  width: 240px; 
+  height: 45px; 
+}
+
 .status {
   width: 100px;
   height: 75px;
