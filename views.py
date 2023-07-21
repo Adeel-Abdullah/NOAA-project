@@ -49,7 +49,8 @@ def popNOAA19(page):
 def CountdownTimer():
     data = PassData.query.filter(and_(PassData.AOS >= datetime.now(), 
                                          PassData.ScheduledToReceive)).first()
-    return jsonify(AOS_time = data.AOS)
+    
+    return jsonify(AOS_time = data.AOS.astimezone())
 
 @app.route("/statusRTL")
 def RTLstatus():

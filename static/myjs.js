@@ -1,4 +1,6 @@
 
+let Timeout = 60000;
+
 $("#status1").each(function CheckSDR() {
     var $this = $(this);
     $.ajax({
@@ -14,8 +16,10 @@ $("#status1").each(function CheckSDR() {
           }
         }
     });
-    setTimeout(CheckSDR, 15000);
+    setTimeout(CheckSDR, Timeout);
 });
+
+
 $("#status2").each(function CheckRTL() {
   var $this = $(this);
   $.ajax({
@@ -31,7 +35,7 @@ $("#status2").each(function CheckRTL() {
         }
       }
   });
-  setTimeout(CheckRTL, 15000);
+  setTimeout(CheckRTL, Timeout);
 });
 
 
@@ -78,8 +82,10 @@ $("#defaultCountdown").each(function StartTimer() {
       type: "GET",
       url: "/Countdown",
       success: function(data) {
-        $this.countdown({until: data["AOS_time"]});
-        console.log(data["AOS_time"]);
+        var austDay = new Date(data["AOS_time"]);
+        console.log(austDay);
+        $this.countdown({until: austDay});
+        
       }
   });
   
