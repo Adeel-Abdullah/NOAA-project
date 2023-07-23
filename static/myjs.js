@@ -1,5 +1,5 @@
 
-let Timeout = 60000;
+let Timeout = 15000;
 
 $("#status1").each(function CheckSDR() {
     var $this = $(this);
@@ -87,9 +87,5 @@ $("#defaultCountdown").each(function StartTimer() {
         $this.countdown({until: austDay});
         
       }
-  });
-  
+  });  
 });
-
-
-//countdown({until: liftoffTime})

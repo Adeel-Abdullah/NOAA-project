@@ -81,13 +81,6 @@ def schedulePasses():
     return jsonify(message="Scheduling Successful!")
 
 
-
-
-
-def parse_table(data):
-    return [{k:(datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%f%z').astimezone(get_localzone()).strftime('%d-%m-%y %H:%M:%S')
-                if isinstance(v,str) else int(v)) for k,v in i.items()} for i in data]
-
 # if __name__ == '__main__':
 #     # APP.run(host='0.0.0.0', port=5000, debug=True)
 #     APP.run(debug=True)
