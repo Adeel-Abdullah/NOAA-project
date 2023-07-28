@@ -8,6 +8,7 @@ pytz = "*"
 tzlocal = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
+celery = "*"
 
 [dev-packages]
 

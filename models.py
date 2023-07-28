@@ -13,8 +13,7 @@ class Satellite(db.Model):
         
     """_summary_
     Norad ID integer
-    operating frequency float 4 decimal
-    
+    operating frequency float 4 decimal    
     """    
     def __repr__(self):
         return f'{self.Name}'

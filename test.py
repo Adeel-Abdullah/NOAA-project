@@ -11,8 +11,10 @@ from sdrangel_requests import *
 from tzlocal import get_localzone
 from datetime import datetime, timedelta
 from sqlalchemy import and_,func
+from celery import shared_task
 
-
+#%%
+"""
 #%%
 
 #  Populating the Satellite Data table
@@ -54,10 +56,11 @@ with app.app_context():
 #%%
 
 # Deleting passes with pk
-with app.app_context():
-    d = db.get_or_404(PassData, 17)
-    db.session.delete(d)
-    db.session.commit()
+for i in range(55,91):
+    with app.app_context():
+        d = db.get_or_404(PassData, i)
+        db.session.delete(d)
+        db.session.commit()
 
            
 
@@ -66,28 +69,59 @@ with app.app_context():
 # Filtering passdata that needs to be showed
 with app.app_context():
     data = PassData.query.filter(and_(PassData.AOS >= datetime.now(), 
-                                         PassData.ScheduledToReceive)).first()
+                                         PassData.ScheduledToReceive)).all()
     print(data.AOS)
     
 #%%
+"""
+#%%
 
 # adding new passes only after checking that they are not already present
-sat_name = "NOAA 15"
-with app.app_context():
-    passes = get_satellite_passes(sat_name)
-    twomins= timedelta(minutes=2)
-    for p in passes:
-        aos = datetime.strptime(p['aos'],'%Y-%m-%dT%H:%M:%S.%f%z').astimezone()
-        data = PassData.query.filter(and_(PassData.AOS <= aos+twomins,
-                                          PassData.AOS >= aos-twomins,
-                                          PassData.SatetlliteName == sat_name)).all()
-        print(data)
+@shared_task(name='updateDB')
+def updateDB():
+    with app.app_context():
+        Satellites = Satellite.query.all()
+        for sat in Satellites:
+            sat_name = sat.Name
+            print(sat_name)
+            passes = get_satellite_passes(sat_name)
+            twomins= timedelta(minutes=2)
+            for p in passes:
+                aos = datetime.strptime(p['aos'],'%Y-%m-%dT%H:%M:%S.%f%z').astimezone()
+                los = datetime.strptime(p['los'],'%Y-%m-%dT%H:%M:%S.%f%z').astimezone()
+                data = PassData.query.filter(and_(PassData.AOS <= aos+twomins,
+                                                  PassData.AOS >= aos-twomins,
+                                                  PassData.SatetlliteName == sat_name)).all()
+                print(data)
+                if data and data[0].AOS.time() != aos.time():
+                    data[0].AOS = aos
+                elif data and data[0].LOS.time() != los.time():
+                    data[0].LOS = los
+                elif not data:
+                    db.session.add(PassData(AOS=aos,
+                                   LOS=los,
+                                   maxElevation=int(p['maxElevation']),
+                                   SatetlliteName=sat_name))
+                    try:
+                        db.session.commit()
+                        print(f"Pass added!")
+                    except Exception as e:
+                        db.session.rollback()
+                        print(f"Commit Failed. Error: {e}") 
+        
         
 
 #%%
 def parse_table(data):
     return [{k:(datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%f%z').astimezone(get_localzone()).strftime('%d-%m-%y %H:%M:%S')
                 if isinstance(v,str) else int(v)) for k,v in i.items()} for i in data]
+
+
+# with app.app_context():
+#     d = PassData.query.filter(and_(PassData.AOS <= datetime.now(),
+#                                 PassData.SatetlliteName == "NOAA 19")).all()
+#     db.session.delete(d)
+#     db.session.commit()
         
     
     
