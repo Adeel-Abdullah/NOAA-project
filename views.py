@@ -5,14 +5,37 @@ from sdrangel_requests import *
 from datetime import datetime
 from sqlalchemy import and_,func
 from tzlocal import get_localzone
+from jinja2  import TemplateNotFound
 
 per_page = 10
 
 
-@app.route("/")
-def index():
-    return render_template("dashboard.html", SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
+# @app.route("/")
+# def index():
+#     return render_template("dashboard.html", SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 # SDRstatus=get_instance()['appname'], RTLstatus = check_rtlstatus())
+@app.route('/', defaults={'path': 'index.html'})
+@app.route('/')
+def index():
+  try:
+    return render_template( 'pages/index.html', segment='index', parent='pages')
+  except TemplateNotFound:
+    return render_template('pages/index.html'), 404
+  
+@app.route('/pages/dashboard/')
+def pages_dashboard():
+  return render_template('pages/dashboard/dashboard.html', segment='dashboard', parent='pages')
+
+@app.route('/pages/tables/bootstrap-tables/')
+def pages_tables_bootstrap_tables():
+  return render_template('pages/tables/bootstrap-tables.html', segment='bootstrap_tables', parent='tables')
+
+@app.route('/pages/settings/')
+def pages_settings():
+  return render_template('pages/settings.html', segment='settings', parent='pages')
+
+
+
 
 @app.route("/NOAA15", methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/NOAA15/<int:page>", methods=['GET', 'POST'])
