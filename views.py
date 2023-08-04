@@ -2,9 +2,9 @@ from flask import render_template, jsonify, request
 from models import Satellite, PassData
 from app import app, db
 from sdrangel_requests import *
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import and_,func
-from tzlocal import get_localzone
+from test import convertodict
 from jinja2  import TemplateNotFound
 
 per_page = 10
@@ -18,9 +18,17 @@ per_page = 10
 @app.route('/')
 def index():
   try:
-    return render_template( 'pages/index.html', segment='index', parent='pages')
+    # return render_template( 'pages/index.html', segment='index', parent='pages')
+    return render_template('pages/dashboard/dashboard.html', 
+                           segment='index')
+
   except TemplateNotFound:
     return render_template('pages/index.html'), 404
+  
+#   def index():
+#     return render_template('home/dashboard.html', 
+#                            segment='index', 
+#                            user_id=current_user.id)
   
 @app.route('/pages/dashboard/')
 def pages_dashboard():
@@ -68,12 +76,14 @@ def popNOAA19(page):
     # SDRstatus = 
     return render_template('passestable.html', passdata = data,SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 
-@app.route("/Countdown")
+@app.route("/ScheduledPasses")
 def CountdownTimer():
     data = PassData.query.filter(and_(PassData.AOS >= datetime.now(), 
-                                         PassData.ScheduledToReceive)).first()
+                                          PassData.ScheduledToReceive),
+                                         PassData.AOS<=datetime.now()+timedelta(hours=6)).all()
+    data = [convertodict(d) for d in data]    
     
-    return jsonify(AOS_time = data.AOS.astimezone())
+    return jsonify(data)
 
 @app.route("/statusRTL")
 def RTLstatus():

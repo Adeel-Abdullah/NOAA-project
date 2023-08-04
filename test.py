@@ -122,6 +122,17 @@ def parse_table(data):
 #                                 PassData.SatetlliteName == "NOAA 19")).all()
 #     db.session.delete(d)
 #     db.session.commit()
-        
-    
-    
+
+#%%
+def schedule():
+    for i in [147, 117, 134, 114]:
+        with app.app_context():
+            d = db.get_or_404(PassData, i)
+            d.ScheduledToReceive=True
+            db.session.commit()
+
+#%%
+def convertodict(d):
+    d = d.__dict__
+    d.pop('_sa_instance_state',None)
+    return d
