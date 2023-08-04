@@ -135,4 +135,6 @@ def schedule():
 def convertodict(d):
     d = d.__dict__
     d.pop('_sa_instance_state',None)
+    d['AOS'] = d['AOS'].astimezone()
+    d['LOS'] = d['LOS'].astimezone()
     return d
