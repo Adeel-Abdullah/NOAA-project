@@ -9,10 +9,15 @@ $("#status1").each(function CheckSDR() {
         success: function(data) {
           if(data['SDRstatus']== "OK")
           {
-            $this.removeClass('inactive').addClass('active').text("Active")
+            $this.removeClass('bg-danger').addClass('bg-success');
+            let smallstatus = $this.querySelectorAll(":scope > small");
+            smallstatus.text("Online");
+
           }
           else{
-            $this.removeClass('active').addClass('inactive').text("InActive");
+            $this.removeClass('bg-success').addClass('bg-danger');
+            let smallstatus = $this.querySelectorAll(":scope > small");
+            smallstatus.text("Offline");
           }
         }
     });
@@ -28,7 +33,7 @@ $("#status2").each(function CheckRTL() {
       success: function(data) {
         if(data['RTLstatus']== "OK")
         {
-          $this.removeClass('inactive').addClass('active').text("Active")
+          $this.removeClass('inactive').addClass('active').text("Active");
         }
         else{
           $this.removeClass('active').addClass('inactive').text("InActive");

@@ -4,7 +4,7 @@ from app import app, db
 from sdrangel_requests import *
 from datetime import datetime, timedelta
 from sqlalchemy import and_,func
-from test import convertodict
+# from test import convertodict
 from jinja2  import TemplateNotFound
 
 per_page = 10
@@ -80,8 +80,8 @@ def popNOAA19(page):
 def CountdownTimer():
     data = PassData.query.filter(and_(PassData.AOS >= datetime.now(), 
                                           PassData.ScheduledToReceive),
-                                         PassData.AOS<=datetime.now()+timedelta(hours=6)).all()
-    data = [convertodict(d) for d in data]    
+                                         PassData.AOS<=datetime.now()+timedelta(hours=72)).all()
+    data = [d.asDict() for d in data]    
     
     return jsonify(data)
 

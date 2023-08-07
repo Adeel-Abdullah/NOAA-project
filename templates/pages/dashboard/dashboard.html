@@ -127,7 +127,7 @@
             <h4 class="h6 mb-0">
                 <a href="#">RTL SDR</a>
             </h4>
-            <div class="d-flex align-items-center">
+            <div id="status1" class="d-flex align-items-center">
                 <div class="bg-success dot rounded-circle me-1"></div>
                 <small>Online</small>
             </div>
@@ -142,7 +142,7 @@
                 <h4 class="h6 mb-0">
                     <a href="#">SDR Server</a>
                 </h4>
-                <div class="d-flex align-items-center">
+                <div id="status2" class="d-flex align-items-center">
                     <div class="bg-warning dot rounded-circle me-1"></div>
                     <small>Busy</small>
                 </div>
@@ -158,8 +158,8 @@
                 <a href="#">Database</a>
             </h4>
             <div class="d-flex align-items-center">
-                <div class="bg-danger dot rounded-circle me-1"></div>
-                <small>Offline</small>
+                <div class="bg-success dot rounded-circle me-1"></div>
+                <small>Online</small>
             </div>
           </div>
         </div>
@@ -337,5 +337,61 @@
 
     // Update the chart every minute
     setInterval(updateChart, 10000); // Adjust interval as needed (60000 ms = 1 minute)
+
+    let Timeout = 15000;
+
+  $("#status1").each(function CheckSDR() {
+    var $this = $(this);
+    $.ajax({
+        type: "GET",
+        url: "/statusRTL",
+        success: function(data) {
+          if(data['SDRstatus']== "OK")
+          {
+            let statusdiv = $this[0].querySelectorAll(":scope > div");
+            statusdiv.removeClass('bg-danger').addClass('bg-success');
+
+            let smallstatus = $this[0].querySelectorAll(":scope > small");
+            smallstatus.text("Online");
+
+          }
+          else{
+            let statusdiv = $this[0].querySelectorAll(":scope > div");
+            $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
+
+            let smallstatus = $this[0].querySelectorAll(":scope > small");
+            $(smallstatus[0]).text("Offline");
+          }
+        }
+    });
+    setTimeout(CheckSDR, Timeout);
+});
+
+$("#status2").each(function CheckSDR() {
+    var $this = $(this);
+    $.ajax({
+        type: "GET",
+        url: "/statusSDR",
+        success: function(data) {
+          if(data['SDRstatus']== "OK")
+          {
+            let statusdiv = $this[0].querySelectorAll(":scope > div");
+            statusdiv.removeClass('bg-danger').addClass('bg-success');
+
+            let smallstatus = $this[0].querySelectorAll(":scope > small");
+            smallstatus.text("Online");
+
+          }
+          else{
+            let statusdiv = $this[0].querySelectorAll(":scope > div");
+            $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
+
+            let smallstatus = $this[0].querySelectorAll(":scope > small");
+            $(smallstatus[0]).text("Offline");
+          }
+        }
+    });
+    setTimeout(CheckSDR, Timeout);
+});
 </script>
 {% endblock javascripts %}

@@ -30,3 +30,10 @@ class PassData(db.Model):
     
     def __repr__(self):
         return f'{self.SatetlliteName} {self.AOS.strftime("%d-%m-%y %H:%M:%S")} {self.ScheduledToReceive}'
+    
+    def asDict(self):
+        d = self.__dict__
+        d.pop('_sa_instance_state',None)
+        d['AOS'] = d['AOS'].astimezone()
+        d['LOS'] = d['LOS'].astimezone()
+        return d
