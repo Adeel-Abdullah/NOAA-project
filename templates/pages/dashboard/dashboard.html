@@ -52,10 +52,10 @@
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
                                 <h2 class="h6 text-gray-400 mb-0">AOS</h2>
-                                <h3 class="fw-extrabold mb-0">19:38:36</h3>
+                                <h3 id="AOS_time" class="fw-extrabold mb-0">19:38:36</h3>
                             </div>
                             <div class="small d-flex mt-0">                               
-                                <div>2023-02-14 PST <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"></path></svg><span class="text-success fw-bolder">45</span></div>
+                                <div id="AOS_date">2023-02-14 PST <svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"></path></svg><span class="text-success fw-bolder">45</span></div>
                             </div>
                         </div>
                     </div>
@@ -78,9 +78,9 @@
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
                                 <h2 class="h6 text-gray-400 mb-0">Top</h2>
-                                <h3 class="fw-extrabold mb-0">19:42:23</h3>
+                                <h3 id="TOP_time" class="fw-extrabold mb-0">19:42:23</h3>
                                 <div class="small d-flex mt-0">                               
-                                    <div>2023-14-02 PST <svg class="icon icon-xs text-secondary" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" clip-rule="evenodd"></path></svg><span class="text-secondary fw-bolder">68</span>
+                                    <div id="TOP_date">2023-14-02 PST <svg class="icon icon-xs text-secondary" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" clip-rule="evenodd"></path></svg><span class="text-secondary fw-bolder">68</span>
                                     </div>
                                 </div>
                             </div>
@@ -105,9 +105,9 @@
                         <div class="col-12 col-xl-7 px-xl-0">
                             <div class="d-none d-sm-block">
                                 <h2 class="h6 text-gray-400 mb-0"> LOS</h2>
-                                <h3 class="fw-extrabold mb-0">19:48:50</h3>
+                                <h3 id= "LOS_time" class="fw-extrabold mb-0">19:48:50</h3>
                                 <div class="small d-flex mt-0">                               
-                                <div>2023-14-02 PST <svg class="icon icon-xs text-danger" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg><span class="text-danger fw-bolder">108</span></div>
+                                <div id= "LOS_date">2023-14-02 PST <svg class="icon icon-xs text-danger" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg><span class="text-danger fw-bolder">108</span></div>
                                 </div>
                             </div> 
                             
@@ -143,7 +143,7 @@
                     <a href="#">SDR Server</a>
                 </h4>
                 <div id="status2" class="d-flex align-items-center">
-                    <div class="bg-warning dot rounded-circle me-1"></div>
+                    <div class="bg-success dot rounded-circle me-1"></div>
                     <small>Busy</small>
                 </div>
             </div>
@@ -197,13 +197,25 @@
         type: "GET",
         url: "/ScheduledPasses",
         success: function(data) {
-          var austDay = new Date(data[0].AOS);
-          console.log(austDay);
-          $this.countdown({until: austDay});
+          var AOSdate = new Date(data[0].AOS);
+          var LOSdate = new Date(data[0].LOS);
+          var TOPdate = new Date((AOSdate.getTime() + LOSdate.getTime()) / 2);
+          //console.log(TOPdate);
+          //console.log(AOSdate);
+          $this.countdown({until: AOSdate});
           $this.data('aos',data[0].AOS);
           $this.data('los',data[0].LOS);
           $this.data('el',data[0].maxElevation);
           console.log($this.data('aos'));
+          //console.log(AOSdate.toTimeString().slice(0, 9));
+          document.getElementById("AOS_time").textContent= AOSdate.toTimeString().slice(0, 9);
+          document.getElementById("AOS_date").textContent= AOSdate.toISOString().slice(0,10);
+
+          document.getElementById("LOS_time").textContent= LOSdate.toTimeString().slice(0, 9);
+          document.getElementById("LOS_date").textContent= LOSdate.toISOString().slice(0,10);
+
+          document.getElementById("TOP_time").textContent= TOPdate.toTimeString().slice(0, 9);
+          document.getElementById("TOP_date").textContent= TOPdate.toISOString().slice(0,10);
           
         }
     });  
@@ -340,31 +352,31 @@
 
     let Timeout = 15000;
 
-  $("#status1").each(function CheckSDR() {
+  $("#status1").each(function CheckRTL() {
     var $this = $(this);
     $.ajax({
         type: "GET",
         url: "/statusRTL",
         success: function(data) {
-          if(data['SDRstatus']== "OK")
+          if(data['RTLstatus']== "OK")
           {
-            let statusdiv = $this[0].querySelectorAll(":scope > div");
-            statusdiv.removeClass('bg-danger').addClass('bg-success');
+            let statusdiv = document.body.querySelectorAll("#status1 > div");
+            $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
 
-            let smallstatus = $this[0].querySelectorAll(":scope > small");
-            smallstatus.text("Online");
+            let smallstatus = document.body.querySelectorAll("#status1 > small");
+            $(smallstatus[0]).text("Online");
 
           }
           else{
-            let statusdiv = $this[0].querySelectorAll(":scope > div");
+            let statusdiv = document.body.querySelectorAll("#status1 > div");
             $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
 
-            let smallstatus = $this[0].querySelectorAll(":scope > small");
+            let smallstatus = document.body.querySelectorAll("#status1 > small");
             $(smallstatus[0]).text("Offline");
           }
         }
     });
-    setTimeout(CheckSDR, Timeout);
+    setTimeout(CheckRTL, Timeout);
 });
 
 $("#status2").each(function CheckSDR() {
@@ -375,18 +387,19 @@ $("#status2").each(function CheckSDR() {
         success: function(data) {
           if(data['SDRstatus']== "OK")
           {
-            let statusdiv = $this[0].querySelectorAll(":scope > div");
-            statusdiv.removeClass('bg-danger').addClass('bg-success');
+            let statusdiv = document.body.querySelectorAll("#status2 > div");
+            console.log(statusdiv);
+            $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
 
-            let smallstatus = $this[0].querySelectorAll(":scope > small");
-            smallstatus.text("Online");
+            let smallstatus = document.body.querySelectorAll("#status2 > small");
+            $(smallstatus[0]).text("Online");
 
           }
           else{
-            let statusdiv = $this[0].querySelectorAll(":scope > div");
+            let statusdiv = document.body.querySelectorAll("#status2 > div");
             $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
 
-            let smallstatus = $this[0].querySelectorAll(":scope > small");
+            let smallstatus = document.body.querySelectorAll("#status2 > small");
             $(smallstatus[0]).text("Offline");
           }
         }

@@ -125,7 +125,7 @@ def parse_table(data):
 
 #%%
 def schedule():
-    for i in [119, 120, 136, 138, 122]:
+    for i in [160, 172, 181, 163, 164, 175, 184, 176]:
         with app.app_context():
             d = db.get_or_404(PassData, i)
             d.ScheduledToReceive=True
