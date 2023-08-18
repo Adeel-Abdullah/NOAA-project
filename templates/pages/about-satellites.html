@@ -1,0 +1,150 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Satellites {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+
+{% block stylesheets %}
+  <!-- <style>
+  .card {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .card-img-container {
+    flex: 0 0 40%; /* Set the image container to take up 40% of the card width */
+    text-align: right; /* Align the image to the right within the image container */
+  }
+
+  #satellite-image {
+    max-height: 400px;
+    max-width: 100%; /* Ensure the image does not exceed the container width */
+  }
+
+  .card-body {
+    flex: 1; /* Make the card body take up the remaining space */
+  }
+</style> -->
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+<div class="d-block mb-4 mb-md-0">
+<nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+              <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                  <li class="breadcrumb-item">
+                      <a href="#">
+                          <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                      </a>
+                  </li>
+                  <li class="breadcrumb-item"><a href="#">Volt</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Satellites</li>
+              </ol>
+          </nav>
+          <h1 class="text-center">Satellites</h1>
+</div>
+</div>
+<div class="container mt-0">
+  <div class="form-group">
+    <label for="satellite-dropdown">Select a Satellite:</label>
+    
+      <select class="form-control" id="satellite-dropdown" onchange="changeSatellite()">
+      <option value="non">Choose...</option>
+      <option value="noaa15">NOAA 15</option>
+      <option value="noaa18">NOAA 18</option>
+      <option value="noaa19">NOAA 19</option>
+    </select>
+  
+  </div>
+  <div class="mt-4">
+    <div class="card justify-content-center">
+      <div class="card-img-container">
+        <img id="satellite-image" src="noaa19.jpeg" alt="" height="400">
+      </div>
+      <div class="card-body">
+        <h5 class="card-title" id="satellite-title">Select a Satellite to know more...</h5>
+        <p class="card-text" id="satellite-info"></p>
+        <h6 class="card-text" id="satellite-whatis"></h6>
+        <p class="card-text" id="satellite-whatisdesc"></p>
+        <h6 class="card-text" id="satellite-whatdoes"></h6>
+        <p class="card-text" id="satellite-whatdoesdesc"></p>
+        <h6 class="card-text" id="satellite-howdoes"></h6>
+        <p class="card-text" id="satellite-howdoesdesc"></p>
+        <h6 class="card-text" id="satellite-funfact"></h6>
+        <p class="card-text" id="satellite-funfactdesc"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script>
+    function changeSatellite() {
+      const dropdown = document.getElementById("satellite-dropdown");
+      const selectedValue = dropdown.value;
+      const satelliteImage = document.getElementById("satellite-image");
+      const satelliteTitle = document.getElementById("satellite-title");
+      const satelliteInfo = document.getElementById("satellite-info");
+      const satelliteWhatIs = document.getElementById("satellite-whatis");
+      const satelliteWhatIsDesc = document.getElementById("satellite-whatisdesc");
+      const satelliteWhatDoes = document.getElementById("satellite-whatdoes");
+      const satelliteWhatDoesDesc = document.getElementById("satellite-whatdoesdesc");
+      const satelliteHowDoes = document.getElementById("satellite-howdoes");
+      const satelliteHowDoesDesc = document.getElementById("satellite-howdoesdesc");
+      const satelliteFunfact = document.getElementById("satellite-funfact");
+      const satelliteFunfactDesc = document.getElementById("satellite-funfactdesc");
+
+      switch (selectedValue) {
+        case "noaa15":
+          satelliteImage.src = "{{ url_for('static', filename='assets/img/satellites/NOAA-15.jpg') }}";
+          satelliteTitle.textContent = "Discovering the Marvelous NOAA 15 Satellite!"
+          satelliteInfo.textContent = "Hey there, curious kids! Let's blast off into space and learn about the amazing NOAA 15 satellite! 🚀";
+          satelliteWhatIs.textContent = "What is NOAA 15?";
+          satelliteWhatIsDesc.textContent = "NOAA 15 is like a super cool space robot that lives way up high in the sky! It's not your regular robot, though. It's a special satellite sent by scientists to explore and keep an eye on our Earth from way above the clouds.";
+          satelliteWhatDoes.textContent = "What Does NOAA 15 Do?";
+          satelliteWhatDoesDesc.textContent = "This awesome satellite has some important jobs to do! It's like a superhero for weather and climate. Every day, NOAA 15 takes pictures of the clouds and the Earth's surface, just like how you take pictures with your camera. But instead of family photos, it captures pictures of storms, hurricanes, and even how the plants and oceans look from space! It helps scientists know what's happening with our weather and helps keep us safe by predicting storms.";
+          satelliteHowDoes.textContent = "How Does NOAA 15 Work?";
+          satelliteHowDoesDesc.textContent = "NOAA 15 is like a little detective in the sky. It has super smart sensors and cameras that help it see things we can't see from the ground. When it takes pictures, it sends them back to the scientists on Earth using invisible waves called radio signals. It's like sending a secret message, but only scientists can understand it!";
+          satelliteFunfact.textContent = "Fun Facts about NOAA 15:";
+          satelliteFunfactDesc.textContent = "NOAA stands for the National Oceanic and Atmospheric Administration, and they take care of this satellite.\nNOAA 15 moves super fast, traveling around the Earth more than 14 times every single day!\nIt's been exploring space since May 1998, so it's a real space veteran!\nNext time you look up at the sky, remember that NOAA 15 might be flying above, working hard to keep us safe and understand our wonderful planet Earth. It's like having a superhero in the sky, watching over us all! 🌍🛰️\nNow, wasn't that a fascinating journey to learn about NOAA 15? Keep exploring and never stop wondering about the incredible universe around us! 🌌🌠";
+          break;
+        case "noaa18":
+          satelliteImage.src = "{{ url_for('static', filename='assets/img/satellites/NOAA-18.jpg') }}";
+          satelliteTitle.textContent = "NOAA 18: The Spectacular Weather Watcher!"
+          satelliteInfo.textContent = "Hello again, curious kids! Get ready to meet another incredible weather superhero, NOAA 18! 🛰️";
+          satelliteWhatIs.textContent = "What is NOAA 18?";
+          satelliteWhatIsDesc.textContent = "NOAA 18 is like a twin to NOAA 15 – another amazing satellite sent to space to study our Earth. It's part of a special group of satellites working together to keep us safe and informed about the weather.";
+          satelliteWhatDoes.textContent = "What Does NOAA 18 Do?";
+          satelliteWhatDoesDesc.textContent = "Just like its sibling, NOAA 18 has a super important job: to take pictures of our planet from up high! It flies around the Earth, capturing images of clouds, oceans, and even the land. These pictures help scientists predict weather changes and track storms, so we know when to bring our umbrellas or enjoy sunny days!";
+          satelliteHowDoes.textContent = "How Does NOAA 18 Work?";
+          satelliteHowDoesDesc.textContent = "NOAA 18 is a space detective just like NOAA 15. It has powerful eyes in the sky – instruments and cameras that snap pictures and gather weather data. Once it has all the cool info, it sends it back to Earth using special signals, like a message in a bottle, but super fast!";
+          satelliteFunfact.textContent = "Fun Facts about NOAA 18:";
+          satelliteFunfactDesc.textContent = "    NOAA 18 was launched in May 2005, so it's been zipping through space for quite a while now!\nIt orbits our planet more than 14 times a day, traveling faster than a speeding race car!";
+          break;
+        case "noaa19":
+          satelliteImage.src = "{{ url_for('static', filename='assets/img/satellites/NOAA-19.jpg') }}";
+          satelliteTitle.textContent = "NOAA 19: The Weather Wonder of Space!"
+          satelliteInfo.textContent = "Hey, young explorers! Let's get to know NOAA 19, another brilliant satellite watching over our weather from the great beyond! 🌦️🚀";
+          satelliteWhatIs.textContent = "What is NOAA 19?";
+          satelliteWhatIsDesc.textContent = "NOAA 19 is like a space buddy to NOAA 15 and NOAA 18 – a trio of weather watchers from up high! It's like having three eyes in the sky, all working together to understand our planet's changing moods.";
+          satelliteWhatDoes.textContent = "What Does NOAA 19 Do?";
+          satelliteWhatDoesDesc.textContent = "JOur friend NOAA 19 is a master of capturing pictures too! It clicks images of clouds, oceans, and all the neat stuff on Earth's surface. These images help scientists learn about the climate and track wild weather events, making sure we're ready for whatever Mother Nature sends our way.";
+          satelliteHowDoes.textContent = "How Does NOAA 19 Work?";
+          satelliteHowDoesDesc.textContent = "NOAA 19 is a high-tech space explorer with fancy gadgets to take those pictures and gather data. Once it's done, it sends all its findings back to Earth for scientists to study and share with the world.";
+          satelliteFunfact.textContent = "Fun Facts about NOAA 19:";
+          satelliteFunfactDesc.textContent = "    NOAA 19 joined the family in February 2009, so it's a bit younger than its siblings, but still just as awesome!\nIt's also super speedy, zooming around the Earth like a shooting star!\nThere you have it – a trio of incredible weather satellites, NOAA 15, NOAA 18, and NOAA 19, working together to make sure we stay safe and prepared for whatever weather comes our way! 🌦️🌍🛰️ Keep looking up to the stars and exploring the wonders of our beautiful universe! 🌌🚀";
+          break;
+        default:
+          break;
+      }
+    }
+  </script>
+{% endblock javascripts %}

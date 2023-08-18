@@ -25,7 +25,7 @@ class PassData(db.Model):
     AOS = db.Column(db.DateTime, index=True)
     LOS = db.Column(db.DateTime)
     maxElevation = db.Column(db.Integer)
-    ScheduledToReceive = db.Column(db.Boolean, default=False)
+    ScheduledToReceive = db.Column(db.Boolean, default=True)
     SatetlliteName = db.Column(db.Integer, db.ForeignKey(Satellite.id))
     
     def __repr__(self):

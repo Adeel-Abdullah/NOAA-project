@@ -130,6 +130,14 @@ def schedule():
             d = db.get_or_404(PassData, i)
             d.ScheduledToReceive=True
             db.session.commit()
+            
+#%%
+def delete():
+    for i in range(230,273):
+        with app.app_context():
+            d = db.get_or_404(PassData, i)
+            db.session.delete(d)
+            db.session.commit()
 
 #%%
 def convertodict(d):

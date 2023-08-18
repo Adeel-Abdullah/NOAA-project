@@ -1,0 +1,251 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Transactions {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+
+<link href="https://unpkg.com/slim-select@latest/dist/slimselect.css" rel="stylesheet"></link>
+
+<style>
+
+  /* Custom table styles */
+  .table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  .table th {
+    font-weight: bold;
+    background-color: #f2f2f2;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.75rem;
+    text-align: center;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+  }
+
+  .table tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  /* Custom dropdown button */
+  .dropdown-toggle-split {
+    cursor: pointer;
+  }
+  .table-selected {
+  background-color: #f0f0f0; /* Change to the color you want for the selected row */
+}
+
+
+
+
+
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+      <div class="d-block mb-4 mb-md-0">
+          <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+              <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                  <li class="breadcrumb-item">
+                      <a href="#">
+                          <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                      </a>
+                  </li>
+                  <li class="breadcrumb-item"><a href="#">Volt</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Schedule</li>
+              </ol>
+          </nav>
+          <h2 class="h4">All Passes</h2>
+          <p class="mb-0">Starting from now, all passes in next 24 hours</p>
+      </div>
+      <div class="btn-toolbar mb-2 mb-md-0">
+          <a href="#" id="btn_get_val" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
+              <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+              Add
+          </a>
+          <div class="btn-group ms-2 ms-lg-3">
+              <button type="button" class="btn btn-sm btn-outline-gray-600">Share</button>
+              <button type="button" class="btn btn-sm btn-outline-gray-600">Export</button>
+          </div>
+      </div>
+  </div>
+  
+  <div class="table-settings mb-4">
+      <div class="row align-items-center justify-content-between">
+          <div class="col col-md-6 col-lg-3 col-xl-4">
+            <form method="post">
+            <label class="form-label">Choose a Satellite...</label>
+                <select name="Satellite" id="multiple" multiple>
+                <optgroup label="Satellites" data-selectall="true" data-selectalltext="Select them all!">
+                  <option value="NOAA 15">NOAA-15</option>
+                  <option value="NOAA 18">NOAA-18</option>
+                  <option value="NOAA 19">NOAA-19</option>
+                </optgroup>
+                </select>
+                <!-- <button class="btn btn-primary" type="button">Apply</button> -->
+            </form>
+          </div>
+          <div class="col-4 col-md-2 col-xl-1 ps-md-0 text-end">
+              <div class="dropdown">
+                  <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <svg class="icon icon-sm" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"></path></svg>
+                      <span class="visually-hidden">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-xs dropdown-menu-end pb-0">
+                      <span class="small ps-3 fw-bold text-dark">Show</span>
+                      <a class="dropdown-item d-flex align-items-center fw-bold" href="#">10 <svg class="icon icon-xxs ms-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></a>
+                      <a class="dropdown-item fw-bold" href="#">20</a>
+                      <a class="dropdown-item fw-bold rounded-bottom" href="#">30</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+ 
+
+    {% include "pages/tables/tables.html" %}
+      
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<!-- For Tags -->
+
+<!-- <script src="https://unpkg.com/slim-select@latest/dist/slimselect.min.js"></script> -->
+
+<script>
+    var select = new SlimSelect({
+    select: '#multiple',
+    settings: {
+      hideSelected: false,
+    }
+    
+  })
+   
+// onChange: function () {
+//  setTimeout(() => {
+//      createOptgroupLogic(select);
+//    }, 1);
+//  }
+
+  // Vanilla JavaScript
+  document.addEventListener("DOMContentLoaded", function () {
+    const selectButtons = document.querySelectorAll(".select-button");
+
+    selectButtons.forEach(function (a) {
+      a.addEventListener("click", function () {
+        // Get the parent row of the clicked button
+        const row = this.closest(".table-row");
+
+        // Toggle the 'table-active' class on the clicked row
+        row.classList.toggle("table-active");
+      });
+    });
+  });
+
+  $("#multiple").change(function() {
+    var values = select.getSelected(); // Will return an array of strings
+    //console.log(values);
+    var jsonObj = {}
+    for(var i = 0, l = values.length; i < l; i++) {
+        jsonObj[i] = values[i];
+      }
+    console.log(jsonObj);
+    $.ajax({
+        url:"/table", 
+        type: "POST",
+        data: JSON.stringify(jsonObj),
+        contentType:"application/json; charset=utf-8",
+        success: function(response) {
+            //table = response.document.getelementbyID("Pass_table");
+            $("#Pass_table").replaceWith(response);
+          }
+        });
+});  
+
+$(document).on("click", "a.page-link",function(e) {
+    if (!this.href.includes("table") ){
+        return;}
+    else{
+    e.stopPropagation();
+    e.preventDefault();
+    console.log("Hi");
+    var href = this.href;
+    var values = select.getSelected(); // Will return an array of strings
+    console.log(values);
+    var jsonObj = {}
+    for(var i = 0, l = values.length; i < l; i++) {
+        jsonObj[i] = values[i];
+      }
+    console.log(jsonObj);
+    $.ajax({
+        url: href, 
+        type: "POST",
+        data: JSON.stringify(jsonObj),
+        contentType:"application/json; charset=utf-8",
+        success: function(response) {
+            //table = response.document.getelementbyID("Pass_table");
+        $("#Pass_table").replaceWith(response);
+          }
+        });}
+});
+
+
+function get_all_val(ele, attr_lookup )
+{
+  var get_checked = [];
+  var get_unchecked = [];
+  ele.each(function(index, v1)
+  {
+    if($(this).prop("checked")){
+      get_checked.push($(this).attr(attr_lookup));
+    }
+    else{
+      get_unchecked.push($(this).attr(attr_lookup));
+    }
+  });
+  
+  let get_obj= {
+    checked: get_checked,
+    unchecked: get_unchecked,
+  }
+  return get_obj;
+}
+
+$(btn_get_val).click(function(event)
+{
+  event.preventDefault();
+  var ele = $(".data_id");
+  var v1 = get_all_val(ele, 'option_id');
+  var v2 = JSON.stringify(v1);
+
+  $.ajax({
+    type: "POST",
+    contentType: "application/json",
+    url: "/schedulePasses",
+    data: v2,
+    dataType: "json"
+  });
+});
+
+
+</script>
+
+{% endblock javascripts %}

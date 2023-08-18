@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, request
+from flask import render_template, jsonify, request, Response
 from models import Satellite, PassData
 from app import app, db
 from sdrangel_requests import *
@@ -14,25 +14,30 @@ per_page = 10
 # def index():
 #     return render_template("dashboard.html", SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 # SDRstatus=get_instance()['appname'], RTLstatus = check_rtlstatus())
-@app.route('/', defaults={'path': 'index.html'})
-@app.route('/')
-def index():
-  try:
-    # return render_template( 'pages/index.html', segment='index', parent='pages')
-    return render_template('pages/dashboard/dashboard.html', 
-                           segment='index')
+# @app.route('/', defaults={'path': 'index.html'})
+# @app.route('/')
+# def index():
+#   try:
+#     # return render_template( 'pages/index.html', segment='index', parent='pages')
+#     return render_template('pages/dashboard/dashboard.html', 
+#                            segment='index')
 
-  except TemplateNotFound:
-    return render_template('pages/index.html'), 404
+#   except TemplateNotFound:
+#     return render_template('pages/index.html'), 404
   
 #   def index():
 #     return render_template('home/dashboard.html', 
 #                            segment='index', 
 #                            user_id=current_user.id)
   
-@app.route('/pages/dashboard/')
+@app.route('/dashboard.html')
+@app.route('/', defaults={'path': 'index.html'})
+@app.route('/')
 def pages_dashboard():
-  return render_template('pages/dashboard/dashboard.html', segment='dashboard', parent='pages')
+    try:
+        return render_template('pages/dashboard/dashboard.html', segment='dashboard', parent='pages')
+    except TemplateNotFound:
+        return render_template('pages/index.html'), 404
 
 @app.route('/pages/tables/bootstrap-tables/')
 def pages_tables_bootstrap_tables():
@@ -42,6 +47,51 @@ def pages_tables_bootstrap_tables():
 def pages_settings():
   return render_template('pages/settings.html', segment='settings', parent='pages')
 
+@app.route('/schedule.html', methods=['GET', 'POST'], defaults={"page": 1})
+@app.route("/schedule.html/<int:page>", methods=['GET', 'POST'])
+def page_schedule(page):
+    # data = str(data.decode())
+    segment = get_segment(request)
+    page = page
+    data = PassData.query.filter(PassData.AOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
+    return render_template('pages/schedule.html',  passdata = data, segment=segment, parent='pages')
+
+
+@app.route('/table', methods=['GET', 'POST'], defaults={"page": 1})
+@app.route("/table/<int:page>", methods=['POST'])
+def table(page):
+    data = request.data
+    data = json.loads(data)
+    segment = get_segment(request)
+    page = page
+    data = PassData.query.filter(and_(PassData.AOS >= datetime.now(),
+                                      PassData.SatetlliteName.in_(data.values()))).paginate(page=page,per_page=per_page,error_out=False)
+    return render_template('pages/tables/tables.html',  passdata = data, segment=segment, parent='pages')
+
+
+@app.route('/<template>')
+def route_template(template):
+    try:
+        if not template.endswith('.html'):
+            template += '.html'
+        # Detect the current page
+        segment = get_segment(request)
+        # Serve the file (if exists) from app/templates/home/FILE.html
+        return render_template("pages/" + template, segment=segment)
+    except TemplateNotFound:
+        return render_template('pages/page-404.html'), 404
+    except:
+        return render_template('pages/page-500.html'), 500
+
+# Helper - Extract current page name from request
+def get_segment(request):
+    try:
+        segment = request.path.split('/')[-1]
+        if segment == '':
+            segment = 'index'
+        return segment
+    except:
+        return None
 
 
 
