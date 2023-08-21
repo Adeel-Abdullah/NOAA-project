@@ -70,12 +70,12 @@
               </ol>
           </nav>
           <h2 class="h4">All Passes</h2>
-          <p class="mb-0">Starting from now, all passes in next 24 hours</p>
+          <p class="mb-0">Starting from now, all upcoming passes</p>
       </div>
       <div class="btn-toolbar mb-2 mb-md-0">
           <a href="#" id="btn_get_val" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
               <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-              Add
+              Schedule
           </a>
           <div class="btn-group ms-2 ms-lg-3">
               <button type="button" class="btn btn-sm btn-outline-gray-600">Share</button>
@@ -106,10 +106,12 @@
                       <span class="visually-hidden">Toggle Dropdown</span>
                   </button>
                   <div class="dropdown-menu dropdown-menu-xs dropdown-menu-end pb-0">
-                      <span class="small ps-3 fw-bold text-dark">Show</span>
+                      <!-- <span class="small ps-3 fw-bold text-dark">Show</span>
                       <a class="dropdown-item d-flex align-items-center fw-bold" href="#">10 <svg class="icon icon-xxs ms-auto" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></a>
                       <a class="dropdown-item fw-bold" href="#">20</a>
-                      <a class="dropdown-item fw-bold rounded-bottom" href="#">30</a>
+                      <a class="dropdown-item fw-bold rounded-bottom" href="#">30</a> -->
+                      <div class="form-check" style="padding-left: 1.025em;"><a id="select" href="#">Select All <div style="border-radius: .25em; margin:3px 10px 0 0; background-color: #1F2937; float: Right;" class="form-check-input"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 6 20 20"><path fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m6 10 3 3 6-6"/></svg></a></div></div>
+                      <div class="form-check" style="padding-left: 0.9em; "><a id ="unselect" href="#">Unselect All <div style="border-radius: .25em; margin:3px 10px 0 0; background-color: #D1D5DB; float: Right;" class="form-check-input"></a></div></div>
                   </div>
               </div>
           </div>
@@ -208,6 +210,7 @@ $(document).on("click", "a.page-link",function(e) {
 });
 
 
+
 function get_all_val(ele, attr_lookup )
 {
   var get_checked = [];
@@ -236,6 +239,14 @@ $(btn_get_val).click(function(event)
   var v1 = get_all_val(ele, 'option_id');
   var v2 = JSON.stringify(v1);
 
+  swalWithBootstrapButtons.fire({
+    icon: 'success',
+    title: 'Success alert',
+    text: 'Passes have been scheduled',
+    showConfirmButton: true,
+    timer: 2000
+})
+
   $.ajax({
     type: "POST",
     contentType: "application/json",
@@ -245,6 +256,35 @@ $(btn_get_val).click(function(event)
   });
 });
 
+$("#select").click(function(e)
+{
+  e.stopPropagation();
+  e.preventDefault();
+  $(".data_id").each(function(elm){
+    if (!$(this).prop("checked")) {
+      $(this).click();
+    }
+  });
+})
+
+$("#unselect").click(function(e)
+{
+  e.stopPropagation();
+  e.preventDefault();
+  $(".data_id").each(function(elm){
+    if ($(this).prop("checked")) {
+      $(this).click();
+    }
+});
+})
+
+const swalWithBootstrapButtons = Swal.mixin({
+  customClass: {
+      confirmButton: 'btn btn-primary',
+      cancelButton: 'btn btn-gray'
+  },
+  buttonsStyling: false
+});
 
 </script>
 
