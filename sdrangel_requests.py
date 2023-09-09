@@ -116,7 +116,35 @@ def check_rtlstatus():
         if (dev['FriendlyName'] == 'Bulk-In, Interface' or dev['FriendlyName'] == 'RTL2832U') and dev['Class'] == 'USBDevice':
             return(dev['Status'] )
     
-    
+
+def start_audioRecording():
+    url = "http://127.0.0.1:8091/sdrangel/audio/output/parameters"
+    file_path = "json/start_recording.json"
+    with open(file_path, 'r') as openfile:
+            json_object = json.load(openfile)
+    payload = json.dumps(json_object)
+    headers = {
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request("PATCH", url, headers=headers, data=payload)
+    return response.text
+
+
+def stop_audioRecording():
+    url = "http://127.0.0.1:8091/sdrangel/audio/output/parameters"
+    file_path = "json/stop_recording.json"
+    with open(file_path, 'r') as openfile:
+            json_object = json.load(openfile)
+    payload = json.dumps(json_object)
+    headers = {
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request("PATCH", url, headers=headers, data=payload)
+    return response.text
+
+
 # result = {
 #     x['aos']: datetime.strptime(x['aos'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%d-%m-%y %H:%M:%S'),
 #     x['los']: datetime.strptime(x['los'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%d-%m-%y %H:%M:%S'),

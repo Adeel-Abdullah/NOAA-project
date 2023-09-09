@@ -6,12 +6,11 @@ Created on Fri Jul  7 15:52:37 2023
 """
 
 from models import Satellite, PassData
-from app import app, db
+from extensions import scheduler, db
 from sdrangel_requests import *
 from tzlocal import get_localzone
 from datetime import datetime, timedelta
 from sqlalchemy import and_,func
-from celery import shared_task
 
 #%%
 """
@@ -77,9 +76,9 @@ with app.app_context():
 #%%
 
 # adding new passes only after checking that they are not already present
-@shared_task(name='updateDB')
+@scheduler.task('interval', id='updateDB', minutes=2)
 def updateDB():
-    with app.app_context():
+    with scheduler.app.app_context():
         Satellites = Satellite.query.all()
         for sat in Satellites:
             sat_name = sat.Name
@@ -146,3 +145,6 @@ def convertodict(d):
     d['AOS'] = d['AOS'].astimezone()
     d['LOS'] = d['LOS'].astimezone()
     return d
+
+#%%
+stop_audioRecording()
