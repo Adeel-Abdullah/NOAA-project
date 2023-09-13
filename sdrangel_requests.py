@@ -2,10 +2,13 @@ import requests
 import json
 import subprocess
 import pytz
+import time
 
 KHI_location={
     'latitude':24.958952,
     'longitude': 67.222534}
+
+sdrangel_path = "C:\Program Files\SDRangel\sdrangel.exe"
 
 def get_instance():
     url = "http://127.0.0.1:8091/sdrangel"
@@ -150,9 +153,17 @@ def stop_audioRecording():
 
 
 def AOS_macro():
-    start_satellitetracker()
-    start_rotator()
-    start_audioRecording()
+    if get_instance()['status'] == 'OK':
+        start_satellitetracker()
+        start_rotator()
+        start_audioRecording()
+    else:
+        subprocess.Popen(sdrangel_path)
+        time.sleep(5)
+        start_satellitetracker()
+        start_rotator()
+        start_audioRecording()
+        
     
 def LOS_macro():
     stop_audioRecording()

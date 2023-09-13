@@ -8,7 +8,7 @@ from sqlalchemy import and_, func
 
 # %% adding new passes only after checking that they are not already present
 
-@scheduler.task(trigger='cron', id='updateDB', minute='*/30')
+@scheduler.task(trigger='cron', id='updateDB', minute='*/5')
 def updateDB():
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()
@@ -55,7 +55,7 @@ def get_tle(NORAD_ID):
         a = [i.strip() for i in a.split("\r\n",2)]
         return a
     except Exception as e:
-        return e
+        raise e
 
 
 
@@ -67,7 +67,7 @@ def update_tle():
             Nor_id = sat.Norad_id
             try:
                 t = get_tle(Nor_id)
-            except:
+            except Exception as e:
                 print(f"TLE not fetched! Error: {e}")
                 return
             sat.TLERow1 = t[1]

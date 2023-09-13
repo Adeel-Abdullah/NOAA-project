@@ -102,7 +102,7 @@ def popNOAA15(page):
     page = page
     data = PassData.query.filter(
         and_(PassData.SatetlliteName == "NOAA 15"),
-        PassData.AOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
+        PassData.LOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
     # data = parse_table(data)
     return render_template('passestable.html', passdata = data, SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 
@@ -112,7 +112,7 @@ def popNOAA18(page):
     page = page
     data = PassData.query.filter(
         and_(PassData.SatetlliteName == "NOAA 18"),
-        PassData.AOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
+        PassData.LOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
     # data = parse_table(data)
     return render_template('passestable.html', passdata = data, SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 
@@ -122,14 +122,14 @@ def popNOAA19(page):
     page = page
     data = PassData.query.filter(
         and_(PassData.SatetlliteName == "NOAA 19"),
-        PassData.AOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
+        PassData.LOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
     # data = parse_table(data)
     # SDRstatus = 
     return render_template('passestable.html', passdata = data,SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 
 @app.route("/ScheduledPasses")
 def CountdownTimer():
-    data = PassData.query.filter(and_(PassData.AOS >= datetime.now(), 
+    data = PassData.query.filter(and_(PassData.LOS >= datetime.now(), 
                                           PassData.ScheduledToReceive),
                                          PassData.AOS<=datetime.now()+timedelta(hours=72)).all()
     data = [d.asDict() for d in data]    

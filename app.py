@@ -42,8 +42,8 @@ def create_app(config_class):
             pass
         else:
             if scheduler.state==0:
-                print (is_debug_mode())
-                print (is_werkzeug_reloader_process())
+                # print (is_debug_mode())
+                # print (is_werkzeug_reloader_process())
                 scheduler.api_enabled = True
                 scheduler.init_app(app)
                 scheduler.scheduler.add_jobstore(
