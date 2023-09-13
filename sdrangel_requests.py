@@ -3,6 +3,9 @@ import json
 import subprocess
 import pytz
 
+KHI_location={
+    'latitude':24.958952,
+    'longitude': 67.222534}
 
 def get_instance():
     url = "http://127.0.0.1:8091/sdrangel"
@@ -144,6 +147,17 @@ def stop_audioRecording():
     response = requests.request("PATCH", url, headers=headers, data=payload)
     return response.text
 
+
+
+def AOS_macro():
+    start_satellitetracker()
+    start_rotator()
+    start_audioRecording()
+    
+def LOS_macro():
+    stop_audioRecording()
+    stop_rotator()
+    stop_satellitetracker()
 
 # result = {
 #     x['aos']: datetime.strptime(x['aos'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%d-%m-%y %H:%M:%S'),

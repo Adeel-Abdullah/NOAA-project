@@ -1,6 +1,7 @@
 from flask import render_template, jsonify, request, Response
 from models import Satellite, PassData
 from app import app
+from app import db
 from sdrangel_requests import *
 from datetime import datetime, timedelta
 from sqlalchemy import and_,func

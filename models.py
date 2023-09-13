@@ -9,8 +9,9 @@ class Satellite(db.Model):
     Name = db.Column(db.String(50), unique = True)
     Norad_id = db.Column(db.Integer)
     OperatingFreq = db.Column(db.Numeric(precision=7, scale=4))
+    TLERow1 = db.Column(db.String(length=80))
+    TLERow2 = db.Column(db.String(length=80))
     Passes = db.relationship('PassData', backref = 'Passes')
-        
     """_summary_
     Norad ID integer
     operating frequency float 4 decimal    

@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from extensions import migrate, scheduler, db, cache
 import os
-from test import updateDB
+from scheduled_functions import updateDB, update_tle
 
 
 config = {
@@ -22,6 +22,7 @@ def create_app(config_class):
     def is_debug_mode():
         """Get app debug status."""
         debug = os.environ.get("FLASK_DEBUG")
+        # print(debug)
         if not debug:
             return os.environ.get("FLASK_ENV") == "development"
         return debug.lower() not in ("0", "false", "no")
@@ -37,10 +38,13 @@ def create_app(config_class):
         db.create_all()
         
     with app.app_context():
-        if is_debug_mode() and not is_werkzeug_reloader_process():
+        if not is_werkzeug_reloader_process():
             pass
         else:
             if scheduler.state==0:
+                print (is_debug_mode())
+                print (is_werkzeug_reloader_process())
+                scheduler.api_enabled = True
                 scheduler.init_app(app)
                 scheduler.scheduler.add_jobstore(
                     SQLAlchemyJobStore(engine=db.engine, metadata=db.metadata))
