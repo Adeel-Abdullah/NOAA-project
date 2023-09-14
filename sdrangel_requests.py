@@ -159,7 +159,7 @@ def AOS_macro():
         start_audioRecording()
     else:
         subprocess.Popen(sdrangel_path)
-        time.sleep(5)
+        time.sleep1(10)
         start_satellitetracker()
         start_rotator()
         start_audioRecording()

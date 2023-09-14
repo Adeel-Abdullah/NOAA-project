@@ -9,7 +9,7 @@ from sqlalchemy import and_, func
 
 # %% adding new passes only after checking that they are not already present
 
-@scheduler.task(trigger='cron', id='updateDB', minute='*/5')
+@scheduler.task(trigger='cron', id='updateDB', hour='*/4')
 def updateDB():
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()
@@ -68,7 +68,7 @@ def get_tle(NORAD_ID):
 
 
 
-@scheduler.task(trigger='interval', id='updateTLE', minutes=2)
+@scheduler.task(trigger='cron', id='updateTLE', hour='*/8')
 def update_tle():
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()
