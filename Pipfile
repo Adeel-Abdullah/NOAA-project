@@ -9,6 +9,8 @@ tzlocal = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-apscheduler = "*"
+flask-caching = "*"
+requests = "*"
 
 [dev-packages]
 

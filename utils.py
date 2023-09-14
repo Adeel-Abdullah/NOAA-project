@@ -84,11 +84,6 @@ with app.app_context():
 
 
 
-
-
-
-
-
 # %%
 def parse_table(data):
     return [{k: (datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%f%z').astimezone(get_localzone()).strftime('%d-%m-%y %H:%M:%S')

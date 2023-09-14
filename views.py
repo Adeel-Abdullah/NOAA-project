@@ -1,7 +1,7 @@
 from flask import render_template, jsonify, request, Response
 from models import Satellite, PassData
 from app import app
-from app import db
+from app import db, scheduler
 from sdrangel_requests import *
 from datetime import datetime, timedelta
 from sqlalchemy import and_,func
@@ -150,17 +150,32 @@ def SDRstatus():
 def schedulePasses():
     scheduledPasses = []
     unscheduledPasses = []
+    thirtysec = timedelta(seconds=30)
     with app.app_context():
         for pk in request.json['checked']:
             d = db.get_or_404(PassData, pk)
             d.ScheduledToReceive=True
             scheduledPasses.append(d)
+            aos_job = scheduler.get_job(str(pk)+'_AOS')
+            los_job = scheduler.get_job(str(pk)+'_LOS')
+            if aos_job:
+                pass
+            else:
+                scheduler.add_job(
+                    str(d.id)+'_AOS', AOS_macro, trigger='date',  run_date=d.AOS-thirtysec)
+            if los_job:
+                pass
+            else:
+                scheduler.add_job(
+                    str(d.id)+'_LOS', LOS_macro, trigger='date',  run_date=d.LOS+thirtysec)
             db.session.commit()
             
         for pk in request.json['unchecked']:
             d = db.get_or_404(PassData, pk)
             d.ScheduledToReceive=False
             unscheduledPasses.append(d)
+            aos_job = scheduler.remove_job(str(pk)+'_AOS')
+            los_job = scheduler.remove_job(str(pk)+'_LOS')
             db.session.commit()
     return jsonify(message="Scheduling Successful!")
 

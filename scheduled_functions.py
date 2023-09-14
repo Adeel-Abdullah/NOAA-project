@@ -1,5 +1,6 @@
 from models import Satellite, PassData
 from extensions import scheduler, db
+# from app import app
 import requests
 from sdrangel_requests import *
 from datetime import datetime, timedelta
@@ -31,16 +32,24 @@ def updateDB():
                 elif data and data[0].LOS.time() != los.time():
                     data[0].LOS = los
                 elif not data:
-                    db.session.add(PassData(AOS=aos,
+                    p = PassData(AOS=aos,
                                    LOS=los,
                                    maxElevation=int(p['maxElevation']),
-                                   SatetlliteName=sat_name))
+                                   SatetlliteName=sat_name)
+                    db.session.add(p)
+                    db.session.flush()
                     try:
                         db.session.commit()
                         print(f"Pass added!")
                     except Exception as e:
                         db.session.rollback()
                         print(f"Commit Failed. Error: {e}")
+                        
+                    thirtysec = timedelta(seconds=30)
+                    xAOS = scheduler.add_job(str(p.id)+'_AOS', AOS_macro, trigger='date',  run_date=p.AOS-thirtysec)
+                    xLOS = scheduler.add_job(str(p.id)+'_LOS', LOS_macro, trigger='date',  run_date=p.LOS+thirtysec)
+                    
+
 
 # %% update satellite tle
 
