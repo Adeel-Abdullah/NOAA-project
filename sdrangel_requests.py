@@ -4,6 +4,7 @@ import subprocess
 import pytz
 import time
 
+
 KHI_location={
     'latitude':24.958952,
     'longitude': 67.222534}
@@ -159,7 +160,7 @@ def AOS_macro():
         start_audioRecording()
     else:
         subprocess.Popen(sdrangel_path)
-        time.sleep1(10)
+        time.sleep(10)
         start_satellitetracker()
         start_rotator()
         start_audioRecording()
@@ -168,7 +169,9 @@ def AOS_macro():
 def LOS_macro():
     stop_audioRecording()
     stop_rotator()
-    stop_satellitetracker()
+    # stop_satellitetracker()
+
+    
 
 # result = {
 #     x['aos']: datetime.strptime(x['aos'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%d-%m-%y %H:%M:%S'),

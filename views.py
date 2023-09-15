@@ -180,6 +180,20 @@ def schedulePasses():
     return jsonify(message="Scheduling Successful!")
 
 
-# if __name__ == '__main__':
-#     # APP.run(host='0.0.0.0', port=5000, debug=True)
-#     APP.run(debug=True)
+@app.route("/tle/<string:name>")
+def fetch_tle(name):
+    import re
+    # with app.app_context:
+    name = str(name).lower()
+    name = re.split(r'[^\w]',name)
+    name = ''.join(name)
+    name = re.split('(\d+)',name)
+    name = '%'.join(name)
+    name = f"%{name}%"
+    sat = Satellite.query.filter(Satellite.Name.ilike(name)).first()
+    try:
+        response = jsonify(sat.Name, sat.TLERow1, sat.TLERow2)
+        return response
+    except Exception as e:
+        return jsonify({"message": "Not Found!"}), 404
+
