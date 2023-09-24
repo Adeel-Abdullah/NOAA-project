@@ -1,0 +1,9 @@
+{
+    "deviceSetIndex": 0,
+    "preset": {
+      "groupName": "RTL SDR",
+      "centerFrequency": {freq},
+      "type": "{type}",
+      "name": "{name}"
+    }
+  }

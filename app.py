@@ -8,10 +8,12 @@ from scheduled_functions import updateDB, update_tle
 
 config = {
     "DEBUG": True,          # some Flask specific configs
-    "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
-    "CACHE_DEFAULT_TIMEOUT": 300,
+    "CACHE_TYPE": "FileSystemCache",  # Flask-Caching related configs
+    "CACHE_DEFAULT_TIMEOUT": 0,
+    "CACHE_DIR": '/tmp',
     "SQLALCHEMY_DATABASE_URI":'sqlite:///db.sqlite3',
     "SCHEDULER_API_ENABLED" : True,
+    'SECRET_KEY':'super secret key'
 }
 
 

@@ -1,15 +1,23 @@
-from flask import render_template, jsonify, request, Response
+from flask import render_template, jsonify, request
 from models import Satellite, PassData
 from app import app
-from app import db, scheduler
+from app import db, scheduler, cache
 from sdrangel_requests import *
 from datetime import datetime, timedelta
-from sqlalchemy import and_,func
-# from test import convertodict
+from sqlalchemy import and_
 from jinja2  import TemplateNotFound
 
 per_page = 10
 
+KHI_location={
+    'latitude': 24.958952,
+    'longitude': 67.222534}
+CS_location={
+    'latitude': 28.235100,
+    'longitude': 112.931328}
+
+if not cache.get("location"):
+    cache.set("location", CS_location)
 
 # @app.route("/")
 # def index():
@@ -95,7 +103,6 @@ def get_segment(request):
         return None
 
 
-
 @app.route("/NOAA15", methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/NOAA15/<int:page>", methods=['GET', 'POST'])
 def popNOAA15(page):
@@ -143,7 +150,12 @@ def RTLstatus():
 
 @app.route("/statusSDR")
 def SDRstatus():
-    SDRstatus = get_instance()['status']
+    pid = cache.get('pid')
+    SDRstatus = check_sdrstatus(pid)
+    if SDRstatus['pid']:
+        cache.set('pid', SDRstatus['pid'])
+    SDRstatus = SDRstatus['status']
+
     return jsonify(SDRstatus=SDRstatus)
 
 @app.route("/schedulePasses", methods=['POST'])
@@ -178,6 +190,18 @@ def schedulePasses():
             los_job = scheduler.remove_job(str(pk)+'_LOS')
             db.session.commit()
     return jsonify(message="Scheduling Successful!")
+
+@app.route('/location')
+def get_loc():
+    if (request.args.get('latitude') and request.args.get('longitude')):
+        location = {
+            'latitude': request.args.get('latitude'),
+            'longitude': request.args.get('longitude')
+        }
+        cache.set("location", location)
+        return jsonify(cache.get("location"))
+    else:
+        return jsonify(cache.get("location"))
 
 
 @app.route("/tle/<string:name>")

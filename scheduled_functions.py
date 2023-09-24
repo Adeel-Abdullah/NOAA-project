@@ -1,6 +1,6 @@
 from models import Satellite, PassData
 from extensions import scheduler, db
-# from app import app
+import subprocess
 import requests
 from sdrangel_requests import *
 from datetime import datetime, timedelta
@@ -11,6 +11,12 @@ from sqlalchemy import and_, func
 
 @scheduler.task(trigger='cron', id='updateDB', hour='*/4')
 def updateDB():
+    if get_instance()['status'] == 'OK':
+        pass
+    else:
+        subprocess.Popen(sdrangel_path)
+        time.sleep(10)
+        
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()
         for sat in Satellites:

@@ -1,7 +1,7 @@
 {
     "copyToUDP": 0,
     "defaultUnregistered": 0,
-    "fileRecordName": "C:/Users/DELL/Documents/NOAA-wav/noaa",
+    "fileRecordName": "D:/NOAA-wav/{}",
     "index": -1,
     "name": "System default device",
     "recordSilenceTime": 0,
