@@ -3,6 +3,7 @@ from models import Satellite, PassData
 from app import app
 from app import db, scheduler, cache
 from sdrangel_requests import *
+from scheduled_functions import AOS_macro, LOS_macro
 from datetime import datetime, timedelta
 from sqlalchemy import and_
 from jinja2  import TemplateNotFound
@@ -162,7 +163,7 @@ def SDRstatus():
 def schedulePasses():
     scheduledPasses = []
     unscheduledPasses = []
-    thirtysec = timedelta(seconds=30)
+    Onemin = timedelta(seconds=60)
     with app.app_context():
         for pk in request.json['checked']:
             d = db.get_or_404(PassData, pk)
@@ -174,12 +175,12 @@ def schedulePasses():
                 pass
             else:
                 scheduler.add_job(
-                    str(d.id)+'_AOS', AOS_macro, trigger='date',  run_date=d.AOS-thirtysec)
+                    str(d.id)+'_AOS', AOS_macro, trigger='date',  run_date=d.AOS-Onemin, args=[d.id])
             if los_job:
                 pass
             else:
                 scheduler.add_job(
-                    str(d.id)+'_LOS', LOS_macro, trigger='date',  run_date=d.LOS+thirtysec)
+                    str(d.id)+'_LOS', LOS_macro, trigger='date',  run_date=d.LOS+Onemin, args=[d.id])
             db.session.commit()
             
         for pk in request.json['unchecked']:

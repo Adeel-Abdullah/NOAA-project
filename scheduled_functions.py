@@ -1,5 +1,5 @@
 from models import Satellite, PassData
-from extensions import scheduler, db
+from extensions import scheduler, db, cache
 import subprocess
 import requests
 from sdrangel_requests import *
@@ -15,14 +15,15 @@ def updateDB():
         pass
     else:
         subprocess.Popen(sdrangel_path)
-        time.sleep(10)
+        time.sleep(15)
         
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()
         for sat in Satellites:
             sat_name = sat.Name
             print(sat_name)
-            passes = get_satellite_passes(sat_name)
+            location = cache.get("location")
+            passes = get_satellite_passes(sat_name, location)
             twomins = timedelta(minutes=2)
             for p in passes:
                 aos = datetime.strptime(
@@ -51,9 +52,9 @@ def updateDB():
                         db.session.rollback()
                         print(f"Commit Failed. Error: {e}")
                         
-                    thirtysec = timedelta(seconds=30)
-                    xAOS = scheduler.add_job(str(p.id)+'_AOS', AOS_macro, trigger='date',  run_date=p.AOS-thirtysec)
-                    xLOS = scheduler.add_job(str(p.id)+'_LOS', LOS_macro, trigger='date',  run_date=p.LOS+thirtysec)
+                    Onemin = timedelta(seconds=60)
+                    xAOS = scheduler.add_job(str(p.id)+'_AOS', AOS_macro, trigger='date',  run_date=p.AOS-Onemin, args=[p.id])
+                    xLOS = scheduler.add_job(str(p.id)+'_LOS', LOS_macro, trigger='date',  run_date=p.LOS+Onemin, args=[p.id])
                     
 
 
@@ -95,3 +96,33 @@ def update_tle():
             except Exception as e:
                 db.session.rollback()
                 print(f"Commit Failed. Error: {e}")
+
+
+def AOS_macro(pk):
+    if get_instance()['status'] == 'OK':
+       pass
+    else:
+        subprocess.Popen(sdrangel_path)
+        time.sleep(30)
+
+    with scheduler.app.app_context():
+        p = db.get_or_404(PassData, pk)
+        SatelliteName = p.SatetlliteName
+    start_satellitetracker()
+    start_rotator()
+    set_preset(SatelliteName)
+    start_audioRecording(SatelliteName)
+        
+    
+def LOS_macro(pk):
+    with scheduler.app.app_context():
+        p = db.get_or_404(PassData, pk)
+        SatelliteName = p.SatetlliteName
+    
+    stop_audioRecording(SatelliteName)
+    stop_rotator()
+    pid = get_instance()['pid']
+    p = psutil.Process(pid)
+    p.kill()
+    
+    # stop_satellitetracker()

@@ -79,14 +79,14 @@ def stop_satellitetracker():
 
 
 def start_rotator():
-    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/1/run"
+    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/2/run"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
     return(response.json())
 
 def stop_rotator():
-    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/1/run"
+    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/2/run"
     payload = {}
     headers = {}
     response = requests.request("DELETE", url, headers=headers, data=payload)
@@ -109,11 +109,14 @@ def get_sdrangel_passes():
     response = requests.request("GET", url, headers=headers, data=payload)
     return(response.json())
 
-def get_satellite_passes(satelliteName):
+def get_satellite_passes(satelliteName, location):
     file_path = "./json/satellitetracker_target.json"
     with open(file_path, 'r') as openfile:
         json_object = json.load(openfile)
-    json_object['SatelliteTrackerSettings']['target'] = satelliteName    
+    json_object['SatelliteTrackerSettings']['target'] = satelliteName
+    json_object['SatelliteTrackerSettings']['latitude'] = location['latitude']
+    json_object['SatelliteTrackerSettings']['longitude'] = location['longitude']
+
     headers = {
         'Content-Type': 'application/json'
         }
@@ -123,7 +126,8 @@ def get_satellite_passes(satelliteName):
     for datum in data["SatelliteTrackerReport"]["satelliteState"]:
         if satelliteName in datum.values():
             return(datum["passes"])
-        
+
+
 def check_rtlstatus():
     out = subprocess.getoutput("PowerShell -Command \"& {Get-PnpDevice | Select-Object Status,Class,FriendlyName,InstanceId | ConvertTo-Json}\"")
     j = json.loads(out)
@@ -176,11 +180,13 @@ def set_preset(satelliteName):
 # set_preset("NOAA 15")
 
 
-def start_audioRecording():
+def start_audioRecording(SatelliteName):
     url = "http://127.0.0.1:8091/sdrangel/audio/output/parameters"
     file_path = "json/start_recording.json"
     with open(file_path, 'r') as openfile:
-            json_object = json.load(openfile)
+        json_object = json.load(openfile)
+    
+    json_object['fileRecordName'] = json_object['fileRecordName'].format(SatelliteName)
     payload = json.dumps(json_object)
     headers = {
     'Content-Type': 'application/json'
@@ -189,12 +195,15 @@ def start_audioRecording():
     response = requests.request("PATCH", url, headers=headers, data=payload)
     return response.text
 
+# start_audioRecording()
 
-def stop_audioRecording():
+def stop_audioRecording(SatelliteName):
     url = "http://127.0.0.1:8091/sdrangel/audio/output/parameters"
     file_path = "json/stop_recording.json"
     with open(file_path, 'r') as openfile:
-            json_object = json.load(openfile)
+        json_object = json.load(openfile)
+    
+    json_object['fileRecordName'] = json_object['fileRecordName'].format(SatelliteName)
     payload = json.dumps(json_object)
     headers = {
     'Content-Type': 'application/json'
@@ -203,28 +212,8 @@ def stop_audioRecording():
     response = requests.request("PATCH", url, headers=headers, data=payload)
     return response.text
 
-# stop_audioRecording()
 
-def AOS_macro():
-    if get_instance()['status'] == 'OK':
-       pass
-    else:
-        subprocess.Popen(sdrangel_path)
-        time.sleep(30)
-        
-    start_satellitetracker()
-    start_rotator()
-    start_audioRecording()
-        
-    
-def LOS_macro():
-    stop_audioRecording()
-    stop_rotator()
-    pid = get_instance()['pid']
-    p = psutil.Process(pid)
-    p.kill()
-    
-    # stop_satellitetracker()
+
 
     
 
