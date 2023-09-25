@@ -1,2 +1,4 @@
 *.pyc
 
+**/instance/db.sqlite3
+
