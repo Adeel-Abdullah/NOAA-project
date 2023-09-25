@@ -16,7 +16,7 @@ def updateDB():
     else:
         subprocess.Popen(sdrangel_path)
         time.sleep(15)
-        
+    start_satellitetracker()
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()
         for sat in Satellites:
