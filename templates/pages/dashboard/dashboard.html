@@ -1,0 +1,831 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/jquery.countdown.css') }}">
+<style type="text/css">
+#defaultCountdown { display: inline-block; background: rgba(0, 0, 0, 0); border-color: rgba(0, 0, 0, 0.2)}
+
+.highlight {
+    color: #b00;
+}
+
+#hiddenCountdown { width: 100px; height: 20px; background: rgba(0, 0, 0, 0); border-color: rgba(0, 0, 0, 0)}
+
+.dot {
+  height: 15px;
+  width: 15px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Add some basic styling to the SVG */
+    /*svg {
+      width: 100%;
+      height: auto;
+    }*/
+
+    .tooltip {
+      position: absolute;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px;
+      font-size: 12px;
+      pointer-events: none;
+    }
+
+    .label {
+      font-size: 10px;
+      text-anchor: middle;
+      fill: black;
+    }
+
+    /*canvas {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:-1;
+    }
+*/
+
+    .line-class {
+        fill: "none";
+        stroke: rgba(255, 0, 0, 0.7);
+    }
+
+    .map {
+  width: 100%;
+  height: auto;
+}
+
+.graphgrey {
+  background-color: #666;
+}
+
+/* You can use media queries for specific breakpoints */
+@media (max-width: 768px) {
+  .map {
+    width: 100%;
+    height: auto;
+  }
+}
+
+
+</style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+    <div >            
+        <div class="d-flex justify-content-center">
+            <div class="display-4 p-2">
+            <span id="defaultCountdown"></span>
+            <span id="hiddenCountdown"></span>
+        </div> 
+    </div>
+      
+
+            <div id="geocontent" class="mt-4 d-flex justify-content-center border border-primary">
+            </div>
+
+      <h1 class="mt-2 h5">Timeline</h1>
+        
+             
+          
+            <div >
+                <div id="chart-container" class="border border-primary">
+                    <svg id="graph"></svg>
+                    <div class="tooltip" id="tooltip">
+                        <small id="satname" class="font-weight-bold">NOAA N</small><br>
+                        <small id="maxel">Elevation:</small><br>
+                        <small id="aos">AOS:</small><br>
+                        <small id="los">LOS:</small>
+                    </div>
+                    <div id ="spinner" class="d-flex justify-content-center">
+                        <div class="spinner-grow" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+        
+        
+    </div>
+    <h1 class="h5 mt-2">Status</h1>
+    <div class="card-header flex-row flex-0 b-2 align-items-center">
+    <div class="row">
+      <!-- First card -->
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="h6 mb-0">
+                <a href="#">RTL SDR</a>
+            </h4>
+            <div id="status1" class="d-flex align-items-center">
+                <div class="bg-success dot rounded-circle me-1"></div>
+                <small>Online</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Second card -->
+      <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="h6 mb-0">
+                    <a href="#">SDR Server</a>
+                </h4>
+                <div id="status2" class="d-flex align-items-center">
+                    <div class="bg-danger dot rounded-circle me-1"></div>
+                    <small>Busy</small>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <!-- Third card -->
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="h6 mb-0">
+                <a href="#">Database</a>
+            </h4>
+            <div class="d-flex align-items-center">
+                <div class="bg-success dot rounded-circle me-1"></div>
+                <small>Online</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fourth card -->
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="h6 mb-0">
+                <a href="#">Rotor</a>
+            </h4>
+            <div class="d-flex align-items-center">
+                <div class="bg-danger dot rounded-circle me-1"></div>
+                <small>Offline</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<!-- <script src="{{ url_for('static', filename='assets/js/chart.js') }}"></script> -->
+<script src="{{ url_for('static', filename='assets/js/jquery.countdown.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/d3.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/satellite.min.js') }}"></script>
+<script>
+  
+  $("#defaultCountdown").each(function StartTimer() {
+    var $this = $(this);
+    $.ajax({
+        type: "GET",
+        url: "/ScheduledPasses",
+        success: function(data) {
+          var AOSdate = new Date(data[0].AOS);
+          var LOSdate = new Date(data[0].LOS);
+          var TOPdate = new Date((AOSdate.getTime() + LOSdate.getTime()) / 2);
+
+        setupCountdown();
+
+        function setupCountdown() {
+            
+            $this.countdown({
+                format: 'dHMS', 
+                until: AOSdate,
+                alwaysExpire: false,
+                tickInterval: 1,
+                onTick: highlightLast,
+                onExpiry: startHiddenCountdown,
+                description: 'To the <i>next pass</i> of <a href="' + '#">'+ data[0].SatetlliteName +'</a>!',
+                expiryText: 'Receiving '+data[0].SatetlliteName+' '
+            });
+            $('#hiddenCountdown').hide();
+
+            $('#hiddenCountdown').countdown({
+                format: 'MS', 
+                until: 0,
+                compact: true,
+                alwaysExpire: false,
+                tickInterval: 1,
+                onTick: null,
+                onExpiry: resetAllCountdownTimers,
+                description: 'until the pass ends'
+            });
+        }
+          
+        function highlightLast(periods) { 
+        // console.log('highlightLast');
+        if ($.countdown.periodsToSeconds(periods) === 15) {
+            $(this).addClass('highlight'); 
+        } 
+    }
+        function startHiddenCountdown(){
+        // console.log('startHiddenCountdown');
+        let austDay = new Date(data[0].LOS);
+        $("#hiddenCountdown").show();
+        $('#hiddenCountdown').countdown('option', {until: austDay});
+    }
+    
+            
+    function resetAllCountdownTimers() {
+        data.shift();
+        $("#hiddenCountdown").hide();
+        let austDay = new Date(data[0].AOS);
+        $('#defaultCountdown')
+            .removeClass('highlight')
+            .countdown('option', {
+                until: austDay, 
+                description: 'To the <i>next pass</i> of <a href="' + '#">'+ data[0].SatetlliteName +'</a>!',
+                expiryText: 'Receiving '+data[0].SatetlliteName+' '
+            });
+            console.log(data[0]);
+    }
+    $this.data('passes', data);
+      
+    // document.getElementById("AOS_time").textContent= AOSdate.toTimeString().slice(0, 9);
+    // document.getElementById("AOS_date").textContent= AOSdate.toISOString().slice(0,10);
+
+    // document.getElementById("LOS_time").textContent= LOSdate.toTimeString().slice(0, 9);
+    // document.getElementById("LOS_date").textContent= LOSdate.toISOString().slice(0,10);
+
+    // document.getElementById("TOP_time").textContent= TOPdate.toTimeString().slice(0, 9);
+    // document.getElementById("TOP_date").textContent= TOPdate.toISOString().slice(0,10);
+          
+        }
+    });  
+  });
+//////////////////////////////////////////////////
+
+    // Clear any previous SVG content
+      d3.select("#graph").remove();
+      d3.select("#spinner").remove();
+
+      var containerWidth = document.getElementById("chart-container").clientWidth;
+
+      // // Set up SVG dimensions based on container width
+      var margin = { top: 20, right: 20, bottom: 30, left: 40 };
+      var width = containerWidth - margin.right - margin.left ;
+      var height = 550 - margin.top - margin.bottom;
+
+
+
+      // Create an SVG element
+      var svgchart = d3.select("#chart-container").append("svg").attr("id", "graph")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Function to create the responsive chart
+    function createChart() {
+
+
+        svgchart.selectAll("*").remove();
+        const passes = $("#defaultCountdown").data('passes');
+        // console.log(passes);
+
+        const newPasses = passes.map(item => {
+          return {
+                    AOS: new Date(item.AOS),
+                    LOS: new Date(item.LOS),
+                    SatetlliteName: item.SatetlliteName,
+                    ScheduledToReceive: item.ScheduledToReceive,
+                    id: item.id,
+                    maxElevation: item.maxElevation
+                };
+        });
+
+      
+
+      // Hide tooltip if any
+      hideTooltip();
+      // // Get the current width of the container
+      
+
+      // Set Background
+      // svg.append('rect')
+      //   .attr('x',0)
+      //   .attr('y',0)
+      //   .attr('width',width)
+      //   .attr('height',height)
+      //   .attr('fill',"#eee");
+
+        const now = new Date();
+        const end = new Date();
+        end.setHours(now.getHours() + 120);
+
+        // if (data[0].name != "now"){
+        //   data.unshift({date: now, value: 0, name: "now" });  
+        // }
+        
+        // Create tooltip
+    var Tooltip = d3.select("#tooltip")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px");
+
+        //console.log(data);
+
+      // Create a time scale
+      var xScale = d3.scaleLog()
+        .domain([now, end])
+        .range([0, width]);
+
+        // console.log(newPasses);
+      // Create y-scale
+      var yScale = d3.scaleLinear()
+        .domain([0, 95])
+        .range([height, 0]);
+
+      // Create x-axis
+      var xAxis = d3.axisBottom(xScale);
+      var xTicksArray = [];
+      for (let i = 24; i < 120; i=i+24){
+        const midnight = new Date();
+        midnight.setHours(i,0,0,0);
+        xTicksArray.push(midnight.getTime());
+      }
+      
+      xAxis.tickValues(xTicksArray);
+      xAxis.tickFormat(d3.timeFormat("%-H:%M %a %d"));
+      // xAxis.tickFormat(d3.timeFormat("%a %d"));
+
+      // xAxis.tickValues([]);
+
+      // Create y-axis
+      var yAxis = d3.axisLeft(yScale);
+      
+
+      // Add x-axis to the SVG
+      svgchart.append("g")
+        .attr("class", "x-axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+      // Add y-axis to the SVG
+      svgchart.append("g")
+        .attr("class", "y-axis")
+        .call(yAxis);
+
+      // Y-axis title
+      svgchart.append("text")
+          .attr("x", 10)
+          .attr("y", 10)
+          .attr("fill", "grey")
+          .attr("text-anchor", "start")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "10px")
+          .text("↑ Max Elevation");
+
+    // Legends
+          
+        // svg.append("circle").attr("cx",(width-80)).attr("cy",10).attr("r", 6).style("fill", "#2361ce");
+        // svg.append("circle").attr("cx",(width-160)).attr("cy", 10).attr("r", 6).style("fill", "#10B981");
+        // svg.append("circle").attr("cx",(width-240)).attr("cy", 10).attr("r", 6).style("fill", "#E11D48");
+        // svg.append("text").attr("x", (width-70)).attr("y", 14).text("NOAA 15").style("font-size", "10px")
+        // .attr("alignment-baseline","middle");
+        // svg.append("text").attr("x", (width-150)).attr("y", 14).text("NOAA 18").style("font-size", "10px")
+        // .attr("alignment-baseline","middle");
+        // svg.append("text").attr("x", (width-230)).attr("y", 14).text("NOAA 19").style("font-size", "10px")
+        // .attr("alignment-baseline","middle");
+
+        // X-axis title
+      svgchart.append("text")
+          .attr("x", width - 74)
+          .attr("y", height - 10)
+          .attr("fill", "grey")
+          .attr("text-anchor", "start")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "10px")
+          .text("Time (AOS) →");
+
+
+    svgchart.selectAll(".circle")
+      .data(newPasses)
+      .enter().append("path")
+      .attr("class", "circle")
+      .attr("d", d3.symbol().type(d3.symbolCircle).size(24)) // Use d3.symbolStar
+      .attr("transform", d => `translate(${xScale(d.AOS)}, ${yScale(d.maxElevation)})`)
+      .attr("fill", "#666"
+        // function(d){
+        //     var color = "#000000";
+        //      if (d.SatetlliteName == "NOAA 15"){
+        //         color = "#2361ce"
+        //      }else if (d.SatetlliteName == "NOAA 18"){
+        //         color = "#10B981"
+        //     }else if (d.SatetlliteName == "NOAA 19"){
+        //         color = "#E11D48"
+        //     }
+        //     return color;
+        // }
+        )
+      .attr("stroke-width", 2)
+      // .attr("fill", "#ffffff")
+        .on("mouseover", function(event, d) {
+        d3.select(this).attr("fill", "orange"); // Highlight the circle on hover
+        showTooltip(event, d); // Show the tooltip
+        })
+        .on("mouseout", function(d) {
+          d3.select(this).attr("fill", "#666"
+        //     function(d){
+        //     var color = "#000000";
+        //      if (d.SatetlliteName == "NOAA 15"){
+        //         color = "#2361ce"
+        //      }else if (d.SatetlliteName == "NOAA 18"){
+        //         color = "#10B981"
+        //     }else if (d.SatetlliteName == "NOAA 19"){
+        //         color = "#E11D48"
+        //     }
+        //     return color;
+        // }
+        ); // Restore original color
+          hideTooltip(); // Hide the tooltip
+        });
+
+        svgchart.selectAll("circle")
+      .data(newPasses)
+      .enter().append("circle")
+      .attr("class", "circle")
+      .attr("transform", d => `translate(${xScale(d.AOS)}, ${yScale(d.maxElevation)})`)
+      .attr("r", 5)
+      .style("fill", "none")
+      .style("stroke-width", 0.3)
+      .style("stroke", "#666");
+
+    
+    }
+
+    
+
+    // Show tooltip on hover
+    function showTooltip(event, d) {
+      if (d.SatetlliteName != "now"){
+        var tooltip = d3.select('.tooltip');
+        // Tooltip content
+        d3.select("#satname").text(d.SatetlliteName);
+        d3.select("#maxel").text("Max. Elevation: " + d.maxElevation);
+        d3.select("#aos").text("AOS: " + d.AOS);
+        d3.select("#los").text("LOS: " + d.LOS);
+        tooltip.transition().duration(500).style("opacity", 1);
+        tooltip.style("left", (event.pageX -30) + "px");    // Fix
+        tooltip.style("top", (event.pageY -30) + "px");     // Fix
+        
+      }
+    }
+
+    // Hide tooltip
+    function hideTooltip() {
+      var tooltip = d3.select('.tooltip');
+      tooltip.transition().duration(500).style("opacity", 0); 
+    }
+
+    const passes = $("#defaultCountdown").data('passes');
+
+    // Update chart data and redraw every 10 seconds
+    setInterval(function() {
+        // Redraw the chart
+        createChart();
+    }, 5000); // 10 seconds
+
+    // Recreate the chart when the window is resized
+    window.addEventListener("resize", createChart);
+
+    /////////////////////////////////////////////////
+
+    // D3 Geographic map
+
+    // Create svg
+    let svgMap = d3.select('#geocontent')
+      .append('svg')
+      .attr('class', 'map-svg')
+      .attr('viewBox', '0 0 700 350')
+      .append('g')
+      .attr('class', 'map');
+
+    const ISS_TLE = 
+        `1 25544U 98067A   23250.13779943  .00012116  00000+0  21777-3 0  9992
+         2 25544  51.6414 282.5514 0005816  37.2180   2.5353 15.50274920414508`;
+
+    const N15_TLE = 
+        `1 25338U 98030A   23252.12447892  .00000183  00000-0  93951-4 0  9995
+         2 25338  98.6019 279.7300 0011423  71.5333 288.7088 14.26384783317229`;
+
+    const N18_TLE =
+        `1 28654U 05018A   23252.19086515  .00000231  00000-0  14763-3 0  9998
+         2 28654  98.9043 326.1568 0015065 139.7204 220.5087 14.13001257943435`;
+
+    const N19_TLE = 
+        `1 33591U 09005A   23252.17512804  .00000180  00000-0  12158-3 0  9996
+         2 33591  99.0925 299.4158 0013901  11.0158 349.1315 14.12816722751806`;
+
+    const satellites = [
+
+        {   name: "NOAA 15", tle: N15_TLE, id: "n15"    },
+        {   name: "NOAA 18", tle: N18_TLE, id: "n18"    },
+        {   name: "NOAA 19", tle: N19_TLE, id: "n19"    }
+    ];
+    
+
+    // Initialize the satellite record with this TLE
+        const satrec_iss = satellite.twoline2satrec(
+          ISS_TLE.split('\n')[0].trim(), 
+          ISS_TLE.split('\n')[1].trim()
+        );
+
+      // Add projection 
+      /*
+      map types
+        geoAzimuthalEqualArea
+        geoAzimuthalEquidistant
+        geoGnomonic
+        geoOrthographic
+        geoStereographic
+        geoAlbers
+        geoConicConformal
+        geoConicEqualArea
+        geoConicEquidistant
+        geoEquirectangular
+        geoMercator
+        geoTransverseMercator
+    */
+    let projection = d3.geoEquirectangular()
+                                  .scale(100)
+                                  .translate([350, 165]);
+
+            let geoGenerator = d3.geoPath()
+              .projection(projection);
+
+              
+
+              //console.log("projection " + projection( [112.9389, 28.2278] ));
+    d3.json("{{ url_for('static', filename='assets/json/ne_110m_land.json') }}")
+        // d3.json("{{ url_for('static', filename='assets/json/countries-110m.json') }}")
+        .then(function(json) {
+            geojson = json;
+            
+              let u = svgMap
+                .selectAll('path')
+                .data(geojson.features);
+
+              u.enter()
+                .append('path')
+                .attr('d', geoGenerator)
+                .attr("fill", "#666");
+
+            let beijingCoordinates = [112.9389, 28.2278]; // Beijing's coordinates
+
+                // Calculate the projected coordinates for Beijing
+                let beijingProjected = projection(beijingCoordinates);
+
+                svgMap.append("path")
+                  .attr("class", "triangle")
+                  .attr("d", d3.symbol().type(d3.symbolTriangle).size(16)) // Use d3.symbolTriangle
+                  .attr("transform", d => 'translate('+ beijingProjected[0] +', '+ beijingProjected[1]+')')
+                .style('fill', '#e00');
+
+                // Add a circle marker to the SVG
+                // svg.append('circle')
+                //   .attr('cx', beijingProjected[0])
+                //   .attr('cy', beijingProjected[1])
+                //   .attr('r', 2) // Adjust the radius of the circle as needed
+                //   .style('fill', 'orange'); // Adjust the fill color as needed
+
+                svgMap.append('text')
+                  .attr("x", beijingProjected[0] + 4)
+                  .attr("y", beijingProjected[1] + 2)
+                  .attr("fill", "#e00")
+                  .attr("text-anchor", "start")
+                  .attr("font-family", "sans-serif")
+                  .attr("font-size", "6px")
+                  .text("You");
+
+
+                  project_sat();
+
+    });
+
+        // Draw satellite projections
+    function project_sat(){
+
+        for (const sat of satellites) {
+            const date = new Date();
+            const satrec = satellite.twoline2satrec(
+              sat.tle.split('\n')[0].trim(), 
+              sat.tle.split('\n')[1].trim()
+            );
+            const positionAndVelocity = satellite.propagate(satrec, date);
+            const gmst = satellite.gstime(date);
+            const position = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
+
+            // console.log(position.longitude);// in radians
+            // console.log(position.latitude);// in radians
+            // console.log(position.height);// in km
+
+            let sat_coordinates = [satellite.degreesLong(position.longitude), satellite.degreesLong(position.latitude)];
+            let sat_projected = projection(sat_coordinates);  
+            paintCirclenLabel(sat_projected, sat.id, sat.name);  
+        }
+}   
+
+    setInterval(project_sat, 5000);    
+
+    function paintCirclenLabel(sat_projected, id, name){
+
+        const dotId  = id;
+        const textId = id+'_text';
+        const ringId = id+'_ring';
+
+        svgMap.select(`#${dotId}`).remove();
+        svgMap.select(`#${textId}`).remove();
+        svgMap.select(`#${ringId}`).remove();
+        d3.select("#track").remove();
+
+        svgMap.append('circle')
+          .attr('cx', sat_projected[0])
+          .attr('cy', sat_projected[1])
+          .attr('id', dotId)
+          .attr('r', 1.5) // Adjust the radius of the circle as needed
+          .style('fill', 'orange')
+          .on("mouseover", function(event, d) {
+            projectSatTrack(this.id);
+          })
+          .on("mouseout", function(d) {
+            d3.select("#track").remove();
+          });
+
+        svgMap.append('circle')
+          .attr('cx', sat_projected[0])
+          .attr('cy', sat_projected[1])
+          .attr('id', ringId)
+          .attr('r', 3) // Adjust the radius of the circle as needed
+          .style('fill', 'none')
+          .style('stroke-width', 0.3)
+          .style('stroke', 'orange');
+
+        svgMap.append('text')
+          .attr("x", sat_projected[0] + 4)
+          .attr("y", sat_projected[1] + 2)
+          .attr("id", textId)
+          .attr("fill", "orange")
+          .attr("text-anchor", "start")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "6px")
+          .text(name);
+    }
+
+    
+
+
+    // Draw satellite track on hover
+    function projectSatTrack(id){
+
+        const index = satellites.findIndex(p => p.id == id);
+
+        if (index == -1) return;
+
+        const sat = satellites[index];
+        console.log(sat);
+        // Calculate track
+        let date = new Date();
+        let path = [];
+        const satrec = satellite.twoline2satrec(
+              sat.tle.split('\n')[0].trim(), 
+              sat.tle.split('\n')[1].trim()
+            );
+        for (let i = 0; i < 101; i=i+1){
+            const positionAndVelocity = satellite.propagate(satrec, date);
+            const gmst = satellite.gstime(date);
+            const position = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
+            // console.log(position);
+            path.push({
+                lon: satellite.degreesLong(position.longitude), 
+                lat: satellite.degreesLong(position.latitude), 
+                height: position.height
+            });
+            date.setMilliseconds(date.getMilliseconds() + 60000); // Using milliseconds due to minutes addition is messing up Date
+        }
+
+        paintTrack(path);
+        
+    }
+
+    function paintTrack(path){
+        const lineFn = d3.line()
+        .x(function (d) {
+            let e = projection([d.lon, d.lat]);
+            // console.log(e[0]);
+            return e[0];
+        })
+        .y(function (d) {
+            let e = projection([d.lon, d.lat]);
+            // console.log(e[1]);
+            return e[1];
+        })
+        .curve(d3.curveMonotoneX)
+        .defined(function(d,i){
+            let inclusion = true;
+            if (i > 0){
+                const xProjectionDiff = projection([d.lon, d.lat])[0]- projection([path[i-1].lon, path[i-1].lat])[0];
+                if (xProjectionDiff > 0){
+                    inclusion = false;
+                }
+                console.log(inclusion);
+            }
+            return inclusion;
+        });
+
+        // console.log(lineFn);
+
+        svgMap
+        .append('path')
+        .datum(path)
+        .attr('id', 'track')
+        .attr('fill', 'none')
+        .attr('stroke', 'orange')
+        .attr('d', lineFn);
+    }
+
+        ////////////
+    let Timeout = 15000;
+
+  $("#status1").each(function CheckRTL() {
+    var $this = $(this);
+    $.ajax({
+        type: "GET",
+        url: "/statusRTL",
+        success: function(data) {
+          if(data['RTLstatus']== "OK")
+          {
+            let statusdiv = document.body.querySelectorAll("#status1 > div");
+            $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
+
+            let smallstatus = document.body.querySelectorAll("#status1 > small");
+            $(smallstatus[0]).text("Online");
+
+          }
+          else{
+            let statusdiv = document.body.querySelectorAll("#status1 > div");
+            $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
+
+            let smallstatus = document.body.querySelectorAll("#status1 > small");
+            $(smallstatus[0]).text("Offline");
+          }
+        }
+    });
+    setTimeout(CheckRTL, Timeout);
+});
+
+$("#status2").each(function CheckSDR() {
+    var $this = $(this);
+    $.ajax({
+        type: "GET",
+        url: "/statusSDR",
+        success: function(data) {
+          if(data['SDRstatus']== "OK")
+          {
+            let statusdiv = document.body.querySelectorAll("#status2 > div");
+            console.log(statusdiv);
+            $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
+
+            let smallstatus = document.body.querySelectorAll("#status2 > small");
+            $(smallstatus[0]).text("Online");
+
+          }
+          else{
+            let statusdiv = document.body.querySelectorAll("#status2 > div");
+            $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
+
+            let smallstatus = document.body.querySelectorAll("#status2 > small");
+            $(smallstatus[0]).text("Offline");
+          }
+        }
+    });
+    setTimeout(CheckSDR, Timeout);
+});
+</script>
+{% endblock javascripts %}

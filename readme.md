@@ -1,20 +1,15 @@
 # Commands to run the app
 
-*All of the following services need to be run in seperate consoles or the app to run properly*
+*Celery has been removed and APScheduler now utilized for scheduling, to run the webapp only the following command is now needed. *
 
 ## Flask
 ```console
-flask -A main.py run --debug
+python app.py
 ```
 
-## Celery beat scheduler
-```console
-celery -A main.celery_app beat
-```
-The celery beat scheduler is currently scheduled to execute tasks every 4 hours
-
-## Celery worker
-```console
-celery -A main.celery_app worker --pool=solo -l INFO
-```
-A pool of a single celery worker is spun up to execute the scheduled tasks
+## To Do
+ * audio file prefix
+ * ~~sdrangel check status using psutils~~
+ * ~~location lat/lng get and set optional timezone setting~~
+ * audio and image file path storage in db along with pass status
+ * ~~load preset before AOS and shutdown sdrangel after los~~

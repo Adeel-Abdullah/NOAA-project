@@ -1,0 +1,26 @@
+{
+    "groups": [
+        {
+            "groupName": "RTL SDR",
+            "nbPresets": 3,
+            "presets": [
+                {
+                    "centerFrequency": 137100000,
+                    "name": "NOAA 19",
+                    "type": "R"
+                },
+                {
+                    "centerFrequency": 137620000,
+                    "name": "NOAA 15",
+                    "type": "R"
+                },
+                {
+                    "centerFrequency": 137912000,
+                    "name": "NOAA 18",
+                    "type": "R"
+                }
+            ]
+        }
+    ],
+    "nbGroups": 1
+}

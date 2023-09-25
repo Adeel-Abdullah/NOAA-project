@@ -1,8 +1,11 @@
 import requests
 import json
 import subprocess
-import pytz
+import time
+import psutil
 
+
+sdrangel_path = "C:\Program Files\SDRangel\sdrangel.exe"
 
 def get_instance():
     url = "http://127.0.0.1:8091/sdrangel"
@@ -16,6 +19,18 @@ def get_instance():
         return {'pid': None, 'message': "SDRangel is inactive!", 'status': None}
                 
     return(data)
+
+def check_sdrstatus(pid):
+    try:
+        p = psutil.Process(pid)
+        if(p.name() == 'sdrangel.exe' and p.status() == 'running'):
+            return {'pid': pid, 'message': "SDRangel is active!", 'status': 'OK'}
+        else:
+            return get_instance()
+    except Exception as e:
+        p = get_instance()
+        return p
+        
 
 def get_sdrangel_config():
     payload = {}
@@ -116,7 +131,103 @@ def check_rtlstatus():
         if (dev['FriendlyName'] == 'Bulk-In, Interface' or dev['FriendlyName'] == 'RTL2832U') and dev['Class'] == 'USBDevice':
             return(dev['Status'] )
     
+
+def get_presets():
+    url = "http://127.0.0.1:8091/sdrangel/presets"
     
+    payload = {}
+    headers = {}
+    
+    response = requests.request("GET", url, headers=headers, data=payload)
+    
+    return(response.json())
+
+def find_preset(json_object, Name):
+    for i in json_object['groups'][0]['presets']:
+        if i['name'] == Name:
+
+            return i
+
+def set_preset(satelliteName):
+    url = "http://127.0.0.1:8091/sdrangel/preset"
+    
+    file_path = "json/presets.json"
+    with open(file_path, 'r') as openfile:
+        json_object = json.load(openfile)
+    
+    preset = find_preset(json_object, satelliteName)
+    
+    file_path = "json/preset.json"
+    with open(file_path, 'r') as openfile:
+        json_object = openfile.read()
+    
+    from string import Template
+    t = Template(json_object.replace('{','${'))
+    payload = t.safe_substitute(freq=preset['centerFrequency'], 
+                                type=preset['type'], 
+                                name=preset['name'])
+    payload = payload.replace('${', '{')
+    headers = {
+    'Content-Type': 'application/json'
+    }
+    response = requests.request("PATCH", url, headers=headers, data=payload)
+    return response.text
+
+# set_preset("NOAA 15")
+
+
+def start_audioRecording():
+    url = "http://127.0.0.1:8091/sdrangel/audio/output/parameters"
+    file_path = "json/start_recording.json"
+    with open(file_path, 'r') as openfile:
+            json_object = json.load(openfile)
+    payload = json.dumps(json_object)
+    headers = {
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request("PATCH", url, headers=headers, data=payload)
+    return response.text
+
+
+def stop_audioRecording():
+    url = "http://127.0.0.1:8091/sdrangel/audio/output/parameters"
+    file_path = "json/stop_recording.json"
+    with open(file_path, 'r') as openfile:
+            json_object = json.load(openfile)
+    payload = json.dumps(json_object)
+    headers = {
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request("PATCH", url, headers=headers, data=payload)
+    return response.text
+
+# stop_audioRecording()
+
+def AOS_macro():
+    if get_instance()['status'] == 'OK':
+       pass
+    else:
+        subprocess.Popen(sdrangel_path)
+        time.sleep(30)
+        
+    start_satellitetracker()
+    start_rotator()
+    start_audioRecording()
+        
+    
+def LOS_macro():
+    stop_audioRecording()
+    stop_rotator()
+    pid = get_instance()['pid']
+    p = psutil.Process(pid)
+    p.kill()
+    
+    # stop_satellitetracker()
+
+    
+
 # result = {
 #     x['aos']: datetime.strptime(x['aos'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%d-%m-%y %H:%M:%S'),
 #     x['los']: datetime.strptime(x['los'], '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%d-%m-%y %H:%M:%S'),

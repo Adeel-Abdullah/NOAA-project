@@ -1,0 +1,80 @@
+<div id="Pass_table" class="card card-body border-0 shadow table-wrapper table-responsive">
+
+<table  class="table table-hover">
+    <thead>
+        <tr>
+            <th class="border-gray-200">#</th>
+            <th class="border-gray-200">Satellite</th>						
+            <th class="border-gray-200">AOS</th>
+            <th class="border-gray-200">TOP</th>
+            <th class="border-gray-200">LOS</th>
+            <th class="border-gray-200">Max El</th>
+            <th class="border-gray-200">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Item -->
+        {% for passes in passdata%}
+        <tr class="table-row">
+            <td>
+                <a href="#" class="fw-bold">
+                    {{passes.id}}
+                </a>
+            </td>
+            <td>
+                <span class="fw-normal">{{passes.SatetlliteName}}</span>
+            </td>
+            <td><span class="fw-normal">{{passes.AOS}}</span></td>
+            <td><span class="fw-normal">{{(passes.AOS + (passes.LOS - passes.AOS)/2).replace(microsecond=0)}}</span></td>
+            <td><span class="fw-normal">{{passes.LOS}}</span></td>
+            {% if passes.maxElevation < 20 %}
+            <td><span class="fw-bold text-danger">{{passes.maxElevation}}</span><svg class="icon icon-xs text-danger" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" clip-rule="evenodd"></path></svg></td>
+            {% elif passes.maxElevation <= 40 %}
+            <td><span class="fw-bold text-warning">{{passes.maxElevation}}</span><svg class="icon icon-xs text-warning" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" clip-rule="evenodd"></path></svg></td>
+            {% else %}
+            <td><span class="fw-bold text-success">{{passes.maxElevation}}</span><svg class="icon icon-xs text-success" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" clip-rule="evenodd"></path></svg></td>
+            {% endif %}
+            <td>
+                <div class="form-check">
+                    {% if passes.ScheduledToReceive %}
+                        <input class="data_id form-check-input"  option_id="{{ passes.id }}" type="checkbox" checked/>
+                    {% else %}
+                        <input class="data_id form-check-input" option_id="{{ passes.id }}" type="checkbox" />
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+      {%endfor%}
+    </tbody>
+</table>
+
+<div class="card-footer px-3 border-0 d-flex flex-column flex-lg-row align-items-center justify-content-between">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination mb-0">
+              {% if passdata.has_prev%}
+              <li class="page-item">
+                  <a class="page-link" href="{{ url_for(request.endpoint, page=passdata.prev_num) }}">Previous</a>
+              </li>                    
+              {% endif %}
+            
+              {% for page in passdata.iter_pages()  %}
+                  {% if passdata.page == page%}
+                  <li class="page-item active">
+                  <a class="page-link" href="{{ url_for(request.endpoint, page=page) }}">{{page}}</a>
+                  </li>
+                  {% else %}
+                  <li class="page-item">
+                      <a class="page-link" href="{{ url_for(request.endpoint, page=page) }}">{{page}}</a>
+                  </li>
+                  {% endif %}
+              {% endfor %}
+              {% if passdata.has_next  %}
+              <li class="page-item">
+                  <a class="page-link" href="{{ url_for(request.endpoint, page=passdata.next_num) }}">Next</a>
+              </li>
+              {% endif %}
+        </ul>
+    </nav>
+    <div class="fw-normal small mt-4 mt-lg-0">Showing <b>{{ passdata.items|length }}</b> out of <b>{{ passdata.total }}</b> entries</div>
+</div>
+</div>
