@@ -1,4 +1,4 @@
-from models import Satellite, PassData
+from models import Satellite, PassData, Reports
 from extensions import scheduler, db, cache
 import subprocess
 import requests
@@ -97,6 +97,63 @@ def update_tle():
                 db.session.rollback()
                 print(f"Commit Failed. Error: {e}")
 
+def getmfile(search_dir, pk):
+    import os
+    
+    with scheduler.app.app_context():
+        p = db.get_or_404(PassData, pk)
+        time = p.LOS## - timedelta(hours=3) ## The timedelta is added for timzone correction!
+    files = list(os.scandir(search_dir))
+    
+    # return files
+    files = sorted(files,reverse = True, key=lambda x:(datetime.fromtimestamp(x.stat().st_mtime)))
+    print(datetime.fromtimestamp(files[0].stat().st_mtime).isoformat())
+    print(files[0])
+    return files[0]
+
+
+def create_report(dpath, Impath, pk):
+    with scheduler.app.app_context():
+        p = db.get_or_404(PassData, pk)
+        Imfile = getmfile(Impath, pk)
+        dfile = getmfile(dpath,pk)
+        twomins = timedelta(seconds=120)
+        dmtime = datetime.fromtimestamp(dfile.stat().st_mtime)
+        Imtime = datetime.fromtimestamp(Imfile.stat().st_mtime)
+        time = p.LOS## - timedelta(hours=3)
+        ## The timedelta is added for timzone correction
+        ## must be removed!
+        
+        if (time - dmtime) < twomins:
+            dfsize = round(dfile.stat().st_size/int(1<<20))
+            dfile = dfile.path
+        else:
+            dfile = None
+            dfsize = None
+            
+        if (time - Imtime) < twomins:
+            Imfilepath = Imfile.path
+        else:
+            Imfilepath = None
+            
+        if (Imtime - dmtime) < twomins and dfile != None and Imfilepath != None:
+            pstatus = True
+        else:
+            pstatus = False
+        
+        r = Reports(id = p.id,
+                    size = dfsize,
+                    status = pstatus,
+                    dataPath = dfile,
+                    imagePath = Imfilepath)
+        db.session.add(r)
+        try:
+            db.session.commit()
+            print("Report added!")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Commit Failed. Error: {e}")
+
 
 def AOS_macro(pk):
     if get_instance()['status'] == 'OK':
@@ -118,11 +175,15 @@ def LOS_macro(pk):
     with scheduler.app.app_context():
         p = db.get_or_404(PassData, pk)
         SatelliteName = p.SatetlliteName
+    dpath = "D:/NOAA-wav/"
+    Impath = "C:/Users/DELL/Documents/NOAA-Images/"
     
     stop_audioRecording(SatelliteName)
     stop_rotator()
     pid = get_instance()['pid']
     p = psutil.Process(pid)
     p.kill()
+    create_report(dpath, Impath, pk)
     
     # stop_satellitetracker()
+    

@@ -7,6 +7,7 @@ import psutil
 
 sdrangel_path = "C:\Program Files\SDRangel\sdrangel.exe"
 
+
 def get_instance():
     url = "http://127.0.0.1:8091/sdrangel"
     payload = {}
@@ -79,14 +80,14 @@ def stop_satellitetracker():
 
 
 def start_rotator():
-    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/2/run"
+    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/1/run"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
     return(response.json())
 
 def stop_rotator():
-    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/2/run"
+    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/1/run"
     payload = {}
     headers = {}
     response = requests.request("DELETE", url, headers=headers, data=payload)

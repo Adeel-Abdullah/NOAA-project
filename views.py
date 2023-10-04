@@ -1,5 +1,5 @@
-from flask import render_template, jsonify, request
-from models import Satellite, PassData
+from flask import render_template, jsonify, request, send_file, send_from_directory
+from models import Satellite, PassData, Reports
 from app import app
 from app import db, scheduler, cache
 from sdrangel_requests import *
@@ -7,6 +7,7 @@ from scheduled_functions import AOS_macro, LOS_macro
 from datetime import datetime, timedelta
 from sqlalchemy import and_
 from jinja2  import TemplateNotFound
+import io
 
 per_page = 10
 
@@ -20,26 +21,7 @@ CS_location={
 if not cache.get("location"):
     cache.set("location", CS_location)
 
-# @app.route("/")
-# def index():
-#     return render_template("dashboard.html", SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
-# SDRstatus=get_instance()['appname'], RTLstatus = check_rtlstatus())
-# @app.route('/', defaults={'path': 'index.html'})
-# @app.route('/')
-# def index():
-#   try:
-#     # return render_template( 'pages/index.html', segment='index', parent='pages')
-#     return render_template('pages/dashboard/dashboard.html', 
-#                            segment='index')
 
-#   except TemplateNotFound:
-#     return render_template('pages/index.html'), 404
-  
-#   def index():
-#     return render_template('home/dashboard.html', 
-#                            segment='index', 
-#                            user_id=current_user.id)
-  
 @app.route('/dashboard.html')
 @app.route('/', defaults={'path': 'index.html'})
 @app.route('/')
@@ -79,6 +61,17 @@ def table(page):
     return render_template('pages/tables/tables.html',  passdata = data, segment=segment, parent='pages')
 
 
+@app.route('/received-passes-table.html', methods=['GET', 'POST'], defaults={"page": 1})
+@app.route("/received-passes-table.html/<int:page>", methods=['GET', 'POST'])
+def page_report(page):
+    # data = str(data.decode())
+    segment = get_segment(request)
+    page = page
+    data = (Reports.query.join(PassData).filter(PassData.LOS <= datetime.now()))\
+    .order_by(PassData.AOS.desc()).paginate(page=page,per_page=per_page,error_out=False)
+    return render_template('pages/received-passes-table.html',  reportdata = data, segment=segment, parent='pages')
+
+
 @app.route('/<template>')
 def route_template(template):
     try:
@@ -114,6 +107,7 @@ def popNOAA15(page):
     # data = parse_table(data)
     return render_template('passestable.html', passdata = data, SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 
+
 @app.route("/NOAA18", methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/NOAA18/<int:page>", methods=['GET', 'POST'])
 def popNOAA18(page):
@@ -123,6 +117,7 @@ def popNOAA18(page):
         PassData.LOS >= datetime.now()).paginate(page=page,per_page=per_page,error_out=False)
     # data = parse_table(data)
     return render_template('passestable.html', passdata = data, SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
+
 
 @app.route("/NOAA19", methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/NOAA19/<int:page>", methods=['GET', 'POST'])
@@ -135,14 +130,16 @@ def popNOAA19(page):
     # SDRstatus = 
     return render_template('passestable.html', passdata = data,SDRstatus = get_instance()['status'], RTLstatus=check_rtlstatus())
 
+
 @app.route("/ScheduledPasses")
 def CountdownTimer():
     data = PassData.query.filter(and_(PassData.LOS >= datetime.now(), 
-                                          PassData.ScheduledToReceive),
-                                         PassData.AOS<=datetime.now()+timedelta(hours=72)).all()
+                                        PassData.ScheduledToReceive),
+                                        PassData.AOS<=datetime.now()+timedelta(hours=72)).all()
     data = [d.asDict() for d in data]    
     
     return jsonify(data)
+
 
 @app.route("/statusRTL")
 def RTLstatus():
@@ -158,6 +155,7 @@ def SDRstatus():
     SDRstatus = SDRstatus['status']
 
     return jsonify(SDRstatus=SDRstatus)
+
 
 @app.route("/schedulePasses", methods=['POST'])
 def schedulePasses():
@@ -192,6 +190,7 @@ def schedulePasses():
             db.session.commit()
     return jsonify(message="Scheduling Successful!")
 
+
 @app.route('/location')
 def get_loc():
     if (request.args.get('latitude') and request.args.get('longitude')):
@@ -222,3 +221,42 @@ def fetch_tle(name):
     except Exception as e:
         return jsonify({"message": "Not Found!"}), 404
 
+
+@app.route("/fetchImage/<int:pk>")
+def fetch_image(pk):
+    r = db.get_or_404(Reports, pk)
+    img = r.imagePath
+    # img = "C:/Users/Abdullah/Desktop/NOAA-Images/apt_NOAA_18_20231002_0348.png"
+    return send_file(
+        img,
+        download_name='image.png',
+        mimetype='image/png'
+    )
+
+
+@app.route("/fetchData/<int:pk>")
+def fetch_data(pk):
+    print(pk)
+    r = db.get_or_404(Reports, pk)
+    path = r.dataPath
+    # path = "C:/Users/Abdullah/Desktop/NOAA-wav/NOAA 18_2023-10-02T03_47_39_163.wav"
+    # data = ""
+    # return send_from_directory(path, data)
+    return send_file(
+        path,
+        download_name="data.wav",
+        mimetype="audio/wav"
+    )
+
+@app.route("/playAudio/<int:pk>")
+def play_audio(pk):
+    # path = "C:/Users/Abdullah/Desktop/NOAA-wav/NOAA 18_2023-10-02T03_47_39_163.wav"
+    # data = ""
+    # return send_from_directory(path, data)
+    return (
+        f'<body style="background-color:dark; align-items: center;  display: flex; justify-content: center;">\
+        <div> \
+        <audio controls="">\
+        <source src="http://127.0.0.1:5000/fetchData/{pk}" type="audio/wav">\
+         </audio> </div> </body>'
+    )

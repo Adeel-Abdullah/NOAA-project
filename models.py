@@ -19,6 +19,7 @@ class Satellite(db.Model):
     def __repr__(self):
         return f'{self.Name}'
 
+
 class PassData(db.Model):
     # __table_args__ = {'extend_existing': True}
     
@@ -28,6 +29,8 @@ class PassData(db.Model):
     maxElevation = db.Column(db.Integer)
     ScheduledToReceive = db.Column(db.Boolean, default=True)
     SatetlliteName = db.Column(db.Integer, db.ForeignKey(Satellite.id))
+
+    Report = db.relationship('Reports', backref="PassData", uselist=False, lazy = 'subquery')
     
     def __repr__(self):
         return f'{self.SatetlliteName} {self.AOS.strftime("%d-%m-%y %H:%M:%S")} {self.ScheduledToReceive}'
@@ -35,6 +38,21 @@ class PassData(db.Model):
     def asDict(self):
         d = self.__dict__
         d.pop('_sa_instance_state',None)
+        d.pop('Report')
         d['AOS'] = d['AOS'].astimezone()
         d['LOS'] = d['LOS'].astimezone()
         return d
+    
+    
+class Reports(db.Model):
+    __tablename__ = 'Reports'
+
+    id = db.Column(db.Integer, db.ForeignKey(PassData.id), primary_key=True)
+    size = db.Column(db.Integer)
+    status = db.Column(db.Boolean, default=False)
+    dataPath = db.Column(db.String(80))
+    imagePath = db.Column(db.String(80))
+
+    def __repr__(self):
+        return f'{self.PassData.SatetlliteName} {self.PassData.AOS.strftime("%d-%m-%y %H:%M:%S")} {self.status}'
+
