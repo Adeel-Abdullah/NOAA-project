@@ -15,7 +15,7 @@ def updateDB():
         pass
     else:
         subprocess.Popen(sdrangel_path)
-        time.sleep(15)
+        time.sleep(30)
     start_satellitetracker()
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()
@@ -23,6 +23,7 @@ def updateDB():
             sat_name = sat.Name
             print(sat_name)
             location = cache.get("location")
+            print(f'location is {location}')
             passes = get_satellite_passes(sat_name, location)
             twomins = timedelta(minutes=2)
             for p in passes:

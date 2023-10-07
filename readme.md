@@ -14,4 +14,5 @@ python app.py
  * ~~location lat/lng get and set optional timezone setting~~
  * ~~ audio and image file path storage in db along with pass status ~~
  * ~~load preset before AOS and shutdown sdrangel after los~~
- *
+ * Add mechanism to avoid scheduling conflicts
+ * Deploy on production server

@@ -48,34 +48,34 @@
                       <!-- Item -->
                       {% for passes in reportdata %}
                       <tr>
-                          <td><a href="#" class="text-primary fw-bold">
-                            {{ passes.id }}
-                          </a> 
-                        </td>
-                          <td class="fw-bold d-flex align-items-center">
+                            <td><a href="#" class="text-primary fw-bold">
+                                {{ passes.id }}
+                            </a> 
+                            </td>
+                            <td>
                               {{ passes.PassData.SatetlliteName }}
+                            </td>
+                            <td>
+                                {{ passes.PassData.AOS }}
+                            </td>
+                            <td>
+                                {{ (passes.PassData.LOS - passes.PassData.AOS).total_seconds()|int }} secs
+                            </td>
+                            <td>
+                                {{ passes.size }}
+                            </td>
+                            <td>
+                                {% if passes.status %}
+                                    <span class="fw-bold text-success">
+                                        Successful
+                                    </span>
+                                {% else %}
+                                    <span class="fw-bold text-danger">
+                                        Unuccessful
+                                    </span>
+                                {% endif %}
                           </td>
                           <td>
-                            {{ passes.PassData.AOS }}
-                          </td>
-                          <td>
-                            {{ (passes.PassData.LOS - passes.PassData.AOS).total_seconds()|int }} secs
-                          </td>
-                          <td>
-                            {{ passes.size }}
-                          </td>
-                          <td>
-                            {% if passes.status %}
-                            <span class="fw-bold text-success">
-                                Successful
-                            </span>
-                            {% else %}
-                            <span class="fw-bold text-danger">
-                                Unuccessful
-                            </span>
-                            {% endif %}
-                          </td>
-                          <td class="text-primary">
                               <div class="d-flex align-items-center"><span class="fw-bold">{{ passes.PassData.maxElevation }}</span>
                                   <svg class="icon icon-xs text-primary" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" clip-rule="evenodd"></path></svg>
                               </div>
@@ -86,10 +86,16 @@
                                     <svg class="icon icon-sm" fill="currentColor" viewBox="0 10 20 22" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18.813 11.406l-7.906 9.906c-0.75 0.906-1.906 0.906-2.625 0l-7.906-9.906c-0.75-0.938-0.375-1.656 0.781-1.656h16.875c1.188 0 1.531 0.719 0.781 1.656z" clip-rule="evenodd"></path></svg>
                                     <span class="visually-hidden">Toggle Dropdown</span>
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-xs dropdown-menu-end pb-0">
-                                    <div class="form-check" ><a id="select" href="/fetchImage/{{passes.id}}" target="_blank">Show Image </div>
-                                    <div class="form-check" ><a id ="unselect" href="/playAudio/{{passes.id}}" target="_blank">Show Data</div>
-                                </div>
+                                {% if passes.imagePath or passes.dataPath %}
+                                    <div class="dropdown-menu dropdown-menu-xs dropdown-menu-end pb-0">
+                                        {% if passes.imagePath %}
+                                            <div class="form-check" ><a id="select" href="/fetchImage/{{passes.id}}" target="_blank">Show Image </div>
+                                        {% endif %}
+                                        {% if passes.dataPath %}
+                                            <div class="form-check" ><a id ="unselect" href="/playAudio/{{passes.id}}" target="_blank">Show Data</div>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
                             </div>
                           </td>
                       </tr>
@@ -110,6 +116,7 @@
               {% endif %}
             
               {% for page in reportdata.iter_pages()  %}
+                {% if page %}
                   {% if reportdata.page == page%}
                   <li class="page-item active">
                   <a class="page-link" href="{{ url_for(request.endpoint, page=page) }}">{{page}}</a>
@@ -119,6 +126,7 @@
                       <a class="page-link" href="{{ url_for(request.endpoint, page=page) }}">{{page}}</a>
                   </li>
                   {% endif %}
+                {% endif %}
               {% endfor %}
               {% if reportdata.has_next  %}
               <li class="page-item">
