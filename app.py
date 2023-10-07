@@ -6,6 +6,7 @@ import os
 from scheduled_functions import updateDB, update_tle
 
 
+
 config = {
     "DEBUG": True,          # some Flask specific configs
     "CACHE_TYPE": "FileSystemCache",  # Flask-Caching related configs
@@ -60,4 +61,8 @@ app = create_app(config)
 from views import *
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
+    from waitress import serve
+    import logging
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
+    serve(app, host='0.0.0.0', threads=8, port=5000)

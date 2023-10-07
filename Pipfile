@@ -12,6 +12,7 @@ flask-apscheduler = "*"
 flask-caching = "*"
 requests = "*"
 psutil = "*"
+waitress = "*"
 
 [dev-packages]
 
