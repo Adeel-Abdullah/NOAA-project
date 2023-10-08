@@ -4,6 +4,7 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from extensions import migrate, scheduler, db, cache
 import os
 from scheduled_functions import updateDB, update_tle
+from flask.helpers import get_debug_flag
 
 
 
@@ -25,36 +26,34 @@ def create_app(config_class):
     def is_debug_mode():
         """Get app debug status."""
         debug = os.environ.get("FLASK_DEBUG")
-        # print(debug)
         if not debug:
             return os.environ.get("FLASK_ENV") == "development"
         return debug.lower() not in ("0", "false", "no")
 
     def is_werkzeug_reloader_process():
         """Get werkzeug status."""
-        return os.environ.get("WERKZEUG_RUN_MAIN") == "true"
+        import logging
+        flag = os.environ.get("WERKZEUG_RUN_MAIN")
+        if flag is not None:
+            return os.environ.get("WERKZEUG_RUN_MAIN") == "true"
+        else:
+            return True
     
     cache.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
-    # with app.app_context():
-    #     db.create_all()
-        
+
     with app.app_context():
         if not is_werkzeug_reloader_process():
             pass
         else:
             if scheduler.state==0:
-                # print (is_debug_mode())
-                # print (is_werkzeug_reloader_process())
                 scheduler.api_enabled = True
                 scheduler.init_app(app)
                 scheduler.scheduler.add_jobstore(
                     SQLAlchemyJobStore(engine=db.engine, metadata=db.metadata))
                 scheduler.start()
-            # else:
-            #     scheduler.shutdown(wait=False)
-            #     scheduler.start()
+        
     return app
 
 app = create_app(config)
@@ -65,4 +64,4 @@ if __name__ == "__main__":
     from waitress import serve
     import logging
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
-    serve(app, host='0.0.0.0', threads=8, port=5000)
+    serve(app, host='127.0.0.1', threads=8, port=5000)

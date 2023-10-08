@@ -153,7 +153,7 @@ def SDRstatus():
     if SDRstatus['pid']:
         cache.set('pid', SDRstatus['pid'])
     SDRstatus = SDRstatus['status']
-
+    
     return jsonify(SDRstatus=SDRstatus)
 
 

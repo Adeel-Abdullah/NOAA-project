@@ -16,3 +16,5 @@ python app.py
  * ~~load preset before AOS and shutdown sdrangel after los~~
  * Add mechanism to avoid scheduling conflicts
  * ~~Deploy on production server~~
+ * Try catch for LOS macro
+
