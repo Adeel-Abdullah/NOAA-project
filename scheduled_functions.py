@@ -9,7 +9,7 @@ from sqlalchemy import and_, func
 
 # %% adding new passes only after checking that they are not already present
 
-@scheduler.task(trigger='cron', id='updateDB', minute='*/3')
+@scheduler.task(trigger='cron', id='updateDB', hour='*/4')
 def updateDB():
     if get_instance()['status'] == 'OK':
         pass
