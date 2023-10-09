@@ -64,7 +64,7 @@
     display: inline-block;
     text-rendering: optimizeLegibility;
     position: relative;
-    margin-bottom: 0;
+    /*margin-bottom: 0;*/
   }
   
   .table-responsive{
@@ -90,6 +90,7 @@
     transition: var(--burger-transition);
     outline: var(--burger-enable-outline-width) solid transparent;
     outline-offset: 0;
+    z-index: 1;
   }
   
   .burger span {
@@ -223,6 +224,7 @@
     transform: scale(var(--nav-active-scale));
     visibility: visible;
     opacity: 1;
+    z-index: 2;
   }
 
 </style>
@@ -327,6 +329,7 @@
                                       <span></span>
                                     </div>
                                     <nav class="popup-window">
+                                      <div>
                                       <legend>Actions</legend>
                                       <ul>
                                         {% if passes.imagePath  %}
@@ -346,6 +349,7 @@
                                         </li> 
                                         {% endif %}
                                       </ul>
+                                    </div>
                                     </nav>
                                   </label>
                           </td>
