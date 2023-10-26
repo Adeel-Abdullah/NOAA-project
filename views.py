@@ -185,8 +185,16 @@ def schedulePasses():
             d = db.get_or_404(PassData, pk)
             d.ScheduledToReceive=False
             unscheduledPasses.append(d)
-            aos_job = scheduler.remove_job(str(pk)+'_AOS')
-            los_job = scheduler.remove_job(str(pk)+'_LOS')
+            aos_job = scheduler.get_job(str(pk)+'_AOS')
+            los_job = scheduler.get_job(str(pk)+'_LOS')
+            if aos_job:
+                aos_job = scheduler.remove_job(str(pk)+'_AOS')
+            else:
+                pass
+            if los_job:
+                los_job = scheduler.remove_job(str(pk)+'_LOS')
+            else:
+                pass
             db.session.commit()
     return jsonify(message="Scheduling Successful!")
 

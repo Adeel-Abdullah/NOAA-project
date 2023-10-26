@@ -5,11 +5,49 @@ import requests
 from sdrangel_requests import *
 from datetime import datetime, timedelta
 from sqlalchemy import and_, func
+from intervaltree import Interval, IntervalTree
 
 
 # %% adding new passes only after checking that they are not already present
 
-@scheduler.task(trigger='cron', id='updateDB', hour='*/4')
+def storePassData(interval, Receive = True):
+    aos = interval.begin
+    los = interval.end
+    el = interval.data[0]
+    sat_name = interval.data[1]
+    twomins = timedelta(minutes=2)
+    data = PassData.query.filter(and_(PassData.AOS <= aos+twomins,
+                                      PassData.AOS >= aos-twomins,
+                                      PassData.SatetlliteName == sat_name)).all()
+    print(data)
+    if data and data[0].AOS.time() != aos.time():
+        data[0].AOS = aos
+    elif data and data[0].LOS.time() != los.time():
+        data[0].LOS = los
+    elif not data:
+        p = PassData(AOS=aos,
+                     LOS=los,
+                     maxElevation=int(el),
+                     ScheduledToReceive=Receive,
+                     SatetlliteName=sat_name)
+        db.session.add(p)
+        db.session.flush()
+        try:
+            db.session.commit()
+            print(f"Pass added!")
+            # return p
+        except Exception as e:
+            db.session.rollback()
+            print(f"Commit Failed. Error: {e}")
+        
+        Onemin = timedelta(seconds=60)
+        xAOS = scheduler.add_job(str(p.id)+'_AOS', AOS_macro, trigger='date',  run_date=p.AOS-Onemin, args=[p.id])
+        xLOS = scheduler.add_job(str(p.id)+'_LOS', LOS_macro, trigger='date',  run_date=p.LOS+Onemin, args=[p.id])
+
+def toDateTime(time):
+    return datetime.strptime(time,'%Y-%m-%dT%H:%M:%S.%f%z').astimezone()
+
+@scheduler.task(trigger='cron', id='updateDB', hour='1,13')
 def updateDB():
     if get_instance()['status'] == 'OK':
         pass
@@ -19,43 +57,38 @@ def updateDB():
     start_satellitetracker()
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()
+        data = {}
         for sat in Satellites:
             sat_name = sat.Name
             print(sat_name)
             location = cache.get("location")
             print(f'location is {location}')
             passes = get_satellite_passes(sat_name, location)
-            twomins = timedelta(minutes=2)
             for p in passes:
-                aos = datetime.strptime(
-                    p['aos'], '%Y-%m-%dT%H:%M:%S.%f%z').astimezone()
-                los = datetime.strptime(
-                    p['los'], '%Y-%m-%dT%H:%M:%S.%f%z').astimezone()
-                data = PassData.query.filter(and_(PassData.AOS <= aos+twomins,
-                                                  PassData.AOS >= aos-twomins,
-                                                  PassData.SatetlliteName == sat_name)).all()
-                print(data)
-                if data and data[0].AOS.time() != aos.time():
-                    data[0].AOS = aos
-                elif data and data[0].LOS.time() != los.time():
-                    data[0].LOS = los
-                elif not data:
-                    p = PassData(AOS=aos,
-                                   LOS=los,
-                                   maxElevation=int(p['maxElevation']),
-                                   SatetlliteName=sat_name)
-                    db.session.add(p)
-                    db.session.flush()
-                    try:
-                        db.session.commit()
-                        print(f"Pass added!")
-                    except Exception as e:
-                        db.session.rollback()
-                        print(f"Commit Failed. Error: {e}")
-                        
-                    Onemin = timedelta(seconds=60)
-                    xAOS = scheduler.add_job(str(p.id)+'_AOS', AOS_macro, trigger='date',  run_date=p.AOS-Onemin, args=[p.id])
-                    xLOS = scheduler.add_job(str(p.id)+'_LOS', LOS_macro, trigger='date',  run_date=p.LOS+Onemin, args=[p.id])
+                p['aos'] = toDateTime(p['aos'])
+                p['los'] = toDateTime(p['los'])
+                
+            data[sat_name] = passes
+        
+        intervals = [Interval(i['aos'],i['los'],(i['maxElevation'],sat_name))\
+                     for sat_name in data.keys() for i in data[sat_name]]
+            
+        tree = IntervalTree(intervals)
+        
+        for interval in intervals:
+            tree.discard(interval)
+            if tree.overlaps(interval):
+                a = tree.overlap(interval)
+                a = a.pop()
+                tree.remove(a)
+                if a.data[0] > interval.data[0]:
+                    storePassData(a, True)
+                    storePassData(interval, False)
+                else:
+                    storePassData(a, False)
+                    storePassData(interval, True)
+            else:
+                storePassData(interval, True)
                     
 
 
@@ -173,17 +206,21 @@ def AOS_macro(pk):
         
     
 def LOS_macro(pk):
-    with scheduler.app.app_context():
-        p = db.get_or_404(PassData, pk)
-        SatelliteName = p.SatetlliteName
-    dpath = "D:/NOAA-wav/"
-    Impath = "C:/Users/DELL/Documents/NOAA-Images/"
-    
-    stop_audioRecording(SatelliteName)
-    stop_rotator()
-    pid = get_instance()['pid']
-    p = psutil.Process(pid)
-    p.kill()
+    try:
+        with scheduler.app.app_context():
+            p = db.get_or_404(PassData, pk)
+            SatelliteName = p.SatetlliteName
+        dpath = "D:/NOAA-wav/"
+        Impath = "C:/Users/DELL/Documents/NOAA-Images/"
+        
+        stop_audioRecording(SatelliteName)
+        stop_rotator()
+        pid = get_instance()['pid']
+        p = psutil.Process(pid)
+        p.kill()
+    except Exception as e:
+            print(f"Commit Failed. Error: {e}")
+            
     create_report(dpath, Impath, pk)
     
     # stop_satellitetracker()
