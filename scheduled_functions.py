@@ -114,7 +114,6 @@ def get_tle(NORAD_ID):
         raise e
 
 
-
 @scheduler.task(trigger='cron', id='updateTLE', hour='1,13')
 def update_tle():
     with scheduler.app.app_context():
@@ -136,6 +135,7 @@ def update_tle():
             except Exception as e:
                 db.session.rollback()
                 print(f"Commit Failed. Error: {e}")
+
 
 def getmfile(search_dir, pk):
     import os

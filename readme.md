@@ -12,7 +12,7 @@ python app.py
  * ~~start and stop with 60 sec difference instead of 30 sec~~
  * ~~sdrangel check status using psutils~~
  * ~~location lat/lng get and set optional timezone setting~~
- * ~~ audio and image file path storage in db along with pass status ~~
+ * ~~audio and image file path storage in db along with pass status~~
  * ~~load preset before AOS and shutdown sdrangel after los~~
  * ~~Add mechanism to avoid scheduling conflicts~~
  * ~~Deploy on production server~~
