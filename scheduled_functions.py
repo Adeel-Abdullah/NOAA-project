@@ -11,8 +11,9 @@ from intervaltree import Interval, IntervalTree
 # %% adding new passes only after checking that they are not already present
 
 def storePassData(interval, Receive = True):
-    aos = interval.begin
-    los = interval.end
+    Onemin = timedelta(seconds=60)
+    aos = interval.begin + Onemin
+    los = interval.end - Onemin
     el = interval.data[0]
     sat_name = interval.data[1]
     twomins = timedelta(minutes=2)
@@ -20,6 +21,10 @@ def storePassData(interval, Receive = True):
                                       PassData.AOS >= aos-twomins,
                                       PassData.SatetlliteName == sat_name)).all()
     print(data)
+    minEL = cache.get("minEL")
+    el = int(el)
+    if el < minEL:
+        Receive = False
     if data and data[0].AOS.time() != aos.time():
         data[0].AOS = aos
     elif data and data[0].LOS.time() != los.time():
@@ -27,7 +32,7 @@ def storePassData(interval, Receive = True):
     elif not data:
         p = PassData(AOS=aos,
                      LOS=los,
-                     maxElevation=int(el),
+                     maxElevation=el,
                      ScheduledToReceive=Receive,
                      SatetlliteName=sat_name)
         db.session.add(p)
@@ -41,8 +46,9 @@ def storePassData(interval, Receive = True):
             print(f"Commit Failed. Error: {e}")
         
         Onemin = timedelta(seconds=60)
-        xAOS = scheduler.add_job(str(p.id)+'_AOS', AOS_macro, trigger='date',  run_date=p.AOS-Onemin, args=[p.id])
-        xLOS = scheduler.add_job(str(p.id)+'_LOS', LOS_macro, trigger='date',  run_date=p.LOS+Onemin, args=[p.id])
+        if Receive and el >= minEL:
+            xAOS = scheduler.add_job(str(p.id)+'_AOS', AOS_macro, trigger='date',  run_date=p.AOS-Onemin, args=[p.id])
+            xLOS = scheduler.add_job(str(p.id)+'_LOS', LOS_macro, trigger='date',  run_date=p.LOS+Onemin, args=[p.id])
 
 def toDateTime(time):
     return datetime.strptime(time,'%Y-%m-%dT%H:%M:%S.%f%z').astimezone()
@@ -69,8 +75,8 @@ def updateDB():
                 p['los'] = toDateTime(p['los'])
                 
             data[sat_name] = passes
-        
-        intervals = [Interval(i['aos'],i['los'],(i['maxElevation'],sat_name))\
+        Onemin = timedelta(seconds=60)
+        intervals = [Interval(i['aos']-Onemin,i['los']+Onemin,(i['maxElevation'],sat_name))\
                      for sat_name in data.keys() for i in data[sat_name]]
             
         tree = IntervalTree(intervals)
@@ -109,7 +115,7 @@ def get_tle(NORAD_ID):
 
 
 
-@scheduler.task(trigger='cron', id='updateTLE', hour='*/8')
+@scheduler.task(trigger='cron', id='updateTLE', hour='1,13')
 def update_tle():
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()

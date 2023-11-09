@@ -21,6 +21,9 @@ CS_location={
 if not cache.get("location"):
     cache.set("location", CS_location)
 
+if not cache.get("minEL"):
+    cache.set("minEL", 15)
+
 
 @app.route('/dashboard.html')
 @app.route('/', defaults={'path': 'index.html'})
@@ -156,46 +159,48 @@ def SDRstatus():
     
     return jsonify(SDRstatus=SDRstatus)
 
+def schedulePass(pk):
+    Onemin = timedelta(seconds=60)
+    d = db.get_or_404(PassData, pk)
+    d.ScheduledToReceive=True
+    aos_job = scheduler.get_job(str(pk)+'_AOS')
+    los_job = scheduler.get_job(str(pk)+'_LOS')
+    if aos_job:
+        pass
+    else:
+        scheduler.add_job(
+            str(d.id)+'_AOS', AOS_macro, trigger='date',  run_date=d.AOS-Onemin, args=[d.id])
+    if los_job:
+        pass
+    else:
+        scheduler.add_job(
+            str(d.id)+'_LOS', LOS_macro, trigger='date',  run_date=d.LOS+Onemin, args=[d.id])
+    db.session.commit()
+
+def unschedulePass(pk):
+    Onemin = timedelta(seconds=60)
+    d = db.get_or_404(PassData, pk)
+    d.ScheduledToReceive=False
+    aos_job = scheduler.get_job(str(pk)+'_AOS')
+    los_job = scheduler.get_job(str(pk)+'_LOS')
+    if aos_job:
+        aos_job = scheduler.remove_job(str(pk)+'_AOS')
+    else:
+        pass
+    if los_job:
+        los_job = scheduler.remove_job(str(pk)+'_LOS')
+    else:
+        pass
+    db.session.commit()
+
 
 @app.route("/schedulePasses", methods=['POST'])
 def schedulePasses():
-    scheduledPasses = []
-    unscheduledPasses = []
-    Onemin = timedelta(seconds=60)
-    with app.app_context():
-        for pk in request.json['checked']:
-            d = db.get_or_404(PassData, pk)
-            d.ScheduledToReceive=True
-            scheduledPasses.append(d)
-            aos_job = scheduler.get_job(str(pk)+'_AOS')
-            los_job = scheduler.get_job(str(pk)+'_LOS')
-            if aos_job:
-                pass
-            else:
-                scheduler.add_job(
-                    str(d.id)+'_AOS', AOS_macro, trigger='date',  run_date=d.AOS-Onemin, args=[d.id])
-            if los_job:
-                pass
-            else:
-                scheduler.add_job(
-                    str(d.id)+'_LOS', LOS_macro, trigger='date',  run_date=d.LOS+Onemin, args=[d.id])
-            db.session.commit()
-            
-        for pk in request.json['unchecked']:
-            d = db.get_or_404(PassData, pk)
-            d.ScheduledToReceive=False
-            unscheduledPasses.append(d)
-            aos_job = scheduler.get_job(str(pk)+'_AOS')
-            los_job = scheduler.get_job(str(pk)+'_LOS')
-            if aos_job:
-                aos_job = scheduler.remove_job(str(pk)+'_AOS')
-            else:
-                pass
-            if los_job:
-                los_job = scheduler.remove_job(str(pk)+'_LOS')
-            else:
-                pass
-            db.session.commit()
+    for pk in request.json['checked']:
+        schedulePass(pk)
+        
+    for pk in request.json['unchecked']:
+        unschedulePass(pk)
     return jsonify(message="Scheduling Successful!")
 
 
@@ -210,6 +215,23 @@ def get_loc():
         return jsonify(cache.get("location"))
     else:
         return jsonify(cache.get("location"))
+
+
+@app.route('/setminEL/<int:minEL>')
+def set_minEL(minEL):
+    cache.set("minEL", minEL)
+    scheduledPasses = PassData.query.filter(and_(PassData.AOS >= datetime.now(), 
+                                    PassData.maxElevation >= minEL )).all()
+    for p in scheduledPasses:
+        schedulePass(p.id)
+
+    unscheduledPasses = PassData.query.filter(and_(PassData.AOS >= datetime.now(), 
+                                    PassData.maxElevation < minEL )).all()
+    for p in unscheduledPasses:
+        unschedulePass(p.id)
+
+    return jsonify(message="Minimum Elevation Set!"), 201
+
 
 
 @app.route("/tle/<string:name>")
