@@ -9,10 +9,13 @@ from datetime import datetime, timedelta
 
 from sqlalchemy import and_, func
 # from tzlocal import get_localzone
-
 from app import app
 from extensions import db, scheduler
 from models import PassData, Satellite, Reports
+from extensions import db, scheduler, cache
+from models import PassData, Satellite, Reports
+from intervaltree import Interval, IntervalTree
+from sdrangel_requests import *
 # from app import db, scheduler
 
 # %% Populating the Satellite Data table
@@ -107,11 +110,17 @@ def schedule():
 
 
 def delete():
-    for i in [88]:
-        d = PassData.query.get_or_404(i)
-        db.session.delete(d)
-        db.session.commit()
-
+    with app.app_context():
+        for i in range(746,758):
+            try:
+                print(i)
+                d = PassData.query.get_or_404(i)
+                db.session.delete(d)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                print(f"Commit Failed. Error: {e}")
+   
 # %%
 
 
@@ -158,16 +167,17 @@ def getmfile(search_dir, pk):
 
 # Impath = 'C:/Users/Abdullah/Desktop/NOAA-Images/'
 # dpath = 'C:/Users/Abdullah/Desktop/NOAA-wav/'
+# Impath = "C:/Users/DELL/Documents/NOAA-Images/"
 
 # I = getmfile(Impath, 441)
 # d = getmfile(dpath, 441)
-
+# "C:/Users/DELL/Documents/NOAA-Images/apt_NOAA_19_20231003_0135.png"
 
 def create_report(dpath, Impath, pk):
     with app.app_context():
         p = db.get_or_404(PassData, pk)
         Imfile = getmfile(Impath, pk)
-        dfile = getmfile(dpath,pk)
+        dfile =  getmfile(dpath,491)
         twomins = timedelta(seconds=120)
         dmtime = datetime.fromtimestamp(dfile.stat().st_mtime)
         Imtime = datetime.fromtimestamp(Imfile.stat().st_mtime)
@@ -178,14 +188,12 @@ def create_report(dpath, Impath, pk):
         if (time - dmtime) < twomins:
             dfsize = round(dfile.stat().st_size/int(1<<20))
             dfile = dfile.path
-            print(f"{dfile} found!")
         else:
             dfile = None
             dfsize = None
             
         if (time - Imtime) < twomins:
             Imfilepath = Imfile.path
-            print(f"{Imfilepath} found!")
         else:
             Imfilepath = None
             
@@ -209,31 +217,114 @@ def create_report(dpath, Impath, pk):
 
 
 #%%
-# create_report(dpath,Impath,440)
-
-
+# utils.create_report(dpath,Impath,491)
+with app.app_context():
+    r = db.get_or_404(Reports,491)
+    r.imagePath = "C:/Users/DELL/Documents/NOAA-Images/apt_NOAA_19_20231003_0135.png"
+    r.status = True
+    db.session.commit()
+    
+with app.app_context():
+    r = db.get_or_404(Reports,491)
+    print(r)
+    
 #%%
 
-from datetime import datetime
-from sqlalchemy import and_
+def storePassData(interval, Receive = True):
+    aos = interval.begin
+    los = interval.end
+    el = interval.data[0]
+    sat_name = interval.data[1]
+    twomins = timedelta(minutes=2)
+    data = PassData.query.filter(and_(PassData.AOS <= aos+twomins,
+                                      PassData.AOS >= aos-twomins,
+                                      PassData.SatetlliteName == sat_name)).all()
+    print(data)
+    if data and data[0].AOS.time() != aos.time():
+        data[0].AOS = aos
+    elif data and data[0].LOS.time() != los.time():
+        data[0].LOS = los
+    elif not data:
+        p = PassData(AOS=aos,
+                     LOS=los,
+                     maxElevation=int(el),
+                     ScheduledToReceive=Receive,
+                     SatetlliteName=sat_name)
+        db.session.add(p)
+        db.session.flush()
+        try:
+            db.session.commit()
+            print(f"Pass added!")
+            return p
+        except Exception as e:
+            db.session.rollback()
+            print(f"Commit Failed. Error: {e}")
+        
+        Onemin = timedelta(seconds=60)
+        xAOS = scheduler.add_job(str(p.id)+'_AOS', AOS_macro, trigger='date',  run_date=p.AOS-Onemin, args=[p.id])
+        xLOS = scheduler.add_job(str(p.id)+'_LOS', LOS_macro, trigger='date',  run_date=p.LOS+Onemin, args=[p.id])
 
-from app import app
-from models import PassData, Reports
-from utils import create_report
+def toDateTime(time):
+    return datetime.strptime(time,'%Y-%m-%dT%H:%M:%S.%f%z').astimezone()
 
-fromdate = datetime(2023, 10, 3)
-todate = datetime(2023, 10, 4)
+def updateDB():
+    with scheduler.app.app_context():
+        Satellites = Satellite.query.all()
+        data = {}
+        for sat in Satellites:
+            sat_name = sat.Name
+            print(sat_name)
+            location = cache.get("location")
+            print(f'location is {location}')
+            passes = get_satellite_passes(sat_name, location)
+            for p in passes:
+                p['aos'] = toDateTime(p['aos'])
+                p['los'] = toDateTime(p['los'])
+                
+            data[sat_name] = passes
+        
+        intervals = [Interval(i['aos'],i['los'],(i['maxElevation'],sat_name))\
+                     for sat_name in data.keys() for i in data[sat_name]]
+            
+        tree = IntervalTree(intervals)
+        
+        for interval in intervals:
+            tree.discard(interval)
+            if tree.overlaps(interval):
+                a = tree.overlap(interval)
+                a = a.pop()
+                tree.remove(a)
+                if a.data[0] > interval.data[0]:
+                    storePassData(a, True)
+                    storePassData(interval, False)
+                else:
+                    storePassData(a, False)
+                    storePassData(interval, True)
+            else:
+                storePassData(interval, True)
 
-#with app.app_context():
-#    passes = PassData.query.filter(and_(PassData.LOS >= fromdate), PassData.LOS <= todate).all()
-#p = [i.id for i in passes]
-p = [491]
+updateDB()
+#%%
 
-dpath = "D:/NOAA-wav/"
-Impath = "C:/Users/DELL/Documents/NOAA-Images/"
+# from datetime import datetime
+# from sqlalchemy import and_
 
-#for i in p:
-#    create_report(dpath, Impath, i)
+# from app import app
+# from models import PassData, Reports
+# from utils import create_report
+
+# fromdate = datetime(2023, 10, 2)
+# todate = datetime(2023, 10, 3)
+
+# with app.app_context():
+#     passes = PassData.query.filter(and_(PassData.LOS >= fromdate), PassData.LOS <= todate).all()
+# p = [i.id for i in passes]
+
+# dpath = "D:/NOAA-wav/"
+# Impath = "C:/Users/DELL/Documents/NOAA-Images/"
+
+# for i in p:
+#     create_report(dpath, Impath, i)
 
 # create_report(507)
 # %% get two line element

@@ -1,2 +1,9 @@
 *.pyc
 
+*.sqlite3
+
+*.log.*
+
+*.log
+
+*.wav
