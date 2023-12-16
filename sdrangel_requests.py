@@ -7,6 +7,7 @@ import psutil
 
 sdrangel_path = "C:\Program Files\SDRangel\sdrangel.exe"
 
+
 def get_instance():
     url = "http://127.0.0.1:8091/sdrangel"
     payload = {}
@@ -79,14 +80,14 @@ def stop_satellitetracker():
 
 
 def start_rotator():
-    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/2/run"
+    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/1/run"
     payload = {}
     headers = {}
     response = requests.request("POST", url, headers=headers, data=payload)
     return(response.json())
 
 def stop_rotator():
-    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/2/run"
+    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/1/run"
     payload = {}
     headers = {}
     response = requests.request("DELETE", url, headers=headers, data=payload)
@@ -116,12 +117,13 @@ def get_satellite_passes(satelliteName, location):
     json_object['SatelliteTrackerSettings']['target'] = satelliteName
     json_object['SatelliteTrackerSettings']['latitude'] = location['latitude']
     json_object['SatelliteTrackerSettings']['longitude'] = location['longitude']
-
+    print(location)
     headers = {
         'Content-Type': 'application/json'
         }
     url = "http://127.0.0.1:8091/sdrangel/featureset/feature/0/settings"
     response = requests.request("PATCH", url, headers=headers, json=json_object)
+    time.sleep(2)
     data = get_sdrangel_passes()
     for datum in data["SatelliteTrackerReport"]["satelliteState"]:
         if satelliteName in datum.values():

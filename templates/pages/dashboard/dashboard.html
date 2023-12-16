@@ -7,7 +7,11 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/jquery.countdown.css') }}">
 <style type="text/css">
-#defaultCountdown { display: inline-block; background: rgba(0, 0, 0, 0); border-color: rgba(0, 0, 0, 0.2)}
+#defaultCountdown { display: inline-block; background: rgba(0, 0, 0, 0); border-color: rgba(0, 0, 0, 0)}
+
+.axis-label-elevation {
+        writing-mode: vertical-lr;
+      }
 
 .highlight {
     color: #b00;
@@ -43,6 +47,14 @@
       text-anchor: middle;
       fill: black;
     }
+    /* .satlabel {
+      font-size: 10px;
+      fill: grey;
+      padding-left: 5px;
+      text-anchor: start;
+      font-family: sans-serif;
+
+    } */
 
     /*canvas {
     position:absolute;
@@ -53,11 +65,6 @@
     z-index:-1;
     }
 */
-
-    .line-class {
-        fill: "none";
-        stroke: rgba(255, 0, 0, 0.7);
-    }
 
     .map {
   width: 100%;
@@ -76,52 +83,96 @@
   }
 }
 
+@font-face{
+ font-family:'digital-clock-font';
+ src: url('static/assets/fonts/14SegmentLEDRegular.ttf');
+}
+#polaricon{
+  animation: rotmove 3s ;
+}
+
+@keyframes rotmove {
+  25% {transform: rotate(90deg);}
+}
+
+#globeicon{
+  animation: rotmoverev 3s ;
+}
+
+@keyframes rotmoverev {
+  25% {transform: rotate(-90deg);}
+}
+
+#infoicon{
+  animation: rotmove 3s ;
+}
+
+@keyframes rotmove {
+  25% {transform: rotate(180deg);}
+}
 
 </style>
 
 {% endblock stylesheets %}
 
 {% block content %}
-
+<div>
     <div >            
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-between">
+          <div class="display-5 d-flex align-items-center justify-content-center mr-5">
+          
+          </div>
             <div class="display-4 p-2">
-            <span id="defaultCountdown"></span>
-            <span id="hiddenCountdown"></span>
-        </div> 
-    </div>
-      
-
-            <div id="geocontent" class="mt-4 d-flex justify-content-center border border-primary">
+              <span id="defaultCountdown"></span>
+              <span id="hiddenCountdown"></span>
+            </div> 
+            <div class="display-5 d-flex align-items-center justify-content-center ml-5">
             </div>
-
-      <h1 class="mt-2 h5">Timeline</h1>
+        </div>
+        <div class="d-flex justify-content-center">
+          <button type="button" class="btn btn-outline-primary">
+          <svg id="polaricon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-crosshair" viewBox="0 0 16 16">
+            <path d="M8.5.5a.5.5 0 0 0-1 0v.518A7.001 7.001 0 0 0 1.018 7.5H.5a.5.5 0 0 0 0 1h.518A7.001 7.001 0 0 0 7.5 14.982v.518a.5.5 0 0 0 1 0v-.518A7.001 7.001 0 0 0 14.982 8.5h.518a.5.5 0 0 0 0-1h-.518A7.001 7.001 0 0 0 8.5 1.018V.5Zm-6.48 7A6.001 6.001 0 0 1 7.5 2.02v.48a.5.5 0 0 0 1 0v-.48a6.001 6.001 0 0 1 5.48 5.48h-.48a.5.5 0 0 0 0 1h.48a6.002 6.002 0 0 1-5.48 5.48v-.48a.5.5 0 0 0-1 0v.48A6.001 6.001 0 0 1 2.02 8.5h.48a.5.5 0 0 0 0-1h-.48ZM8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+          </svg>
+        </button>
+          <button type="button" class="btn btn-outline-primary mx-2">
+          <svg id="globeicon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-globe-asia-australia" viewBox="0 0 16 16">
+            <path d="m10.495 6.92 1.278-.619a.483.483 0 0 0 .126-.782c-.252-.244-.682-.139-.932.107-.23.226-.513.373-.816.53l-.102.054c-.338.178-.264.626.1.736a.476.476 0 0 0 .346-.027ZM7.741 9.808V9.78a.413.413 0 1 1 .783.183l-.22.443a.602.602 0 0 1-.12.167l-.193.185a.36.36 0 1 1-.5-.516l.112-.108a.453.453 0 0 0 .138-.326ZM5.672 12.5l.482.233A.386.386 0 1 0 6.32 12h-.416a.702.702 0 0 1-.419-.139l-.277-.206a.302.302 0 1 0-.298.52l.761.325Z"/>
+            <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM1.612 10.867l.756-1.288a1 1 0 0 1 1.545-.225l1.074 1.005a.986.986 0 0 0 1.36-.011l.038-.037a.882.882 0 0 0 .26-.755c-.075-.548.37-1.033.92-1.099.728-.086 1.587-.324 1.728-.957.086-.386-.114-.83-.361-1.2-.207-.312 0-.8.374-.8.123 0 .24-.055.318-.15l.393-.474c.196-.237.491-.368.797-.403.554-.064 1.407-.277 1.583-.973.098-.391-.192-.634-.484-.88-.254-.212-.51-.426-.515-.741a6.998 6.998 0 0 1 3.425 7.692 1.015 1.015 0 0 0-.087-.063l-.316-.204a1 1 0 0 0-.977-.06l-.169.082a1 1 0 0 1-.741.051l-1.021-.329A1 1 0 0 0 11.205 9h-.165a1 1 0 0 0-.945.674l-.172.499a1 1 0 0 1-.404.514l-.802.518a1 1 0 0 0-.458.84v.455a1 1 0 0 0 1 1h.257a1 1 0 0 1 .542.16l.762.49a.998.998 0 0 0 .283.126 7.001 7.001 0 0 1-9.49-3.409Z"/>
+          </svg>
+        </button>
+        <button type="button" class="btn btn-outline-primary">
+          <svg id="infoicon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+          </svg>
+        </button>
+        </div>
+        <div id="geocontent" class="mt-4 d-flex justify-content-center border"></div>
+        <h1 class="mt-2 h5">Timeline</h1>
         
              
           
-            <div >
-                <div id="chart-container" class="border border-primary">
-                    <svg id="graph"></svg>
-                    <div class="tooltip" id="tooltip">
-                        <small id="satname" class="font-weight-bold">NOAA N</small><br>
-                        <small id="maxel">Elevation:</small><br>
-                        <small id="aos">AOS:</small><br>
-                        <small id="los">LOS:</small>
-                    </div>
-                    <div id ="spinner" class="d-flex justify-content-center">
-                        <div class="spinner-grow" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
+        <div >
+            <div id="chart-container" class="border py-4">
+                <svg id="graph"></svg>
+                <div class="tooltip" id="tooltip">
+                    <small id="satname" class="font-weight-bold">NOAA N</small><br>
+                    <small id="maxel">Elevation:</small><br>
+                    <small id="aos">AOS:</small><br>
+                    <small id="los">LOS:</small>
+                </div>
+                <div id ="spinner" class="d-flex justify-content-center">
+                    <div class="spinner-grow" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
             </div>
-
-            
-        
-        
+        </div>  
     </div>
-    <h1 class="h5 mt-2">Status</h1>
-    <div class="card-header flex-row flex-0 b-2 align-items-center">
+
+  <h1 class="h5 mt-2">Status</h1>
+  <div class="flex-row flex-0 b-2 align-items-center">
     <div class="row">
       <!-- First card -->
       <div class="col-md-3">
@@ -146,7 +197,7 @@
                     <a href="#">SDR Server</a>
                 </h4>
                 <div id="status2" class="d-flex align-items-center">
-                    <div class="bg-danger dot rounded-circle me-1"></div>
+                    <div class="bg-success dot rounded-circle me-1"></div>
                     <small>Busy</small>
                 </div>
             </div>
@@ -184,7 +235,107 @@
       </div>
     </div>
   </div>
-    
+  <!-- Modal for Polar Chart -->
+  <div class="modal fade" id="polarModal" 
+    tabindex="-1" aria-labelledby="modal-default" 
+    style="display: none;" aria-hidden="true" width="700"> 
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document"> 
+      <div class="modal-content"> 
+        <div class="modal-header"> 
+          <h2 class="h6 modal-title">Polar Chart</h2> 
+          <button type="button" class="btn-close" data-bs-dismiss="modal" 
+            aria-label="Close">
+          </button> 
+        </div> 
+        <div class="modal-body d-flex align-items-center justify-content-center"> 
+          <div id="polarcontainer"></div>
+        </div> 
+        <div class="modal-footer"> 
+          <button type="button" class="btn btn-link text-gray-600 ms-auto" 
+            data-bs-dismiss="modal">Close</button> 
+        </div> 
+      </div> 
+    </div> 
+  </div>
+
+    <!-- Modal for Map -->
+    <div class="modal fade" id="mapModal" 
+    tabindex="-1" aria-labelledby="modal-default" 
+    style="display: none;" aria-hidden="true" width="700"> 
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document"> 
+      <div class="modal-content"> 
+        <div class="modal-header"> 
+          <h2 class="h6 modal-title">Geographic Depiction</h2> 
+          <button type="button" class="btn-close" data-bs-dismiss="modal" 
+            aria-label="Close">
+          </button> 
+        </div> 
+        <div class="modal-body d-flex align-items-center justify-content-center"> 
+          <div id="mapcontainer">
+            <canvas width="800" height="400"></canvas>
+          </div>
+        </div> 
+        <div class="modal-footer"> 
+          <button type="button" class="btn btn-link text-gray-600 ms-auto" 
+            data-bs-dismiss="modal">Close</button> 
+        </div> 
+      </div> 
+    </div> 
+  </div>
+
+
+  <!-- Modal for Pass info -->
+  <div class="modal fade" id="passInfoModal" 
+  tabindex="-1" aria-labelledby="modal-default" 
+  style="display: none;" aria-hidden="true" width="700"> 
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document"> 
+    <div class="modal-content"> 
+      <div class="modal-header"> 
+        <h2 class="h6 modal-title">Pass Details</h2> 
+        <button type="button" class="btn-close" data-bs-dismiss="modal" 
+          aria-label="Close">
+        </button> 
+      </div> 
+      <div class="modal-body d-flex align-items-center justify-content-center"> 
+        <div id="passinfocontainer">
+      <h2 id="sat_name_modal" class="text-center">NOAA N</h2>
+        <table class="table">
+        <tbody>
+          <tr>
+            <td>AOS</td>
+            <td id="aos_modal"></td>
+          </tr>
+          <tr>
+            <td>In Azimuth</td>
+            <td id="in_azimuth_modal"></td>
+          </tr>
+          <tr>
+            <td>Max Elevation</td>
+            <td id="maxel_modal"></td>
+          </tr>
+          <tr>
+            <td>LOS</td>
+            <td id="los_modal"></td>
+          </tr>
+          <tr>
+            <td>Out Azimuth</td>
+            <td id="out_azimuth_modal"></td>
+          </tr>
+          </tbody>
+          </table>
+          <div id="graph_container_modal"></div>
+          <svg id="graph_azel_modal" width="600" height="300"></svg>
+        </div>
+      </div> 
+      <div class="modal-footer"> 
+        <button type="button" class="btn btn-link text-gray-600 ms-auto" 
+          data-bs-dismiss="modal">Close</button> 
+      </div> 
+    </div> 
+  </div> 
+</div>
+</div>
+
 {% endblock content %}
 
 <!-- Specific Page JS goes HERE  -->
@@ -193,7 +344,59 @@
 <script src="{{ url_for('static', filename='assets/js/jquery.countdown.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/d3.min.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/satellite.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/topojson-client.min.js') }}"></script>
 <script>
+
+  // Local time clock
+document.getElementById('clock_local').style.fontFamily = 'digital-clock-font';
+  function startTime() {
+    var today = new Date();
+
+    var hl = today.getHours();
+    var ml = today.getMinutes();
+    var sl = today.getSeconds();
+    // h = h + offset;
+    if (hl > 24) {
+      hl = hl - 24;
+    }
+    if (hl < 0) {
+      hl = hl + 24;
+    }
+    hl = checkTime(hl);
+    ml = checkTime(ml);
+    sl = checkTime(sl);
+    document.getElementById('clock_local').innerHTML = hl + "." + ml + "." + sl;
+    var t = setTimeout(function() {
+      startTime()
+    }, 500);
+}
+
+function checkTime(i) {
+  if (i < 10) {
+    i = "0" + i
+  };
+  return i;
+}
+
+startTime();
+
+// Top left corner status text
+$("#status_txt").show();
+$("#status_txt").click(function() {
+  $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+
+});
+
+$.ajax({type: "GET",
+        url: "/tle/noaa18",
+        success: function(data) {
+          
+          satellites.push({
+            name: data[0], tle1: data[1], tle2: data[2], id: "n18"
+          });
+        }
+      
+      });
   
   $("#defaultCountdown").each(function StartTimer() {
     var $this = $(this);
@@ -208,15 +411,19 @@
         setupCountdown();
 
         function setupCountdown() {
-            
+
+          let now = new Date();
+          let nowPlus1s = new Date();
+          nowPlus1s.setMilliseconds(now.getMilliseconds() + 1000);
+          // console.log(nowPlus1s.toLocaleString());
             $this.countdown({
                 format: 'dHMS', 
-                until: AOSdate,
+                until: (AOSdate > now? AOSdate : nowPlus1s),
                 alwaysExpire: false,
                 tickInterval: 1,
                 onTick: highlightLast,
                 onExpiry: startHiddenCountdown,
-                description: 'To the <i>next pass</i> of <a href="' + '#">'+ data[0].SatetlliteName +'</a>!',
+                description: 'To the <i>next pass</i> of <a href="#">'+ data[0].SatetlliteName +'</a>!',
                 expiryText: 'Receiving '+data[0].SatetlliteName+' '
             });
             $('#hiddenCountdown').hide();
@@ -235,8 +442,9 @@
           
         function highlightLast(periods) { 
         // console.log('highlightLast');
-        if ($.countdown.periodsToSeconds(periods) === 15) {
+        if ($.countdown.periodsToSeconds(periods) === 60) {
             $(this).addClass('highlight'); 
+            showNotyfAOS('Commencing Acquisition From NOAA');
         } 
     }
         function startHiddenCountdown(){
@@ -248,33 +456,44 @@
     
             
     function resetAllCountdownTimers() {
+      let data = $("#defaultCountdown").data('passes');
+      // console.log("resetcountdowntimer");
+      // console.log(data);
         data.shift();
+        // console.log('Satellite name '+data[0].SatetlliteName);
         $("#hiddenCountdown").hide();
         let austDay = new Date(data[0].AOS);
         $('#defaultCountdown')
             .removeClass('highlight')
             .countdown('option', {
                 until: austDay, 
-                description: 'To the <i>next pass</i> of <a href="' + '#">'+ data[0].SatetlliteName +'</a>!',
+                description: 'To the <i>next pass</i> of <a href="#">'+ data[0].SatetlliteName +'</a>!',
                 expiryText: 'Receiving '+data[0].SatetlliteName+' '
             });
-            console.log(data[0]);
     }
     $this.data('passes', data);
       
-    // document.getElementById("AOS_time").textContent= AOSdate.toTimeString().slice(0, 9);
-    // document.getElementById("AOS_date").textContent= AOSdate.toISOString().slice(0,10);
-
-    // document.getElementById("LOS_time").textContent= LOSdate.toTimeString().slice(0, 9);
-    // document.getElementById("LOS_date").textContent= LOSdate.toISOString().slice(0,10);
-
-    // document.getElementById("TOP_time").textContent= TOPdate.toTimeString().slice(0, 9);
-    // document.getElementById("TOP_date").textContent= TOPdate.toISOString().slice(0,10);
-          
+       // Polar icon 
+       if (data.length > 0){
+        $("#polaricon").show();
+        $("#globeicon").show();
+        $("#infoicon").show();
+        $("#polaricon").click(function(){
+          showPolarChart();
+        }); 
+        $("#globeicon").click(function(){
+          showMapModal();
+        });
+        $("#infoicon").click(function(){
+          showInfoModal();
+        });
+       }  
         }
     });  
   });
 //////////////////////////////////////////////////
+
+    const sat_colors = {n15:"#66bb6a", n18:"#e53935", n19:"#3498db"};
 
     // Clear any previous SVG content
       d3.select("#graph").remove();
@@ -315,13 +534,12 @@
                 };
         });
 
-      
+
 
       // Hide tooltip if any
       hideTooltip();
       // // Get the current width of the container
       
-
       // Set Background
       // svg.append('rect')
       //   .attr('x',0)
@@ -331,12 +549,6 @@
       //   .attr('fill',"#eee");
 
         const now = new Date();
-        const end = new Date();
-        end.setHours(now.getHours() + 120);
-
-        // if (data[0].name != "now"){
-        //   data.unshift({date: now, value: 0, name: "now" });  
-        // }
         
         // Create tooltip
     var Tooltip = d3.select("#tooltip")
@@ -349,11 +561,14 @@
         .style("border-radius", "5px")
         .style("padding", "5px");
 
-        //console.log(data);
-
+        const aosList = newPasses.map(item => {
+          return item.AOS;
+        });
+        aosList.unshift(now);
+        const extent = d3.extent(aosList);
       // Create a time scale
-      var xScale = d3.scaleLog()
-        .domain([now, end])
+      var xScale = d3.scaleTime()
+        .domain(extent)
         .range([0, width]);
 
         // console.log(newPasses);
@@ -362,20 +577,24 @@
         .domain([0, 95])
         .range([height, 0]);
 
-      // Create x-axis
-      var xAxis = d3.axisBottom(xScale);
-      var xTicksArray = [];
-      for (let i = 24; i < 120; i=i+24){
-        const midnight = new Date();
-        midnight.setHours(i,0,0,0);
-        xTicksArray.push(midnight.getTime());
-      }
-      
-      xAxis.tickValues(xTicksArray);
-      xAxis.tickFormat(d3.timeFormat("%-H:%M %a %d"));
-      // xAxis.tickFormat(d3.timeFormat("%a %d"));
+      //Grid work
+      const xAxisGrid = d3.axisTop(xScale).tickSize(-height).tickFormat('');
+      const yAxisGrid = d3.axisLeft(yScale).tickSize(-width).tickFormat('');
 
-      // xAxis.tickValues([]);
+      svgchart.append('g')
+        .attr('class', 'x axis-grid')
+        .attr("stroke", "grey")
+        .attr("stroke-width", "0.2")
+        .call(xAxisGrid);
+
+        svgchart.append('g')
+        .attr('class', 'y axis-grid')
+        .attr("stroke", "grey")
+        .attr("stroke-width", "0.2")
+        .call(yAxisGrid);
+
+      // Create x-axis
+      var xAxis = d3.axisTop(xScale);
 
       // Create y-axis
       var yAxis = d3.axisLeft(yScale);
@@ -384,103 +603,215 @@
       // Add x-axis to the SVG
       svgchart.append("g")
         .attr("class", "x-axis")
-        .attr("transform", "translate(0," + height + ")")
+        .attr("stroke", "grey")
+        .attr("stroke-width", "0.2")
         .call(xAxis);
 
-      // Add y-axis to the SVG
-      svgchart.append("g")
-        .attr("class", "y-axis")
-        .call(yAxis);
+    // Add y-axis to the SVG
+    svgchart.append("g")
+      .attr("class", "y-axis")
+      .attr("stroke", "grey")
+      .attr("stroke-width", "0.2")
+      .call(yAxis);
+    
 
-      // Y-axis title
-      svgchart.append("text")
-          .attr("x", 10)
-          .attr("y", 10)
-          .attr("fill", "grey")
-          .attr("text-anchor", "start")
-          .attr("font-family", "sans-serif")
-          .attr("font-size", "10px")
-          .text("↑ Max Elevation");
-
-    // Legends
-          
-        // svg.append("circle").attr("cx",(width-80)).attr("cy",10).attr("r", 6).style("fill", "#2361ce");
-        // svg.append("circle").attr("cx",(width-160)).attr("cy", 10).attr("r", 6).style("fill", "#10B981");
-        // svg.append("circle").attr("cx",(width-240)).attr("cy", 10).attr("r", 6).style("fill", "#E11D48");
-        // svg.append("text").attr("x", (width-70)).attr("y", 14).text("NOAA 15").style("font-size", "10px")
-        // .attr("alignment-baseline","middle");
-        // svg.append("text").attr("x", (width-150)).attr("y", 14).text("NOAA 18").style("font-size", "10px")
-        // .attr("alignment-baseline","middle");
-        // svg.append("text").attr("x", (width-230)).attr("y", 14).text("NOAA 19").style("font-size", "10px")
-        // .attr("alignment-baseline","middle");
+    // Y-axis title
+    svgchart.append("text")
+      .attr("x", 10)
+      .attr("y", height-4)
+      .attr("fill", "grey")
+      .attr("text-anchor", "start")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", "10px")
+      .text("↑ Max Elevation");
 
         // X-axis title
-      svgchart.append("text")
-          .attr("x", width - 74)
-          .attr("y", height - 10)
-          .attr("fill", "grey")
-          .attr("text-anchor", "start")
-          .attr("font-family", "sans-serif")
-          .attr("font-size", "10px")
-          .text("Time (AOS) →");
+    svgchart.append("text")
+      .attr("x", width - 74)
+      .attr("y", 18)
+      .attr("fill", "grey")
+      .attr("text-anchor", "start")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", "10px")
+      .text("Time (AOS) →");
+
+      //Create horizontal lines
+    // svgchart.selectAll(".myline")
+    //   .data(newPasses)
+    //   .enter()
+    //   .append("line")
+    //   .attr("x1", d => xScale(d.AOS))
+    //   .attr("x2", d => xScale(new Date().setDate(now.getDate()+6)))
+    //   .attr("y1", d => yScale(d.maxElevation))
+    //   .attr("y2", d => yScale(d.maxElevation))
+    //   .attr("stroke", "grey")
+    //   .style("stroke-width", 0.5)
+    //   .style("stroke-dasharray", ("3, 3"));
 
 
-    svgchart.selectAll(".circle")
+      // create dots
+    // svgchart.selectAll(".circle")
+    //   .data(newPasses)
+    //   .enter().append("path")
+    //   .attr("class", "circle")
+    //   .attr("d", d3.symbol().type(d3.symbolCircle).size(96)) // Use d3.symbolStar
+    //   .attr("transform", d => `translate(${xScale(d.AOS)}, ${yScale(d.maxElevation)})`)
+    //   .attr("fill", d => {
+    //     // console.log(d.SatetlliteName);
+    //     let clr = '#e00';
+    //     switch(d.SatetlliteName) {
+    //       case "NOAA 15":
+    //         clr = sat_colors['n15'];
+    //         break;
+            
+    //       case "NOAA 18":
+    //         clr = sat_colors['n18'];
+    //         break;
+
+    //       case "NOAA 19":
+    //         clr = sat_colors['n19'];
+    //         break;
+
+    //       default:
+    //           clr = '#0e0';
+    //     }
+    //     return clr;
+    //   });
+
+      // Create rectangles
+      svgchart.selectAll("rect")
       .data(newPasses)
-      .enter().append("path")
-      .attr("class", "circle")
-      .attr("d", d3.symbol().type(d3.symbolCircle).size(24)) // Use d3.symbolStar
-      .attr("transform", d => `translate(${xScale(d.AOS)}, ${yScale(d.maxElevation)})`)
-      .attr("fill", "#666"
-        // function(d){
-        //     var color = "#000000";
-        //      if (d.SatetlliteName == "NOAA 15"){
-        //         color = "#2361ce"
-        //      }else if (d.SatetlliteName == "NOAA 18"){
-        //         color = "#10B981"
-        //     }else if (d.SatetlliteName == "NOAA 19"){
-        //         color = "#E11D48"
-        //     }
-        //     return color;
-        // }
-        )
-      .attr("stroke-width", 2)
-      // .attr("fill", "#ffffff")
-        .on("mouseover", function(event, d) {
-        d3.select(this).attr("fill", "orange"); // Highlight the circle on hover
+      .enter().append("rect")
+      .attr("x", d => `${xScale(d.AOS)}`)
+      .attr("y", d => `${yScale(d.maxElevation) - 5}`)
+      .attr("id", d => `${'rect'+d.id}`)
+      .attr('width', 50)
+      .attr('height', 10)
+      .style("fill", d => {
+        // console.log(d.SatetlliteName);
+        let clr = '#e00';
+        switch(d.SatetlliteName) {
+          case "NOAA 15":
+            clr = sat_colors['n15'];
+            break;
+            
+          case "NOAA 18":
+            clr = sat_colors['n18'];
+            break;
+
+          case "NOAA 19":
+            clr = sat_colors['n19'];
+            break;
+
+          default:
+              clr = '#0e0';
+        }
+        return clr;
+      });
+      // .style("stroke", "orange");
+
+      // Create satellite names
+      svgchart.selectAll(".satlabel")
+      .data(newPasses)
+      .enter().append("text")
+      .text(d => d.SatetlliteName)
+      .attr("x", d => `${xScale(d.AOS) + 2}`)
+      .attr("y", d => `${yScale(d.maxElevation) + 4}`)
+      .style("font-size", "10px")
+      .style("fill", "white")
+      .style("text-anchor", "start")
+      .style("font-family", "sans-serif")
+      .on("mouseover", function(event, d) {
+        // d3.select(this).attr("fill", "orange"); // Highlight the circle on hover
         showTooltip(event, d); // Show the tooltip
         })
         .on("mouseout", function(d) {
-          d3.select(this).attr("fill", "#666"
-        //     function(d){
-        //     var color = "#000000";
-        //      if (d.SatetlliteName == "NOAA 15"){
-        //         color = "#2361ce"
-        //      }else if (d.SatetlliteName == "NOAA 18"){
-        //         color = "#10B981"
-        //     }else if (d.SatetlliteName == "NOAA 19"){
-        //         color = "#E11D48"
-        //     }
-        //     return color;
-        // }
-        ); // Restore original color
+          // d3.select(this).attr("fill", "none"); // Restore original color
           hideTooltip(); // Hide the tooltip
         });
+      // .transition()
+      // .delay(30000)
+      // .on("start", function repeat(d, i) {
+      //   if ( i==0){
+      //     d3.active(this)
+      //           .style("opacity", 0)
+      //         .transition()
+      //           .style("opacity", 1)
+      //         .transition()
+      //           .on("start", repeat);
+      //   }
+      // });
 
-        svgchart.selectAll("circle")
-      .data(newPasses)
-      .enter().append("circle")
-      .attr("class", "circle")
-      .attr("transform", d => `translate(${xScale(d.AOS)}, ${yScale(d.maxElevation)})`)
-      .attr("r", 5)
-      .style("fill", "none")
-      .style("stroke-width", 0.3)
-      .style("stroke", "#666");
+      // now text
+      svgchart.append("text")
+      .attr("x", xScale(new Date()))
+      .attr("y", yScale(95))
+      .text("now")
+      .style("font-size", "12px")
+      .style("fill", "red")
+      .style("text-anchor", "end")
+      .style("font-family", "sans-serif");
+      
+      // Red line
+      svgchart.append('line')
+      .style("stroke", "red")
+      .style("stroke-width", 1)
+      .attr("x1", 0)
+      .attr("y1", 0)
+      .attr("x2", 0)
+      .attr("y2", height);
+      // .transition()
+      // .on("start", function repeat(d, i) {
+      //   if ( i==0){
+      //     d3.active(this)
+      //           .style("opacity", 0)
+      //         .transition()
+      //           .style("opacity", 1)
+      //         .transition()
+      //           .on("start", repeat);
+      //   }
+      // }); 
 
-    
+      // Pass time animation
+      
+          // console.log(newPasses[0]);
+          if (newPasses != null){
+            if (new Date(newPasses[0].AOS) < new Date() ){
+              svgchart.select(`#${'rect'+newPasses[0].id}`).transition()
+              .delay(function(d, i) { return i * 150; })
+              .on("start", function repeat(d) {
+                d3.active(this)
+                .style("fill", d => {
+                  // console.log(d.SatetlliteName);
+                  let clr = '#e00';
+                  switch(d.SatetlliteName) {
+                    case "NOAA 15":
+                      clr = sat_colors['n15'];
+                      break;
+                      
+                    case "NOAA 18":
+                      clr = sat_colors['n18'];
+                      break;
+
+                    case "NOAA 19":
+                      clr = sat_colors['n19'];
+                      break;
+
+                    default:
+                        clr = '#0e0';
+                  }
+                  return clr;
+                })
+                .transition()
+                .style("fill", "none")
+                .transition()
+                .on("start", repeat);
+              });
+            }
+          }
+
+
     }
-
-    
 
     // Show tooltip on hover
     function showTooltip(event, d) {
@@ -527,35 +858,40 @@
       .append('g')
       .attr('class', 'map');
 
-    const ISS_TLE = 
-        `1 25544U 98067A   23250.13779943  .00012116  00000+0  21777-3 0  9992
-         2 25544  51.6414 282.5514 0005816  37.2180   2.5353 15.50274920414508`;
+      let satellites = [];
 
-    const N15_TLE = 
-        `1 25338U 98030A   23252.12447892  .00000183  00000-0  93951-4 0  9995
-         2 25338  98.6019 279.7300 0011423  71.5333 288.7088 14.26384783317229`;
+      $.ajax({type: "GET",
+        url: "/tle/noaa15",
+        success: function(data) {
+          // console.log(data[0]);
+          satellites.push({
+            name: data[0], tle1: data[1], tle2: data[2], id: "n15"
+          });
+        }
+      
+      });
 
-    const N18_TLE =
-        `1 28654U 05018A   23252.19086515  .00000231  00000-0  14763-3 0  9998
-         2 28654  98.9043 326.1568 0015065 139.7204 220.5087 14.13001257943435`;
+      $.ajax({type: "GET",
+        url: "/tle/noaa18",
+        success: function(data) {
+          // console.log(data[0]);
+          satellites.push({
+            name: data[0], tle1: data[1], tle2: data[2], id: "n18"
+          });
+        }
+      
+      });
 
-    const N19_TLE = 
-        `1 33591U 09005A   23252.17512804  .00000180  00000-0  12158-3 0  9996
-         2 33591  99.0925 299.4158 0013901  11.0158 349.1315 14.12816722751806`;
-
-    const satellites = [
-
-        {   name: "NOAA 15", tle: N15_TLE, id: "n15"    },
-        {   name: "NOAA 18", tle: N18_TLE, id: "n18"    },
-        {   name: "NOAA 19", tle: N19_TLE, id: "n19"    }
-    ];
-    
-
-    // Initialize the satellite record with this TLE
-        const satrec_iss = satellite.twoline2satrec(
-          ISS_TLE.split('\n')[0].trim(), 
-          ISS_TLE.split('\n')[1].trim()
-        );
+      $.ajax({type: "GET",
+        url: "/tle/noaa19",
+        success: function(data) {
+          // console.log(data[0]);
+          satellites.push({
+            name: data[0], tle1: data[1], tle2: data[2], id: "n19"
+          });
+        }
+      
+      });
 
       // Add projection 
       /*
@@ -577,66 +913,68 @@
                                   .scale(100)
                                   .translate([350, 165]);
 
-            let geoGenerator = d3.geoPath()
-              .projection(projection);
+    let geoGenerator = d3.geoPath().projection(projection);
 
-              
-
-              //console.log("projection " + projection( [112.9389, 28.2278] ));
-    d3.json("{{ url_for('static', filename='assets/json/ne_110m_land.json') }}")
-        // d3.json("{{ url_for('static', filename='assets/json/countries-110m.json') }}")
+    //console.log("projection " + projection( [112.9389, 28.2278] ));
+    d3.json("{{ url_for('static', filename='assets/json/countries-110m.json') }}")
         .then(function(json) {
             geojson = json;
             
               let u = svgMap
                 .selectAll('path')
-                .data(geojson.features);
+                .data(topojson.feature(geojson, geojson.objects.countries).features);
 
               u.enter()
                 .append('path')
                 .attr('d', geoGenerator)
-                .attr("fill", "#666");
+                .attr("fill", "#1F2937")
+                .attr('stroke', 'white');
 
-            let beijingCoordinates = [112.9389, 28.2278]; // Beijing's coordinates
+                $.ajax({type: "GET",
+                  url: "/location",
+                  success: function(coord) {
+                    let beijingCoordinates = [coord.longitude, coord.latitude]; // Changsha's coordinates
 
                 // Calculate the projected coordinates for Beijing
                 let beijingProjected = projection(beijingCoordinates);
 
-                svgMap.append("path")
-                  .attr("class", "triangle")
-                  .attr("d", d3.symbol().type(d3.symbolTriangle).size(16)) // Use d3.symbolTriangle
-                  .attr("transform", d => 'translate('+ beijingProjected[0] +', '+ beijingProjected[1]+')')
-                .style('fill', '#e00');
+                // svgMap.append("path")
+                //   .attr("class", "triangle")
+                //   .attr("d", d3.symbol().type(d3.symbolTriangle).size(16)) // Use d3.symbolTriangle
+                //   .attr("transform", d => 'translate('+ beijingProjected[0] +', '+ beijingProjected[1]+')')
+                // .style('fill', '#e00');
 
-                // Add a circle marker to the SVG
-                // svg.append('circle')
-                //   .attr('cx', beijingProjected[0])
-                //   .attr('cy', beijingProjected[1])
-                //   .attr('r', 2) // Adjust the radius of the circle as needed
-                //   .style('fill', 'orange'); // Adjust the fill color as needed
-
-                svgMap.append('text')
-                  .attr("x", beijingProjected[0] + 4)
-                  .attr("y", beijingProjected[1] + 2)
-                  .attr("fill", "#e00")
-                  .attr("text-anchor", "start")
-                  .attr("font-family", "sans-serif")
-                  .attr("font-size", "6px")
-                  .text("You");
+                svgMap.append('image')
+                  .attr('xlink:href', "{{ url_for('static', filename='assets/img/home.png') }}")
+                  .attr('width', 20)
+                  .attr('height', 20)
+                  .attr("transform", d => 'translate('+ (beijingProjected[0] - 10) +', '+ (beijingProjected[1] - 20)+')')
 
 
-                  project_sat();
+                // svgMap.append('text')
+                //   .attr("x", beijingProjected[0] - 6)
+                //   .attr("y", beijingProjected[1] - 6)
+                //   .attr("fill", "#e00")
+                //   .attr("text-anchor", "start")
+                //   .attr("font-family", "sans-serif")
+                //   .attr("font-size", "6px")
+                //   .text("You");
+                    
+                  }
+                
+                });
+                  project_satellites();
 
     });
 
         // Draw satellite projections
-    function project_sat(){
-
+    function project_satellites(){
+      if (satellites.length == 0) return;
         for (const sat of satellites) {
             const date = new Date();
             const satrec = satellite.twoline2satrec(
-              sat.tle.split('\n')[0].trim(), 
-              sat.tle.split('\n')[1].trim()
+              sat.tle1.trim(), 
+              sat.tle2.trim()
             );
             const positionAndVelocity = satellite.propagate(satrec, date);
             const gmst = satellite.gstime(date);
@@ -650,72 +988,87 @@
             let sat_projected = projection(sat_coordinates);  
             paintCirclenLabel(sat_projected, sat.id, sat.name);  
         }
-}   
+    }   
 
-    setInterval(project_sat, 5000);    
+    setInterval(project_satellites, 5000);    
 
     function paintCirclenLabel(sat_projected, id, name){
 
         const dotId  = id;
         const textId = id+'_text';
         const ringId = id+'_ring';
+        const trackId = id+'_track';
 
         svgMap.select(`#${dotId}`).remove();
         svgMap.select(`#${textId}`).remove();
         svgMap.select(`#${ringId}`).remove();
-        d3.select("#track").remove();
+        svgMap.select(`#${trackId}`).remove();
 
         svgMap.append('circle')
           .attr('cx', sat_projected[0])
           .attr('cy', sat_projected[1])
           .attr('id', dotId)
-          .attr('r', 1.5) // Adjust the radius of the circle as needed
-          .style('fill', 'orange')
-          .on("mouseover", function(event, d) {
-            projectSatTrack(this.id);
-          })
-          .on("mouseout", function(d) {
-            d3.select("#track").remove();
-          });
-
+          .attr('r', 3) // Adjust the radius of the circle as needed
+          .style('fill', sat_colors[id]);
+          
         svgMap.append('circle')
           .attr('cx', sat_projected[0])
           .attr('cy', sat_projected[1])
           .attr('id', ringId)
-          .attr('r', 3) // Adjust the radius of the circle as needed
+          .attr('r', 7) // Adjust the radius of the circle as needed
           .style('fill', 'none')
           .style('stroke-width', 0.3)
-          .style('stroke', 'orange');
+          .style('stroke', sat_colors[id]);
 
         svgMap.append('text')
-          .attr("x", sat_projected[0] + 4)
+          .attr("x", sat_projected[0] + 8)
           .attr("y", sat_projected[1] + 2)
           .attr("id", textId)
-          .attr("fill", "orange")
+          .attr("fill", sat_colors[id])
           .attr("text-anchor", "start")
           .attr("font-family", "sans-serif")
-          .attr("font-size", "6px")
+          .attr("font-size", "4px")
           .text(name);
+
+          // Pass time animation
+
+          const passes = $("#defaultCountdown").data('passes');
+          console.log(passes[0]);
+          if (passes != null){
+            if (new Date(passes[0].AOS) < new Date() ){
+              const index = satellites.findIndex(p => p.name == passes[0].SatetlliteName);
+              svgMap.select(`#${satellites[index].id}`).transition()
+              .delay(function(d, i) { return i * 150; })
+              .on("start", function repeat(d) {
+                d3.active(this)
+                .style("fill", "orange")
+                .transition()
+                .style("fill", "none")
+                .transition()
+                .on("start", repeat);
+              });
+            }
+          }
+          projectSatTrack(id, trackId);
     }
 
-    
-
-
     // Draw satellite track on hover
-    function projectSatTrack(id){
+    function projectSatTrack(id, trackId){
+
+      
 
         const index = satellites.findIndex(p => p.id == id);
 
         if (index == -1) return;
 
         const sat = satellites[index];
-        console.log(sat);
+
         // Calculate track
         let date = new Date();
         let path = [];
         const satrec = satellite.twoline2satrec(
-              sat.tle.split('\n')[0].trim(), 
-              sat.tle.split('\n')[1].trim()
+              sat.tle1.trim(), 
+              sat.tle2.trim()
             );
         for (let i = 0; i < 101; i=i+1){
             const positionAndVelocity = satellite.propagate(satrec, date);
@@ -730,11 +1083,11 @@
             date.setMilliseconds(date.getMilliseconds() + 60000); // Using milliseconds due to minutes addition is messing up Date
         }
 
-        paintTrack(path);
+        paintTrack(path, trackId, sat_colors[id]);
         
     }
 
-    function paintTrack(path){
+    function paintTrack(path, trackId, color){
         const lineFn = d3.line()
         .x(function (d) {
             let e = projection([d.lon, d.lat]);
@@ -754,7 +1107,7 @@
                 if (xProjectionDiff > 0){
                     inclusion = false;
                 }
-                console.log(inclusion);
+                // console.log(inclusion);
             }
             return inclusion;
         });
@@ -764,13 +1117,709 @@
         svgMap
         .append('path')
         .datum(path)
-        .attr('id', 'track')
+        .attr('id', trackId)
         .attr('fill', 'none')
-        .attr('stroke', 'orange')
+        .attr('stroke', color)
         .attr('d', lineFn);
     }
 
-        ////////////
+    ////////////////////////////////////
+
+  function showPolarChart(){
+    var myModal = new bootstrap.Modal(document.getElementById('polarModal'));
+    const width = 600;
+    const height = 600;
+    const marginTop = 25;
+    const marginRight = 25;
+    const marginBottom = 25;
+    const marginLeft = 25;
+
+    d3.select("#polarsvg").remove();
+
+// Create the SVG container.
+const svg = d3.create("svg")
+    .attr("id", "polarsvg")
+    .attr("width", (width+marginLeft+marginRight))
+    .attr("height", (height+marginTop+marginBottom))
+    .attr("transform", "translate(" + marginLeft + "," + marginTop + ")");
+
+// Define the scales for mapping data to the polar coordinates
+const radiusScale = d3.scaleLinear()
+    .domain([90, 0])
+    .range([0, width / 2 - 25]);
+
+const angleScale = d3.scaleLinear()
+    .domain([0, 360])
+    .range([0, 360]);
+
+// Create a group for the polar chart
+const chartGroup = svg.append("g")
+    .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+// Create the polar chart
+// chartGroup.selectAll(".satellite")
+//     .data(satelliteData)
+//     .enter()
+//     .append("circle")
+//     .attr("fill", "none")
+//     .attr("stroke", "black")
+//     .attr("class", "satellite")
+//     .attr("cx", d => radiusScale(d.elevation))
+//     .attr("cy", d => angleScale(0))
+//     .attr("r", 4)
+//     .attr("transform", d => `rotate(${d.azimuth - 90})`);
+
+    const azimuthCircles = [
+
+        {label:"0", value:0}, 
+        {label:"30", value:30}, 
+        {label:"60", value:60}, 
+        {label:"90", value:90}
+
+    ];
+
+    const elevationLines = [
+
+        {label:"0", value:0},
+        {label:"45", value:45},
+        {label:"90", value:90},
+        {label:"135", value:135},
+        {label:"180", value:180},
+        {label:"225", value:225},
+        {label:"270", value:270},
+        {label:"315", value:315}
+
+    ];
+
+// Add axis circles
+chartGroup.selectAll(".axis-circle")
+    .data(azimuthCircles)
+    .enter()
+    .append("circle")
+    .attr("class", "axis-circle")
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr("r", d => radiusScale(d.value))
+    .attr("fill", "none")
+    .attr("stroke", function (d){
+        if (d.value == 0 ) return "black";
+        else return "grey";
+    })
+    .style("stroke-width", function (d){
+        if (d.value == 0 ) return 1;
+        else return 0.5;
+    });
+
+// Add elevation labels
+chartGroup.selectAll(".axis-label-elevation")
+    .data(azimuthCircles)
+    .enter()
+    .append("text")
+    .attr("class", "axis-label-elevation")
+    .attr("x", function(d){
+        return (radiusScale(d.value) - 8);
+    })
+    .attr("y", 0)
+    .text(d => d.label)
+    .attr("text-anchor", "start")
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "14px")
+    .attr("fill", "grey")
+    .attr("transform", d => `rotate(-90)`);
+
+//Add elevation radial lines
+chartGroup.selectAll(".axis-line")
+    .data(elevationLines)
+    .enter()
+    .append("line")
+    .attr("x1", radiusScale(90))
+    .attr("x2", radiusScale(0))
+    .attr("y1", angleScale(0)) // Don't mind
+    .attr("y2", d => angleScale(d)) // Don't mind
+    .attr("transform", d => `rotate(${d.value})`)
+    .attr("stroke", function (d, i){
+
+        return (i % 2) == 0 ? "black": "grey" ;
+    })
+    .style("stroke-width", function (d, i){
+
+        return (i % 2) == 0 ? "1": "0.5" ;
+    })
+    .style("stroke-dasharray", function (d, i){
+
+        return (i % 2) == 0 ? "0, 0": "3, 3" ;
+    });
+
+// Add azimuth labels
+chartGroup.selectAll(".axis-label")
+    .data(elevationLines)
+    .enter()
+    .append("text")
+    .attr("class", "axis-label-elevation")
+    .attr("x", radiusScale(-2))
+    .attr("y", 0) // Don't mind
+    .text(d => d.label)
+    .attr("text-anchor", "middle")
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "14px")
+    .attr("transform", d => `rotate(${d.value-90})`);
+
+function polarChart(){
+
+    const deg2rad = Math.PI / 180;
+    const rad2deg = 180 / Math.PI;
+    let path = [];
+
+    $.ajax({type: "GET",
+                  url: "/location",
+                  success: function(coord) {
+     // Changsha's coordinates
+
+    var observerGd = {
+      longitude: coord.longitude * deg2rad,
+      latitude:  coord.latitude * deg2rad,
+      height: 0.63
+    };
+
+    const passes = $("#defaultCountdown").data('passes');
+      // Select next pass
+        const pass = passes[0];
+        let sat = null;
+        let now = new Date(pass.AOS);
+        let later = new Date(pass.LOS);
+
+        // Identify sat for TLE selection and path calculation
+        const index = satellites.findIndex(p => p.name == pass.SatetlliteName);
+        sat = satellites[index];
+
+        const satrec = satellite.twoline2satrec(
+            sat.tle1.trim(), 
+            sat.tle2.trim()
+          );
+
+          // console.log("Calculating for "+sat.name)
+
+        while (later > now){
+            const positionAndVelocity = satellite.propagate(satrec, now);
+            const gmst = satellite.gstime(now);
+            // const position = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
+            var positionEcf   = satellite.eciToEcf(positionAndVelocity.position, gmst),
+              lookAngles    = satellite.ecfToLookAngles(observerGd, positionEcf)
+            // console.log(position);
+            path.push({
+                azimuth: (lookAngles.azimuth * rad2deg),
+                elevation: (lookAngles.elevation * rad2deg),
+                rangeSat: lookAngles.rangeSat
+            });
+
+            now.setMilliseconds(now.getMilliseconds() + 6000); // Using milliseconds due to minutes iteration is messing up Date
+            // console.log(now.toLocaleString());
+            // console.log(`Az: ${lookAngles.azimuth * rad2deg} El: ${lookAngles.elevation * rad2deg}`);
+        }
+        var lineRadial = d3.lineRadial()
+          .angle((d) => angleScale (d.azimuth * Math.PI / 180))
+          .radius((d) => radiusScale(d.elevation))
+          .curve(d3.curveMonotoneX);
+
+        var pathEle = chartGroup
+          .append("path")
+          .datum(path)
+          .attr("id", "polartrack")
+          .attr("fill", "none")
+          .attr("stroke", "orange")
+          .attr("stroke-width", "2")
+          .attr("d", lineRadial);
+
+        const length = pathEle.node().getTotalLength();
+
+        chartGroup
+            .append("text")
+            .attr("x", radiusScale(path[0].elevation ))
+            .attr("y", 0)
+            .attr("fill", "grey")
+            .attr("text-anchor", "start")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "10px")
+            .text("← AOS")
+            .attr("class", "axis-label-elevation")
+            .attr("transform", "rotate("+(path[0].azimuth-90)+")");
+
+        chartGroup
+            .append("text")
+            .attr("x", radiusScale(path[path.length-1].elevation ))
+            .attr("y", 0)
+            .attr("fill", "grey")
+            .attr("text-anchor", "start")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "10px")
+            .text("← LOS")
+            .attr("class", "axis-label-elevation")
+            .attr("transform", "rotate("+(path[path.length-1].azimuth-90)+")");
+
+        function drawPath() {
+            // Animate the path by setting the initial offset and dasharray and then transition the offset to 0
+            pathEle.attr("stroke-dasharray", length + " " + length)
+                .attr("stroke-dashoffset", length)
+                .transition()
+                .ease(d3.easeLinear)
+                .attr("stroke-dashoffset", 0)
+                .duration(2000)
+                .on("end", animateSat); // this will repeat the animation after waiting 1 second
+            }
+
+            drawPath();
+
+            // extract starting point
+            function extractStartingPoint(){  
+                // console.log(lineRadial);
+                const d = pathEle._groups[0][0].attributes.d.nodeValue;
+                const regex = /-?\d*\.?\d+,-?\d*\.?\d+/;
+                const match = regex.exec(d);
+                const coords = match[0].split(",");
+                
+                return coords;
+            }
+
+
+            // Append the SVG element.
+            function animateSat(){
+
+                const startCoord = extractStartingPoint();
+                
+
+                chartGroup.append("circle")
+                    .attr("cx", startCoord[0]) //Starting x
+                    .attr("cy", startCoord[1]) //Starting y
+                    .attr("r", 5)
+                    .transition()
+                    .delay(250)
+                    .duration(4000)
+                    .tween("pathTween", function(){return pathTween(pathEle)});
+
+                function pathTween(path){
+                    var length = path.node().getTotalLength(); // Get the length of the path
+                    var r = d3.interpolate(0, length); //Set up interpolation from 0 to the path length
+                    return function(t) {
+                      
+                        var point = path.node().getPointAtLength(r(t)); // Get the next point along the path
+                        d3.select(this) // Select the circle
+                        .attr("cx", point.x) // Set the cx
+                        .attr("cy", point.y) // Set the cy
+                      
+                    }
+                }
+            }
+        polarcontainer.append(svg.node());
+        myModal.show();
+
+      }});
+    }
+      polarChart();
+      
+    }
+
+    ////////////////
+
+    function showMapModal(){
+      var myModal = new bootstrap.Modal(document.getElementById('mapModal'));
+      const width = 600;
+      const height = 600;
+      const marginTop = 25;
+      const marginRight = 25;
+      const marginBottom = 25;
+      const marginLeft = 25;
+
+      d3.select("#mapcontainer canvas").remove();
+
+      let geojson = {}
+      let beijingCoordinates = [0,0];
+
+      let mapcanvas = d3.select('#mapcontainer')
+      .append('canvas')
+      .attr("width", (width+marginLeft+marginRight))
+      .attr("height", (height+marginTop+marginBottom));
+
+      let context = mapcanvas
+      .node()
+      .getContext('2d');
+
+      let projection = d3.geoOrthographic()
+        .scale(400)
+        .rotate([-120, -35]);
+
+      let geoGenerator = d3.geoPath()
+        .projection(projection)
+        .pointRadius(4)
+        .context(context);
+
+        let data = $("#defaultCountdown").data('passes');
+
+        let pass = data[0];
+
+        //name: data[0], tle1: data[1], tle2: data[2], id: "n19"
+
+        // console.log(pass.SatetlliteName);
+        // console.log(satellites);
+        let aos = new Date(pass.AOS);
+        let los = new Date(pass.LOS);
+
+        let sat = satellites.find(x => x.name === pass.SatetlliteName);
+        // console.log(sat);
+
+        const satrec = satellite.twoline2satrec(
+              sat.tle1.trim(), 
+              sat.tle2.trim()
+            );
+        const aos_positionAndVelocity = satellite.propagate(satrec, aos);
+        const aos_gmst = satellite.gstime(aos);
+        const aos_position = satellite.eciToGeodetic(aos_positionAndVelocity.position, aos_gmst);
+        let aos_sat_coordinates = [satellite.degreesLong(aos_position.longitude), satellite.degreesLong(aos_position.latitude)];
+        
+        const los_positionAndVelocity = satellite.propagate(satrec, los);
+        const los_gmst = satellite.gstime(los);
+        const los_position = satellite.eciToGeodetic(los_positionAndVelocity.position, los_gmst);
+        let los_sat_coordinates = [satellite.degreesLong(los_position.longitude), satellite.degreesLong(los_position.latitude)];
+
+      let geoInterpolator = d3.geoInterpolate(aos_sat_coordinates, los_sat_coordinates);
+      let u = 0;
+
+      function update() {
+        context.clearRect(0, 0, 800, 600);
+
+        context.lineWidth = 0.5;
+        context.strokeStyle = '#333';
+        
+
+        context.beginPath();
+        context.fillStyle = '#1F2937';
+        geoGenerator({type: 'FeatureCollection', features: geojson.features})
+        // context.stroke();
+        context.fill();
+
+        // Graticule
+        let graticule = d3.geoGraticule();
+        context.beginPath();
+        context.strokeStyle = '#ccc';
+        geoGenerator(graticule());
+        context.stroke();
+
+        // AOS - LOS line
+        context.beginPath();
+        context.strokeStyle = 'orange';
+        context.lineWidth = '2';
+        geoGenerator({type: 'Feature', geometry: {type: 'LineString', coordinates: [aos_sat_coordinates, los_sat_coordinates]}});
+        context.stroke();
+
+        // AOS Label
+        const aoscoord = projection(aos_sat_coordinates);
+        context.font = "14px sans-serif";
+        context.textAlign = "start";
+        context.fillStyle ="orange";
+        context.fillText(" ↑ "+ new Date(pass.AOS).toLocaleTimeString(), aoscoord[0] + 2, (aoscoord[1])); 
+
+        // LOS Label
+        const loscoord = projection(los_sat_coordinates);
+        context.font = "14px sans-serif";
+        context.textAlign = "start";
+        context.fillStyle ="orange";
+        context.fillText(" ↓ "+new Date(pass.LOS).toLocaleTimeString(), loscoord[0] + 2, (loscoord[1])); 
+
+
+        // Point
+        context.beginPath();
+        context.fillStyle = 'black';
+        geoGenerator({
+          type: 'Feature',
+          geometry: {
+            type: 'Point', 
+            coordinates: geoInterpolator(u)
+          },
+        //   properties: {
+        //   subType: "Circle",
+        //   radius: 2000
+        // }
+        });
+        context.fill();
+
+
+
+         // Observer (Ground Station)
+        context.beginPath();
+        context.fillStyle = 'red';
+        geoGenerator({type: 'Feature', geometry: {type: 'Point', coordinates: beijingCoordinates}});
+        context.fill();
+
+        // Observer Label
+        const obsrlabelCoord = projection(beijingCoordinates);// Fetch from DB
+        context.font = "12px sans-serif";
+        context.textAlign = "center";
+        context.fillText("You", obsrlabelCoord[0], (obsrlabelCoord[1]-10)); 
+
+        // x Speed
+        const durationSeconds = Math.abs((new Date(pass.LOS) - new Date(pass.AOS))/1000);
+        let speed = Math.abs(durationSeconds/5); //~ Rough estimate
+        context.font = "15px sans-serif";
+        context.fillStyle = 'red';
+        context.fillText(speed + 'x faster', 75, height-10); 
+
+
+        u += 0.01
+        if(u > 1) u = 0
+      }
+
+      // REQUEST DATA
+      d3.json("{{ url_for('static', filename='assets/json/ne_110m_land.json') }}")
+        .then(function(json) {
+          geojson = json;
+          $.ajax({type: "GET",
+                  url: "/location",
+                  success: function(coord) {
+                    beijingCoordinates = [coord.longitude, coord.latitude]; // Changsha's coordinates
+                  }
+                });
+          window.setInterval(update, 50);
+        });
+
+
+      myModal.show();
+    }
+
+    // Show pass details/info
+    function showInfoModal(){
+      var myModal = new bootstrap.Modal(document.getElementById('passInfoModal'));
+      let data = $("#defaultCountdown").data('passes');
+      let pass = data[0];
+
+
+      // Look angles
+      let sat = satellites.find(x => x.name === pass.SatetlliteName);
+        // console.log(sat);
+
+        const satrec = satellite.twoline2satrec(
+              sat.tle1.trim(), 
+              sat.tle2.trim()
+            );
+      let aostime = new Date(pass.AOS);
+      let lostime = new Date(pass.LOS);
+      let midtime = new Date((aostime.getTime() + lostime.getTime())/2);
+      const deg2rad = Math.PI / 180;
+      
+
+      $.ajax({type: "GET",
+          url: "/location",
+          success: function(coord) {
+          var observerGd = {
+          longitude: coord.longitude * deg2rad,
+          latitude:  coord.latitude * deg2rad,
+          height: 0.63
+        };
+        let iter_time = new Date(aostime);
+        let data = [];
+          while (iter_time < lostime){  
+            data.push(getLookAngles(satrec, observerGd, iter_time));
+            iter_time.setMilliseconds(iter_time.getMilliseconds() + 10000);  
+          }
+          let startAzEl = getLookAngles(satrec, observerGd, aostime);
+          // let midAzEl = getLookAngles(satrec, observerGd, midtime);
+          let endAzEl = getLookAngles(satrec, observerGd, lostime);
+
+          // For svg
+          // console.log(startAzEl);
+          // console.log(midAzEl);
+          // console.log(endAzEl);
+          // let data = [startAzEl, midAzEl, endAzEl];
+
+          $("#sat_name_modal").text(pass.SatetlliteName);
+          $("#aos_modal").text(aostime.toLocaleTimeString('en-US', {hour12: false}) +
+            " ("+ aostime.toDateString()+")");
+          $("#maxel_modal").text(pass.maxElevation + "°");
+          $("#los_modal").text(lostime.toLocaleTimeString('en-US', {hour12: false}));
+          $('#in_azimuth_modal').text(startAzEl.azimuth.toFixed(2) + "°");
+          $('#out_azimuth_modal').text(endAzEl.azimuth.toFixed(2) + "°");
+
+          // d3.select("#graph_azel_modal").remove();
+
+          let containerWidth = 600;
+          let containerHeight = 300;
+
+          // // Set up SVG dimensions based on container width
+          var margin = { top: 25, right: 25, bottom: 25, left: 25 };
+          var width = containerWidth - margin.right - margin.left ;
+          var height = containerHeight - margin.top - margin.bottom;
+
+
+
+          // Create an SVG element
+          var svg = d3.select("#graph_azel_modal");
+          svg.selectAll("*").remove();
+
+          // Define the scales for mapping data to the polar coordinates
+    const yScale = d3.scaleLinear()
+        .domain([90, 0])
+        .range([0, height])
+        .nice();
+
+    const xScale = d3.scaleLinear()
+        .domain([0, 360])
+        .range([0, width])
+        .nice();
+
+    // create x-axis
+    let xAxis = d3.axisBottom(xScale);
+
+    // Create y-axis
+    let yAxis = d3.axisLeft(yScale);
+
+     // Add x-axis to the SVG
+     svg.append("g")
+        .attr("class", "x-axis")
+        .attr("stroke", "grey")
+        .attr("stroke-width", "0.2")
+        .attr("transform", "translate("+margin.left+"," + (height+margin.bottom) + ")")
+        .call(xAxis);
+
+      // Add y-axis to the SVG
+      svg.append("g")
+        .attr("class", "y-axis")
+        .attr("stroke", "grey")
+        .attr("stroke-width", "0.2")
+        .attr("transform", "translate("+margin.left+"," + margin.top + ")")
+        .call(yAxis);
+
+        const xAxisGrid = d3.axisBottom(xScale).tickSize(-(height)).tickFormat('').ticks(20);
+        const yAxisGrid = d3.axisLeft(yScale).tickSize(-(width)).tickFormat('').ticks(9);
+    svg.append('g')
+        .attr('class', 'x axis-grid')
+        .attr("stroke", "grey")
+        .attr("stroke-width", "0.1")
+        .attr("transform", "translate("+margin.left+"," + (height+margin.bottom) + ")")
+        .call(xAxisGrid);
+    svg.append('g')
+        .attr('class', 'y axis-grid')
+        .attr("stroke", "grey")
+        .attr("stroke-width", "0.1")
+        .attr("transform", "translate("+margin.left+"," + margin.top + ")")
+        .call(yAxisGrid);
+
+        
+        const lineFn = d3.line()
+        .x(function (d) {
+            return xScale(d.azimuth);
+        })
+        .y(function (d) {
+            return yScale(d.elevation);
+        })
+        .curve(d3.curveMonotoneX)
+        .defined(function(d,i){
+            let inclusion = true;
+            if (i > 0){
+                const azDiff = d.azimuth - data[i-1].azimuth;
+                if (Math.abs(azDiff) > 300){
+                    inclusion = false;
+                }
+            }
+            return inclusion;
+        })
+        ;
+    svg.append('path')
+        .datum(data)
+        .attr('fill', 'none')
+        .attr('stroke', 'orange')
+        .attr('d', lineFn)
+        .attr('transform', 'translate('+margin.left +','+ margin.top +')');
+
+    // graph_container_modal.append(svg.node());
+
+    svg.append('text')
+      .attr("x", xScale(data[0].azimuth) )
+      .attr("y", yScale(data[0].elevation) + 10)
+      .attr("fill", "#e00")
+      .attr("text-anchor", "middle")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", "8px")
+      .text("AOS")
+      .attr('transform', 'translate('+margin.left +','+ margin.top +')');
+
+
+      svg.append('text')
+      .attr("x", xScale(data[data.length-1].azimuth) )
+      .attr("y", yScale(data[data.length-1].elevation) + 10)
+      .attr("fill", "#e00")
+      .attr("text-anchor", "middle")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", "8px")
+      .text("LOS")
+      .attr('transform', 'translate('+margin.left +','+ margin.top +')');
+
+        svg.append('text')
+        .attr('x', 20)
+        .attr('y', 12)
+        .attr("fill", "#888")
+        .attr("text-anchor", "start")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "12px")
+        .text("↑ Elevation ");
+
+        svg.append('text')
+        .attr('x', width-30)
+        .attr('y', height+10)
+        .attr("fill", "#888")
+        .attr("text-anchor", "start")
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "12px")
+        .text("Azimuth →");
+
+          myModal.show();
+        }
+      });
+    }
+
+    function getLookAngles(satrec, observerGd, timestamp){
+      const rad2deg = 180 / Math.PI;
+      const positionAndVelocity = satellite.propagate(satrec, timestamp);
+      const gmst = satellite.gstime(timestamp);
+      // const position = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
+      var positionEcf   = satellite.eciToEcf(positionAndVelocity.position, gmst),
+        lookAngles    = satellite.ecfToLookAngles(observerGd, positionEcf)
+      // console.log(position);
+      let thelookangle = {
+          azimuth: (lookAngles.azimuth * rad2deg),
+          elevation: (lookAngles.elevation * rad2deg),
+          rangeSat: lookAngles.rangeSat
+      };
+
+      return thelookangle;
+    }
+
+    /////////////////
+
+    function showNotyfAOS(msg){
+      const notyf = new Notyf({
+                position: {
+                    x: 'right',
+                    y: 'top',
+                },
+                types: [
+                    {
+                        type: 'error',
+                        background: '#FA5252',
+                        icon: {
+                            className: 'fas fa-times',
+                            tagName: 'span',
+                            color: '#fff'
+                        },
+                        dismissible: false
+                    }
+                ]
+            });
+            notyf.open({
+                type: 'error',
+                message: msg
+            });
+    }
+
+
+    ////////////////
     let Timeout = 15000;
 
   $("#status1").each(function CheckRTL() {
@@ -791,6 +1840,7 @@
           else{
             let statusdiv = document.body.querySelectorAll("#status1 > div");
             $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
+            showNotyfAOS('RTL SDR is Offline!');
 
             let smallstatus = document.body.querySelectorAll("#status1 > small");
             $(smallstatus[0]).text("Offline");
@@ -809,7 +1859,7 @@ $("#status2").each(function CheckSDR() {
           if(data['SDRstatus']== "OK")
           {
             let statusdiv = document.body.querySelectorAll("#status2 > div");
-            console.log(statusdiv);
+            
             $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
 
             let smallstatus = document.body.querySelectorAll("#status2 > small");
@@ -825,7 +1875,7 @@ $("#status2").each(function CheckSDR() {
           }
         }
     });
-    setTimeout(CheckSDR, Timeout);
+    // setTimeout(CheckSDR, Timeout);
 });
 </script>
 {% endblock javascripts %}

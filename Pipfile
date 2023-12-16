@@ -12,6 +12,8 @@ flask-apscheduler = "*"
 flask-caching = "*"
 requests = "*"
 psutil = "*"
+waitress = "*"
+intervaltree = "*"
 
 [dev-packages]
 
