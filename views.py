@@ -246,7 +246,7 @@ def fetch_tle(name):
     name = f"%{name}%"
     sat = Satellite.query.filter(Satellite.Name.ilike(name)).first()
     try:
-        response = jsonify(sat.Name, sat.TLERow1, sat.TLERow2)
+        response = jsonify(sat.Name, sat.TLERow1, sat.TLERow2, sat.TLEUpdateTime)
         return response
     except Exception as e:
         return jsonify({"message": "Not Found!"}), 404

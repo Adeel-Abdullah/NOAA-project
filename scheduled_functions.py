@@ -129,6 +129,7 @@ def update_tle():
             print(sat.TLERow1)
             sat.TLERow2 = t[2]
             print(sat.TLERow2)
+            sat.TLEUpdateTime = datetime.now()
             try:
                 db.session.commit()
                 print(f"TLE added!")
@@ -194,6 +195,17 @@ def create_report(dpath, Impath, pk):
             db.session.rollback()
             print(f"Commit Failed. Error: {e}")
 
+def start_SpectrumServer():
+    import subprocess
+    import time
+
+    server_path = "C:\\Users\\DELL\\Documents\\sdrangelspectrum\\sdrangelspectrum\\dist\\sdrangelspectrum\\"
+    p = subprocess.Popen(["http-server"], stdout=subprocess.DEVNULL, cwd=server_path, shell=True, close_fds=True)
+    time.sleep(1)
+    print(f"Spectrum server started with ID {p.pid}!")
+    return p.pid
+
+
 
 def AOS_macro(pk):
     if get_instance()['status'] == 'OK':
@@ -209,6 +221,10 @@ def AOS_macro(pk):
     start_rotator()
     set_preset(SatelliteName)
     start_audioRecording(SatelliteName)
+    # enable_lowSampleRate()
+    start_SpectrumBroadcast()
+    spectrum_pid = start_SpectrumServer()
+    cache.set('spectrum_pid', spectrum_pid)
         
     
 def LOS_macro(pk):
@@ -221,8 +237,12 @@ def LOS_macro(pk):
         
         stop_audioRecording(SatelliteName)
         stop_rotator()
+        stop_SpectrumBroadcast()
         pid = get_instance()['pid']
         p = psutil.Process(pid)
+        p.kill()
+        spectrum_pid = cache.get('spectrum_pid')
+        p = psutil.Process(spectrum_pid)
         p.kill()
     except Exception as e:
             print(f"Commit Failed. Error: {e}")

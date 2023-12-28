@@ -18,5 +18,7 @@ python app.py
  * ~~Deploy on production server~~
  * ~~Try catch for LOS macro~~
  * ~~api to set minimum pass elevation~~
+ * ~~spectrum display to be added~~
+ * ~~last update time of tle in api~~
  * Control the antenna through ACU
 

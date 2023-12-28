@@ -11,6 +11,7 @@ class Satellite(db.Model):
     OperatingFreq = db.Column(db.Numeric(precision=7, scale=4))
     TLERow1 = db.Column(db.String(length=80))
     TLERow2 = db.Column(db.String(length=80))
+    TLEUpdateTime = db.Column(db.DateTime)
     Passes = db.relationship('PassData', backref = 'Passes')
     """_summary_
     Norad ID integer

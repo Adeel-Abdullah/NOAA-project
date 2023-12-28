@@ -214,6 +214,46 @@ def stop_audioRecording(SatelliteName):
     response = requests.request("PATCH", url, headers=headers, data=payload)
     return response.text
 
+def start_SpectrumBroadcast():
+    url = "http://127.0.0.1:8091/sdrangel/deviceset/0/spectrum/server"
+    payload = {}
+    headers = {}
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    return response.text
+
+
+def stop_SpectrumBroadcast():
+    url = "http://127.0.0.1:8091/sdrangel/deviceset/0/spectrum/server"
+
+    payload = {}
+    headers = {}
+
+    response = requests.request("DELETE", url, headers=headers, data=payload)
+
+    return response.text
+
+def enable_lowSampleRate():
+    url = "http://127.0.0.1:8091/sdrangel/deviceset/0/device/settings"
+
+    payload = "{\r\n    \"deviceHwType\": \"RTLSDR\",\r\n    \"direction\": 0,\r\n    \"rtlSdrSettings\": {\r\n        \"lowSampleRate\": 1\r\n    }\r\n}\r\n"
+    headers = {
+    'Content-Type': 'text/plain'
+    }
+    print("enabling low sample rate")
+    response = requests.request("PATCH", url, headers=headers, data=payload)
+    return response.text
+
+def disable_lowSampleRate():
+    url = "http://127.0.0.1:8091/sdrangel/deviceset/0/device/settings"
+
+    payload = "{\r\n    \"deviceHwType\": \"RTLSDR\",\r\n    \"direction\": 0,\r\n    \"rtlSdrSettings\": {\r\n        \"lowSampleRate\": 0\r\n    }\r\n}"
+    headers = {
+    'Content-Type': 'text/plain'
+    }
+
+    response = requests.request("PATCH", url, headers=headers, data=payload)
+    return response.text
 
 
 
