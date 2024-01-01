@@ -110,11 +110,12 @@ def get_sdrangel_passes():
     response = requests.request("GET", url, headers=headers, data=payload)
     return(response.json())
 
-def get_satellite_passes(satelliteName, location):
+def get_satellite_passes(satelliteName, location, altitude= 0):
     file_path = "./json/satellitetracker_target.json"
     with open(file_path, 'r') as openfile:
         json_object = json.load(openfile)
     json_object['SatelliteTrackerSettings']['target'] = satelliteName
+    json_object['SatelliteTrackerSettings']['heightAboveSeaLevel'] = altitude
     json_object['SatelliteTrackerSettings']['latitude'] = location['latitude']
     json_object['SatelliteTrackerSettings']['longitude'] = location['longitude']
     print(location)

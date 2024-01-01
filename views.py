@@ -7,7 +7,7 @@ from scheduled_functions import AOS_macro, LOS_macro
 from datetime import datetime, timedelta
 from sqlalchemy import and_
 from jinja2  import TemplateNotFound
-import io
+from forms import SettingsForm
 
 per_page = 10
 
@@ -38,9 +38,34 @@ def pages_dashboard():
 def pages_tables_bootstrap_tables():
   return render_template('pages/tables/bootstrap-tables.html', segment='bootstrap_tables', parent='tables')
 
-@app.route('/pages/settings/')
+@app.route('/pages/settings/', methods=['GET', 'POST'])
+@app.route('/settings.html', methods=['GET', 'POST'])
 def pages_settings():
-  return render_template('pages/settings.html', segment='settings', parent='pages')
+    form = SettingsForm()
+    toggle1 = cache.get("user-notification-1")
+    toggle2 = cache.get("user-notification-2")
+    # if form.validate_on_submit():
+    #     data = {k: v for k, v in form.data.items() if v is not None}
+    #     print(data)
+    #     for key, value in data.items():
+    #         cache.set(key, value)
+    #     return jsonify(success=True)
+    # else:
+    #     return render_template('pages/errors.html')
+    return render_template('pages/settings.html', segment='settings', parent='pages', form= form, S1= toggle1, S2 = toggle2)
+
+@app.route('/updateSettings', methods=['POST'])
+def updateSettings():
+    form = SettingsForm()
+    if form.validate_on_submit():
+        data = {k: v for k, v in form.data.items() if v is not None}
+        print(data)
+        for key, value in data.items():
+            cache.set(key, value)
+        return render_template('pages/errors.html', form=form), 200
+    else:
+        return render_template('pages/errors.html', form=form), 400
+
 
 @app.route('/schedule.html', methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/schedule.html/<int:page>", methods=['GET', 'POST'])
@@ -142,6 +167,15 @@ def CountdownTimer():
     data = [d.asDict() for d in data]    
     
     return jsonify(data)
+
+@app.route("/notificationStatus", methods=['POST'])
+def updateNotificationStatus():
+    data = request.json
+    # print(data)
+    # print(data['value'])
+    cache.set(data['id'], data['value'])
+    print(f"{data['id']} is now {data['value']}!")
+    return jsonify(success=True)
 
 
 @app.route("/statusRTL")

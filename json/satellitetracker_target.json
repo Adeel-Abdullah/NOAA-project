@@ -69,7 +69,7 @@
         "drawOnMap": 1,
         "elevationOffset": 0,
         "groundTrackPoints": 100,
-        "heightAboveSeaLevel": 0,
+        "heightAboveSeaLevel": {},
         "latitude": {},
         "longitude": {},
         "losSpeech": "${name} is no longer visible.",

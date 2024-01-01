@@ -69,7 +69,11 @@ def updateDB():
             print(sat_name)
             location = cache.get("location")
             print(f'location is {location}')
-            passes = get_satellite_passes(sat_name, location)
+            alt = cache.get("altitude")
+            if alt:
+                passes = get_satellite_passes(sat_name, location, alt)
+            else:
+                passes = get_satellite_passes(sat_name, location)
             for p in passes:
                 p['aos'] = toDateTime(p['aos'])
                 p['los'] = toDateTime(p['los'])
@@ -101,7 +105,8 @@ def updateDB():
 # %% update satellite tle
 
 def get_tle(NORAD_ID):
-    url = "https://celestrak.org/NORAD/elements/gp.php?CATNR={}".format(str(NORAD_ID).strip())
+    # url = f"https://celestrak.org/NORAD/elements/gp.php?CATNR={str(NORAD_ID).strip()}"
+    url = cache.get("TLESource").format(NORAD_ID)
     payload = {}
     headers = {}
     try:        
@@ -232,9 +237,18 @@ def LOS_macro(pk):
         with scheduler.app.app_context():
             p = db.get_or_404(PassData, pk)
             SatelliteName = p.SatetlliteName
-        dpath = "D:/NOAA-wav/"
-        Impath = "C:/Users/DELL/Documents/NOAA-Images/"
-        
+        path = cache.get("AudioDirectory")
+        if path:
+            dpath = path
+        else:
+            dpath = "D:/NOAA-wav/"
+
+        path = cache.get("ImageDirectory")
+        if path:
+            Impath = path
+        else:
+            Impath = "C:/Users/DELL/Documents/NOAA-Images/"
+                
         stop_audioRecording(SatelliteName)
         stop_rotator()
         stop_SpectrumBroadcast()
