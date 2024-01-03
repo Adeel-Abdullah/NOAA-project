@@ -2,7 +2,9 @@ from flask import render_template, jsonify, request, send_file, send_from_direct
 from models import Satellite, PassData, Reports
 from app import app
 from app import db, scheduler, cache
+from app import db, scheduler, cache
 from sdrangel_requests import *
+from scheduled_functions import AOS_macro, LOS_macro
 from scheduled_functions import AOS_macro, LOS_macro
 from datetime import datetime, timedelta
 from sqlalchemy import and_

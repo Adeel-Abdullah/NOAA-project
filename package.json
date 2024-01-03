@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "ink": "^4.3.0",
+    "react": "^18.2.0",
+    "timelines-chart": "^2.12.1"
+  }
+}

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antenna Control Dashboard</title>
+    <link type="text/css" href="{{ url_for('static', filename='assets/css/volt.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background-color: rgb(31, 41, 55);
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: rgb(31, 41, 55);
+        }
+
+        h6 {
+            color: rgb(31, 41, 55);
+        }
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            border: 2px solid rgb(0, 80, 102);
+            border-radius: 15px;
+            background-color: rgb(242, 244, 246);
+            box-shadow: 0 0 20px rgba(228, 239, 240, 0.5);
+        }
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .left-group, .right-group {
+            flex: 1;
+        }
+        label {
+            font-weight: bold;
+            color: rgb(0, 36, 57);
+        }
+        .control-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgb(0, 80, 102);
+            border-radius: 5px;
+            background-color: rgb(120, 204, 226);
+            color: rgb(0, 36, 57);
+        }
+        .control-button {
+            background-color: rgb(78, 121, 136);
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+        .display {
+            font-size: 24px;
+            color: rgb(0, 36, 57);
+            margin-top: 10px;
+        }
+        .display-label {
+            font-size: 24px;
+            color: rgb(0, 36, 57);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Antenna Control Unit</h1>
+        <form id="acu-form">
+            <div class="control-group">
+                <div class="left-group">
+                    <h6 class="mt-4" for="azimuth">Azimuth (degrees)</h6>
+                    <input type="number" id="azimuth" placeholder="Enter azimuth angle" min="0" max="360">
+                    <h6 class="mt-4" for="commanded-azimuth" >Command Azimuth</h6>
+                    <span id="commanded-azimuth" class="display">N/A</span>
+                    <h6 class="mt-4" for="current-azimuth" >Current Azimuth</h6>
+                    <span id="current-azimuth" class="display">N/A</span>
+                </div>
+                <div class="right-group">
+                    <h6 class="mt-4" for="elevation">Elevation (degrees)</h6>
+                    <input type="number" id="elevation" placeholder="Enter elevation angle" min="0" max="90">
+                    <h6 class="mt-4" for="commanded-elevation" >Command Elevation</h6>
+                    <span id="commanded-elevation" class="display">N/A</span>
+                    <h6 class="mt-4" for="current-elevation" >Current Elevation</h6>
+                    <span id="current-elevation" class="display">N/A</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <button type="button" id="move-button" class="control-button">Move Antenna</button>
+            </div>
+        </form>
+        <div class="row mt-4">
+            <div class="col">
+                
+              </div>
+              <div class="col">
+                
+              </div>
+              <div class="col">
+                
+              </div>
+              <div class="col">
+                
+              </div>
+        <div class="col">
+            
+            <div class="d-flex align-items-center">
+                <div class="bg-danger dot rounded-circle me-1"></div>
+                <small>Offline</small>
+            </div>
+        </div>
+        
+    </div>
+    </div>
+
+    <script>
+        // JavaScript code to handle ACU functionality goes here
+        var currentAzimuth = 0;
+        var currentElevation = 0;
+        var commandedAzimuth = 0;
+        var commandedElevation = 0;
+        var animationInterval;
+
+        document.getElementById("move-button").addEventListener("click", function() {
+            // Get the values of commanded azimuth and elevation angles from the input fields
+            commandedAzimuth = parseInt(document.getElementById("azimuth").value);
+            commandedElevation = parseInt(document.getElementById("elevation").value);
+
+            // Ensure values are within the specified range
+            commandedAzimuth = Math.min(360, Math.max(0, commandedAzimuth));
+            commandedElevation = Math.min(90, Math.max(0, commandedElevation));
+
+
+            // Update the commanded values for display
+            document.getElementById("commanded-azimuth").textContent = commandedAzimuth;
+            document.getElementById("commanded-elevation").textContent = commandedElevation;
+
+            // Start the animation to simulate the antenna movement
+            clearInterval(animationInterval);
+            animationInterval = setInterval(function() {
+                if (currentAzimuth < commandedAzimuth) {
+                    currentAzimuth++;
+                } else if (currentAzimuth > commandedAzimuth) {
+                    currentAzimuth--;
+                }
+
+                if (currentElevation < commandedElevation) {
+                    currentElevation++;
+                } else if (currentElevation > commandedElevation) {
+                    currentElevation--;
+                }
+
+                // Update the current values for display
+                document.getElementById("current-azimuth").textContent = currentAzimuth;
+                document.getElementById("current-elevation").textContent = currentElevation;
+
+                // If the antenna has reached the commanded position, stop the animation
+                if (currentAzimuth === commandedAzimuth && currentElevation === commandedElevation) {
+                    clearInterval(animationInterval);
+                }
+            }, 50); // Adjust the interval for smoother/faster animation
+        });
+    </script>
+</body>
+</html>

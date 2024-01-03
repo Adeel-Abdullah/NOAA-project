@@ -5,6 +5,11 @@ import time
 import psutil
 
 
+KHI_location={
+    'latitude':24.958952,
+    'longitude': 67.222534
+    }
+
 sdrangel_path = "C:\Program Files\SDRangel\sdrangel.exe"
 
 

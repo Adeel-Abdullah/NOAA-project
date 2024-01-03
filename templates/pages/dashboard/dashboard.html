@@ -12,6 +12,11 @@
 .axis-label-elevation {
         writing-mode: vertical-lr;
       }
+#defaultCountdown { display: inline-block; background: rgba(0, 0, 0, 0); border-color: rgba(0, 0, 0, 0)}
+
+.axis-label-elevation {
+        writing-mode: vertical-lr;
+      }
 
 .highlight {
     color: #b00;
@@ -47,6 +52,14 @@
       text-anchor: middle;
       fill: black;
     }
+    /* .satlabel {
+      font-size: 10px;
+      fill: grey;
+      padding-left: 5px;
+      text-anchor: start;
+      font-family: sans-serif;
+
+    } */
     /* .satlabel {
       font-size: 10px;
       fill: grey;
@@ -111,6 +124,12 @@
   25% {transform: rotate(180deg);}
 }
 
+.night {
+      stroke: steelblue;
+      fill: steelblue;
+      fill-opacity: .3;
+      stroke-opacity: .3;
+    }
 </style>
 
 {% endblock stylesheets %}
@@ -635,58 +654,15 @@ $.ajax({type: "GET",
       .attr("font-size", "10px")
       .text("Time (AOS) →");
 
-      //Create horizontal lines
-    // svgchart.selectAll(".myline")
-    //   .data(newPasses)
-    //   .enter()
-    //   .append("line")
-    //   .attr("x1", d => xScale(d.AOS))
-    //   .attr("x2", d => xScale(new Date().setDate(now.getDate()+6)))
-    //   .attr("y1", d => yScale(d.maxElevation))
-    //   .attr("y2", d => yScale(d.maxElevation))
-    //   .attr("stroke", "grey")
-    //   .style("stroke-width", 0.5)
-    //   .style("stroke-dasharray", ("3, 3"));
-
-
-      // create dots
-    // svgchart.selectAll(".circle")
-    //   .data(newPasses)
-    //   .enter().append("path")
-    //   .attr("class", "circle")
-    //   .attr("d", d3.symbol().type(d3.symbolCircle).size(96)) // Use d3.symbolStar
-    //   .attr("transform", d => `translate(${xScale(d.AOS)}, ${yScale(d.maxElevation)})`)
-    //   .attr("fill", d => {
-    //     // console.log(d.SatetlliteName);
-    //     let clr = '#e00';
-    //     switch(d.SatetlliteName) {
-    //       case "NOAA 15":
-    //         clr = sat_colors['n15'];
-    //         break;
-            
-    //       case "NOAA 18":
-    //         clr = sat_colors['n18'];
-    //         break;
-
-    //       case "NOAA 19":
-    //         clr = sat_colors['n19'];
-    //         break;
-
-    //       default:
-    //           clr = '#0e0';
-    //     }
-    //     return clr;
-    //   });
-
       // Create rectangles
       svgchart.selectAll("rect")
       .data(newPasses)
       .enter().append("rect")
       .attr("x", d => `${xScale(d.AOS)}`)
-      .attr("y", d => `${yScale(d.maxElevation) - 5}`)
+      .attr("y", d => `${yScale(d.maxElevation) - 6}`)
       .attr("id", d => `${'rect'+d.id}`)
-      .attr('width', 50)
-      .attr('height', 10)
+      .attr('width', 60)
+      .attr('height', 12)
       .style("fill", d => {
         // console.log(d.SatetlliteName);
         let clr = '#e00';
@@ -707,8 +683,9 @@ $.ajax({type: "GET",
               clr = '#0e0';
         }
         return clr;
-      });
-      // .style("stroke", "orange");
+      })
+      .style("stroke-width", 0.5)
+      .style("stroke", "black");
 
       // Create satellite names
       svgchart.selectAll(".satlabel")
@@ -716,8 +693,8 @@ $.ajax({type: "GET",
       .enter().append("text")
       .text(d => d.SatetlliteName)
       .attr("x", d => `${xScale(d.AOS) + 2}`)
-      .attr("y", d => `${yScale(d.maxElevation) + 4}`)
-      .style("font-size", "10px")
+      .attr("y", d => `${yScale(d.maxElevation) + 4.5}`)
+      .style("font-size", "12px")
       .style("fill", "white")
       .style("text-anchor", "start")
       .style("font-family", "sans-serif")
@@ -729,18 +706,6 @@ $.ajax({type: "GET",
           // d3.select(this).attr("fill", "none"); // Restore original color
           hideTooltip(); // Hide the tooltip
         });
-      // .transition()
-      // .delay(30000)
-      // .on("start", function repeat(d, i) {
-      //   if ( i==0){
-      //     d3.active(this)
-      //           .style("opacity", 0)
-      //         .transition()
-      //           .style("opacity", 1)
-      //         .transition()
-      //           .on("start", repeat);
-      //   }
-      // });
 
       // now text
       svgchart.append("text")
@@ -914,6 +879,8 @@ $.ajax({type: "GET",
                                   .translate([350, 165]);
 
     let geoGenerator = d3.geoPath().projection(projection);
+    let nightCircle = d3.geoCircle().radius(90);
+    let π = Math.PI, radians = π / 180, degrees = 180 / π;
 
     //console.log("projection " + projection( [112.9389, 28.2278] ));
     d3.json("{{ url_for('static', filename='assets/json/countries-110m.json') }}")
@@ -927,8 +894,18 @@ $.ajax({type: "GET",
               u.enter()
                 .append('path')
                 .attr('d', geoGenerator)
-                .attr("fill", "#1F2937")
-                .attr('stroke', 'white');
+                .attr("fill", function (d){
+                  if (d.properties.name == 'China')
+                    return "#a00"
+                  // console.log(d.properties.name);
+                  return "#1F2937"
+                })
+                .attr('stroke', 'white')
+                .attr('stroke-width', 0.2);
+
+              svgMap.append("path")
+              .attr("class", "night")
+              .attr("d", geoGenerator);
 
                 $.ajax({type: "GET",
                   url: "/location",
@@ -951,14 +928,14 @@ $.ajax({type: "GET",
                   .attr("transform", d => 'translate('+ (beijingProjected[0] - 10) +', '+ (beijingProjected[1] - 20)+')')
 
 
-                // svgMap.append('text')
-                //   .attr("x", beijingProjected[0] - 6)
-                //   .attr("y", beijingProjected[1] - 6)
-                //   .attr("fill", "#e00")
-                //   .attr("text-anchor", "start")
-                //   .attr("font-family", "sans-serif")
-                //   .attr("font-size", "6px")
-                //   .text("You");
+                svgMap.append('text')
+                  .attr("x", beijingProjected[0])
+                  .attr("y", beijingProjected[1] + 6)
+                  .attr("fill", "#36AEBB")
+                  .attr("text-anchor", "start")
+                  .attr("font-family", "sans-serif")
+                  .attr("font-size", "6px")
+                  .text("Penghuan");
                     
                   }
                 
@@ -969,6 +946,7 @@ $.ajax({type: "GET",
 
         // Draw satellite projections
     function project_satellites(){
+      drawDaylightOverlay();  // daylight overlay
       if (satellites.length == 0) return;
         for (const sat of satellites) {
             const date = new Date();
@@ -990,7 +968,7 @@ $.ajax({type: "GET",
         }
     }   
 
-    setInterval(project_satellites, 5000);    
+    setInterval(project_satellites, 5000);
 
     function paintCirclenLabel(sat_projected, id, name){
 
@@ -1052,7 +1030,7 @@ $.ajax({type: "GET",
           projectSatTrack(id, trackId);
     }
 
-    // Draw satellite track on hover
+    // Draw satellite track
     function projectSatTrack(id, trackId){
 
       
@@ -1122,6 +1100,81 @@ $.ajax({type: "GET",
         .attr('stroke', color)
         .attr('d', lineFn);
     }
+
+  /// Daylight overlay code
+
+  function drawDaylightOverlay() {
+    svgMap.select(".night").datum(nightCircle.center(antipode(solarPosition(new Date)))).attr("d", geoGenerator);
+  }
+
+  function antipode(position) {
+    return [position[0] + 180, -position[1]];
+  }
+
+  function solarPosition(time) {
+    var centuries = (time - Date.UTC(2000, 0, 1, 12)) / 864e5 / 36525, // since J2000
+        longitude = (d3.utcDay.floor(time) - time) / 864e5 * 360 - 180;
+    return [
+      longitude - equationOfTime(centuries) * degrees,
+      solarDeclination(centuries) * degrees
+    ];
+  }
+
+  // Equations based on NOAA’s Solar Calculator; all angles in radians.
+  // http://www.esrl.noaa.gov/gmd/grad/solcalc/
+
+  function equationOfTime(centuries) {
+    var e = eccentricityEarthOrbit(centuries),
+        m = solarGeometricMeanAnomaly(centuries),
+        l = solarGeometricMeanLongitude(centuries),
+        y = Math.tan(obliquityCorrection(centuries) / 2);
+    y *= y;
+    return y * Math.sin(2 * l)
+        - 2 * e * Math.sin(m)
+        + 4 * e * y * Math.sin(m) * Math.cos(2 * l)
+        - 0.5 * y * y * Math.sin(4 * l)
+        - 1.25 * e * e * Math.sin(2 * m);
+  }
+
+  function solarDeclination(centuries) {
+    return Math.asin(Math.sin(obliquityCorrection(centuries)) * Math.sin(solarApparentLongitude(centuries)));
+  }
+
+  function solarApparentLongitude(centuries) {
+    return solarTrueLongitude(centuries) - (0.00569 + 0.00478 * Math.sin((125.04 - 1934.136 * centuries) * radians)) * radians;
+  }
+
+  function solarTrueLongitude(centuries) {
+    return solarGeometricMeanLongitude(centuries) + solarEquationOfCenter(centuries);
+  }
+
+  function solarGeometricMeanAnomaly(centuries) {
+    return (357.52911 + centuries * (35999.05029 - 0.0001537 * centuries)) * radians;
+  }
+
+  function solarGeometricMeanLongitude(centuries) {
+    var l = (280.46646 + centuries * (36000.76983 + centuries * 0.0003032)) % 360;
+    return (l < 0 ? l + 360 : l) / 180 * π;
+  }
+
+  function solarEquationOfCenter(centuries) {
+    var m = solarGeometricMeanAnomaly(centuries);
+    return (Math.sin(m) * (1.914602 - centuries * (0.004817 + 0.000014 * centuries))
+        + Math.sin(m + m) * (0.019993 - 0.000101 * centuries)
+        + Math.sin(m + m + m) * 0.000289) * radians;
+  }
+
+  function obliquityCorrection(centuries) {
+    return meanObliquityOfEcliptic(centuries) + 0.00256 * Math.cos((125.04 - 1934.136 * centuries) * radians) * radians;
+  }
+
+  function meanObliquityOfEcliptic(centuries) {
+    return (23 + (26 + (21.448 - centuries * (46.8150 + centuries * (0.00059 - centuries * 0.001813))) / 60) / 60) * radians;
+  }
+
+  function eccentricityEarthOrbit(centuries) {
+    return 0.016708634 - centuries * (0.000042037 + 0.0000001267 * centuries);
+  }
 
     ////////////////////////////////////
 
