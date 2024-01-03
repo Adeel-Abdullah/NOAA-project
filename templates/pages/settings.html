@@ -9,6 +9,8 @@
         
     <div class="row">
         
+        
+        
         <div >
             <h2 class="h5 mb-4">General Settings</h2>
             <div class="card card-body border-0 shadow mb-4">
@@ -23,6 +25,9 @@
                                 {{form.GStationName(class_="form-control")}}
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
                     </div>
                     <div class="row">
                         <div class="col-md-3 mb-3">
@@ -43,10 +48,6 @@
                         </div>
                     </div>
                     <div class="row align-items-center">
-                             <div class="col-md-12 mb-3">
-                                <label for="timezone">{{form.Timezone.label}}</label>
-                                {{form.Timezone(class_="form-control")}}
-                            </div>
                         
                             <div class="col-md-12 mb-3">
                                 <label for="timezone">{{form.Timezone.label}}</label>
@@ -56,7 +57,7 @@
                                 <label for="tlesource">{{form.TLESource.label}}</label>
                                 {{form.TLESource(class_="form-control")}}
                             </div>
-                        </div>
+                    </div>
                         <div class="row">
                         <div class="col-md-3 mb-3">
                             <div>
@@ -81,8 +82,10 @@
                     </div>
                 </form>
             </div>
+            
             <h2 class="h5 mb-4">Alerts & Notifications</h2>
             <div class="card card-body border-0 shadow mb-4 mb-xl-0">
+                
                 
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex align-items-center justify-content-between px-0 border-bottom">
@@ -118,9 +121,10 @@
                         </div>
                     </li>
                     
+                    
                 </ul>
             </div>
-        </div>
+        
         
     </div>
 
