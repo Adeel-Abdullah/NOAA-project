@@ -248,9 +248,14 @@ def get_loc():
             'longitude': request.args.get('longitude')
         }
         cache.set("location", location)
-        return jsonify(cache.get("location"))
+        resp = {"latitude":location['latitude'], "longitude":location['longitude'],
+                "GStationName":cache.get("GStationName")}
+        return jsonify(resp)
     else:
-        return jsonify(cache.get("location"))
+        resp = {"latitude":cache.get("location")['latitude'], "longitude":cache.get("location")['longitude'],
+                "GStationName":cache.get("GStationName")}
+        return jsonify(resp)
+        # return jsonify(cache.get("location"), {"GStationName": cache.get("GStationName")})
 
 
 @app.route('/setminEL/<int:minEL>')
