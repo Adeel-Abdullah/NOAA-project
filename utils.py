@@ -10,8 +10,6 @@ from datetime import datetime, timedelta
 from sqlalchemy import and_, func
 # from tzlocal import get_localzone
 from app import app
-from extensions import db, scheduler
-from models import PassData, Satellite, Reports
 from extensions import db, scheduler, cache
 from models import PassData, Satellite, Reports
 from intervaltree import Interval, IntervalTree
@@ -165,9 +163,9 @@ def getmfile(search_dir, pk):
     return files[0]
 
 
-# Impath = 'C:/Users/Abdullah/Desktop/NOAA-Images/'
-# dpath = 'C:/Users/Abdullah/Desktop/NOAA-wav/'
-# Impath = "C:/Users/DELL/Documents/NOAA-Images/"
+Impath = 'C:/Users/Abdullah/Desktop/NOAA-Images/'
+dpath = 'C:/Users/Abdullah/Desktop/NOAA-wav/'
+Impath = "C:/Users/DELL/Documents/NOAA-Images/"
 
 # I = getmfile(Impath, 441)
 # d = getmfile(dpath, 441)
@@ -201,12 +199,14 @@ def create_report(dpath, Impath, pk):
             pstatus = True
         else:
             pstatus = False
-        
+        a = Satellite.query.filter_by(Name=p.SatetlliteName).first()
         r = Reports(id = p.id,
                     size = dfsize,
                     status = pstatus,
                     dataPath = dfile,
-                    imagePath = Imfilepath)
+                    imagePath = Imfilepath,
+                    TLELine1 = a.TLERow1,
+                    TLELine2 = a.TLERow2)
         db.session.add(r)
         try:
             db.session.commit()
@@ -217,16 +217,16 @@ def create_report(dpath, Impath, pk):
 
 
 #%%
-# utils.create_report(dpath,Impath,491)
-with app.app_context():
-    r = db.get_or_404(Reports,491)
-    r.imagePath = "C:/Users/DELL/Documents/NOAA-Images/apt_NOAA_19_20231003_0135.png"
-    r.status = True
-    db.session.commit()
+create_report(dpath,Impath,491)
+# with app.app_context():
+#     r = db.get_or_404(Reports,491)
+#     r.imagePath = "C:/Users/DELL/Documents/NOAA-Images/apt_NOAA_19_20231003_0135.png"
+#     r.status = True
+#     db.session.commit()
     
-with app.app_context():
-    r = db.get_or_404(Reports,491)
-    print(r)
+# with app.app_context():
+#     r = db.get_or_404(Reports,491)
+#     print(r)
     
 #%%
 
@@ -303,7 +303,16 @@ def updateDB():
             else:
                 storePassData(interval, True)
 
-updateDB()
+# updateDB()
+#%%
+
+def run_httpServer():
+    import subprocess
+    # server_path = "C:\Users\DELL\Documents\sdrangelspectrum\sdrangelspectrum\dist\sdrangelspectrum"
+    p = subprocess.Popen([http-server], cwd=server_path)
+    p.wait()
+
+
 #%%
 
 # from datetime import datetime
@@ -328,5 +337,21 @@ updateDB()
 
 # create_report(507)
 # %% get two line element
+import requests
+def get_tle(NORAD_ID):
+    # url = f"https://celestrak.org/NORAD/elements/gp.php?CATNR={str(NORAD_ID).strip()}"
+    url = cache.get("TLESource").format(str(NORAD_ID).strip())
+    payload = {}
+    headers = {}
+    try:        
+        response = requests.request("GET", url, headers=headers, data=payload)
+        response.raise_for_status()
+        a = response.text
+        a = [i.strip() for i in a.split("\r\n",2)]
+        with open(a[0]+'.txt', 'w') as f:
+            f.writelines(response.text)
+        return a
+    except Exception as e:
+        raise e
 
 # a = get_tle(25338)

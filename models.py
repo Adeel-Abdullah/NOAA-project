@@ -53,6 +53,8 @@ class Reports(db.Model):
     status = db.Column(db.Boolean, default=False)
     dataPath = db.Column(db.String(80))
     imagePath = db.Column(db.String(80))
+    TLELine1 = db.Column(db.String(70))
+    TLELine2 = db.Column(db.String(70))
 
     def __repr__(self):
         return f'{self.PassData.SatetlliteName} {self.PassData.AOS.strftime("%d-%m-%y %H:%M:%S")} {self.status}'

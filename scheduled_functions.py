@@ -106,7 +106,7 @@ def updateDB():
 
 def get_tle(NORAD_ID):
     # url = f"https://celestrak.org/NORAD/elements/gp.php?CATNR={str(NORAD_ID).strip()}"
-    url = cache.get("TLESource").format(NORAD_ID)
+    url = cache.get("TLESource").format(int(str(NORAD_ID).strip()))
     payload = {}
     headers = {}
     try:        
@@ -114,6 +114,8 @@ def get_tle(NORAD_ID):
         response.raise_for_status()
         a = response.text
         a = [i.strip() for i in a.split("\r\n",2)]
+        with open(a[0]+'.txt', 'w') as f:
+            f.writelines(response.text)
         return a
     except Exception as e:
         raise e
@@ -187,11 +189,14 @@ def create_report(dpath, Impath, pk):
         else:
             pstatus = False
         
+        a = Satellite.query.filter_by(Name=p.SatetlliteName).first()
         r = Reports(id = p.id,
                     size = dfsize,
                     status = pstatus,
                     dataPath = dfile,
-                    imagePath = Imfilepath)
+                    imagePath = Imfilepath,
+                    TLELine1 = a.TLERow1,
+                    TLELine2 = a.TLERow2)
         db.session.add(r)
         try:
             db.session.commit()

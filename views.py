@@ -46,14 +46,6 @@ def pages_settings():
     form = SettingsForm()
     toggle1 = cache.get("user-notification-1")
     toggle2 = cache.get("user-notification-2")
-    # if form.validate_on_submit():
-    #     data = {k: v for k, v in form.data.items() if v is not None}
-    #     print(data)
-    #     for key, value in data.items():
-    #         cache.set(key, value)
-    #     return jsonify(success=True)
-    # else:
-    #     return render_template('pages/errors.html')
     return render_template('pages/settings.html', segment='settings', parent='pages', form= form, S1= toggle1, S2 = toggle2)
 
 @app.route('/updateSettings', methods=['POST'])
