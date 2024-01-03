@@ -5,7 +5,6 @@ from app import db, scheduler, cache
 from app import db, scheduler, cache
 from sdrangel_requests import *
 from scheduled_functions import AOS_macro, LOS_macro
-from scheduled_functions import AOS_macro, LOS_macro
 from datetime import datetime, timedelta
 from sqlalchemy import and_
 from jinja2  import TemplateNotFound

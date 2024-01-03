@@ -129,7 +129,6 @@
     </li>
     <li role="separator" class="dropdown-divider mt-4 mb-3 border-gray-700"></li>
     
-    <li class="nav-item" id="acu">
     <li class="nav-item" id="spectrum">
       <a class="nav-link">  
        <span class="sidebar-icon">
@@ -141,7 +140,7 @@
       </a>
     </li> 
   <li class="nav-item" id="acu">
-    <a href="" class="nav-link">  
+    <a class="nav-link" >  
     <span class="sidebar-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dpad text-secondary me-2" viewBox="0 0 16 16">
         <path d="m7.788 2.34-.799 1.278A.25.25 0 0 0 7.201 4h1.598a.25.25 0 0 0 .212-.382l-.799-1.279a.25.25 0 0 0-.424 0Zm0 11.32-.799-1.277A.25.25 0 0 1 7.201 12h1.598a.25.25 0 0 1 .212.383l-.799 1.278a.25.25 0 0 1-.424 0ZM3.617 9.01 2.34 8.213a.25.25 0 0 1 0-.424l1.278-.799A.25.25 0 0 1 4 7.201V8.8a.25.25 0 0 1-.383.212Zm10.043-.798-1.277.799A.25.25 0 0 1 12 8.799V7.2a.25.25 0 0 1 .383-.212l1.278.799a.25.25 0 0 1 0 .424Z"/>
@@ -151,7 +150,7 @@
     <span class="sidebar-text">ACU</span>
     </a>
   </li> 
-    <li class="nav-item" id="acu">
+    <li class="nav-item">
          <a href="" class="nav-link">  <!-- {#{{ url_for('authentication_blueprint.logout') }} #} -->
           <span class="sidebar-icon">
               <svg class="icon icon-xs text-danger me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -168,16 +167,17 @@
 
 {% block javascripts %}
 <script>
-  document.getElementById("spectrum").onclick = function launchSpectrum(){
+  document.getElementById("spectrum").onclick = function launchSpectrum(e){
     // Command `cd C:\Users\DELL\Documents\sdrangelspectrum\sdrangelspectrum\dist\sdrangelspectrum`
     // Command `http-server`
     newWindow = window.open('spectrum.html','spectrum_dashboard','height=960px,width=940px');
   }
 
-  document.getElementById("acu").onclick = function launchSpectrum(){
+  document.getElementById("acu").onclick = function launchACU(e){
     // Command `launch sdrangel`
     // Command `toggle open rotor control`
-    newWindow = window.open('acu.html','acu_dashboard','height=960px,width=940px');
+   newWindow = window.open('acu.html','acu_dashboard','height=960px,width=940px');
   }
+
 </script>
 {% endblock javascripts %}  

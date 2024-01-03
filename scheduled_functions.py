@@ -53,7 +53,7 @@ def storePassData(interval, Receive = True):
 def toDateTime(time):
     return datetime.strptime(time,'%Y-%m-%dT%H:%M:%S.%f%z').astimezone()
 
-@scheduler.task(trigger='cron', id='updateDB', minute='4')
+@scheduler.task(trigger='cron', id='updateDB', hour='1,13')
 def updateDB():
     if get_instance()['status'] == 'OK':
         pass
