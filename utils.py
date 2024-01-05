@@ -217,7 +217,7 @@ def create_report(dpath, Impath, pk):
 
 
 #%%
-create_report(dpath,Impath,491)
+# create_report(dpath,Impath,491)
 # with app.app_context():
 #     r = db.get_or_404(Reports,491)
 #     r.imagePath = "C:/Users/DELL/Documents/NOAA-Images/apt_NOAA_19_20231003_0135.png"
@@ -355,3 +355,22 @@ def get_tle(NORAD_ID):
         raise e
 
 # a = get_tle(25338)
+#%%
+
+# subprocess.Popen(sdrangel_path)
+# time.sleep(30)
+
+def launch_apps_to_virtual_desktops(desktops=2):
+    import ctypes, time, shlex, subprocess
+    sdrangel_path = "C:\Program Files\SDRangel\sdrangel.exe"
+    virtual_desktop_accessor = ctypes.WinDLL("C:/Users/Abdullah/Desktop/NOAA/VirtualDesktopAccessor.dll")
+    virtual_desktop_accessor.GoToDesktopNumber(1)
+    time.sleep(0.25) # Wait for the desktop to switch
+    subprocess.Popen(sdrangel_path)
+    time.sleep(15) # Wait for the desktop to switch
+    virtual_desktop_accessor.GoToDesktopNumber(0) # Go back to the 1st desktop
+    # time.sleep(0.25) # Wait for the desktop to switch
+    time.sleep(30) # Wait for apps to open their windows
+    
+
+launch_apps_to_virtual_desktops()

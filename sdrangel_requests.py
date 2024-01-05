@@ -98,6 +98,28 @@ def stop_rotator():
     response = requests.request("DELETE", url, headers=headers, data=payload)
     return(response.json())
 
+def get_rotatorAngle():
+    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/1/report"
+    payload = {}
+    headers = {}
+    response = requests.request("GET", url, headers=headers, data=payload)
+    return(response.json())
+
+def set_rotatorAngle(Azimuth = 0, Elevation = 0 ):
+    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/1/settings"
+    payload = json.dumps({
+    "featureType": "GS232Controller",
+    "GS232ControllerSettings": {
+        "azimuth": Azimuth,
+        "elevation": Elevation
+    }
+    })
+    headers = {
+    'Content-Type': 'application/json'
+    }
+    response = requests.request("PATCH", url, headers=headers, data=payload)
+    return(response.json())
+
 
 def get_satellitetracker_settings():
     url = "http://127.0.0.1:8091/sdrangel/featureset/feature/0/settings"
