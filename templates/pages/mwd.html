@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<style type="text/css">
+    #float {
+    position: relative;
+    -webkit-animation: floatBubble 1 25s normal ease-out;
+    animation: floatBubble 1 25s normal ease-out;
+}
+@-webkit-keyframes floatBubble {
+    0% {
+        bottom:-1000px;
+    }
+    100% {
+        bottom: 0px;
+    }
+}
+@keyframes floatBubble {
+    0% {
+        bottom:-1000px;
+    }
+    100% {
+        bottom: 0px;
+    }
+}
+#moving-image {  width: 100%;  height: auto; } 
+
+</style>
+<body>
+    <div id="float"></div>
+</body>
+<script type="text/javascript">
+
+    function scrollToBottom(timedelay=0) {
+        var scrollId;
+        var height = 0;
+        var minScrollHeight = 1;
+        scrollId = setInterval(function () {
+            if (height <= document.body.scrollHeight) {
+                window.scrollBy(0, minScrollHeight);
+            }
+            else {
+                clearInterval(scrollId);
+            }
+            height += minScrollHeight;
+        }, timedelay);           
+    }
+
+    let imageDiv = document.getElementById('float');
+    imageDiv.addEventListener('animationend', (ev) => {
+        // console.log("animation end", ev);
+        // window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+        scrollToBottom();
+    });
+
+    const queryString = window.location.search;
+    console.log(queryString);
+    const urlParams = new URLSearchParams(queryString);
+    const passid = urlParams.get('passid');
+
+    elem = document.createElement("img");
+    elem.setAttribute("src", "http://127.0.0.1:5000/fetchImage/"+passid);
+    elem.setAttribute("height", "100");
+    elem.setAttribute("width", "100");
+    elem.setAttribute("alt", "~");
+    document.getElementById("float").appendChild(elem);
+
+</script>
+</html>
