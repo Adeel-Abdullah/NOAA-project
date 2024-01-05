@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Antenna Control Dashboard</title>
     <link type="text/css" href="{{ url_for('static', filename='assets/css/volt.css') }}" rel="stylesheet">
+    {% include 'includes/scripts.html' %}
     <style>
         body {
             background-color: rgb(31, 41, 55);
@@ -139,37 +140,52 @@
 
             // Ensure values are within the specified range
             commandedAzimuth = Math.min(360, Math.max(0, commandedAzimuth));
-            commandedElevation = Math.min(90, Math.max(0, commandedElevation));
-
+            commandedElevation = Math.min(180, Math.max(0, commandedElevation));
 
             // Update the commanded values for display
             document.getElementById("commanded-azimuth").textContent = commandedAzimuth;
             document.getElementById("commanded-elevation").textContent = commandedElevation;
 
-            // Start the animation to simulate the antenna movement
+            // send azimuth and elevation command
+            var settings = {
+                "url": "http://127.0.0.1:8091/sdrangel/featureset/feature/1/settings",
+                "method": "PATCH",
+                "timeout": 0,
+                "headers": {
+                  "Content-Type": "application/json"
+                },
+                "data": JSON.stringify({
+                  "featureType": "GS232Controller",
+                  "GS232ControllerSettings": {
+                    "azimuth": commandedAzimuth,
+                    "elevation": commandedElevation
+                  }
+                }),
+              };
+              
+              $.ajax(settings).done(function (response) {
+                console.log(response);
+              });
+
+                       
+            //Start the antenna movement
             clearInterval(animationInterval);
             animationInterval = setInterval(function() {
-                if (currentAzimuth < commandedAzimuth) {
-                    currentAzimuth++;
-                } else if (currentAzimuth > commandedAzimuth) {
-                    currentAzimuth--;
-                }
+                var settings = {
+                    "url": "http://127.0.0.1:8091/sdrangel/featureset/feature/1/report",
+                    "method": "GET",
+                    "timeout": 0,
+                  };
+                  
+                  $.ajax(settings).done(function (response) {
+                    currentAzimuth = response["GS232ControllerReport"]["currentAzimuth"]
+                    currentElevation = response["GS232ControllerReport"]["currentElevation"]
 
-                if (currentElevation < commandedElevation) {
-                    currentElevation++;
-                } else if (currentElevation > commandedElevation) {
-                    currentElevation--;
-                }
-
-                // Update the current values for display
-                document.getElementById("current-azimuth").textContent = currentAzimuth;
-                document.getElementById("current-elevation").textContent = currentElevation;
-
-                // If the antenna has reached the commanded position, stop the animation
-                if (currentAzimuth === commandedAzimuth && currentElevation === commandedElevation) {
-                    clearInterval(animationInterval);
-                }
-            }, 50); // Adjust the interval for smoother/faster animation
+                    // Update the current values for display
+                    document.getElementById("current-azimuth").textContent = currentAzimuth;
+                    document.getElementById("current-elevation").textContent = currentElevation;
+                  });
+            }, 500);
         });
     </script>
 </body>
