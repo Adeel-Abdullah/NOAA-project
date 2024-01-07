@@ -14,7 +14,7 @@
         <div >
             <h2 class="h5 mb-4">General Settings</h2>
             <div class="card card-body border-0 shadow mb-4">
-                <form action="/updateSettings"   method="post">
+                <form method="post">
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             {{ form.csrf_token }}
@@ -199,13 +199,13 @@ $("#Save-all").on('click', function(e){
   });
 });
 
-let swalWithBootstrapButtons = Swal.mixin({
-    customClass: {
-        confirmButton: 'btn btn-primary',
-        cancelButton: 'btn btn-gray'
-    },
-    buttonsStyling: false
-  });
+//let swalWithBootstrapButtons = Swal.mixin({
+//    customClass: {
+//        confirmButton: 'btn btn-primary',
+//        cancelButton: 'btn btn-gray'
+//    },
+//    buttonsStyling: false
+//  });
   
 
 </script>

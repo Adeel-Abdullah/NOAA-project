@@ -1,7 +1,6 @@
-from flask import render_template, jsonify, request, send_file, send_from_directory
+from flask import render_template, jsonify, request, send_file
 from models import Satellite, PassData, Reports
 from app import app
-from app import db, scheduler, cache
 from app import db, scheduler, cache
 from sdrangel_requests import *
 from scheduled_functions import AOS_macro, LOS_macro
@@ -183,8 +182,18 @@ def SDRstatus():
     if SDRstatus['pid']:
         cache.set('pid', SDRstatus['pid'])
     SDRstatus = SDRstatus['status']
-    
     return jsonify(SDRstatus=SDRstatus)
+
+@app.route("/statusROT")
+def ROTstatus():
+    try:
+        if cache.get('pid'):
+            resp = get_rotatorStatus()
+            return jsonify(resp)
+        else:
+            return jsonify(state = "busy")
+    except Exception as e:
+        return jsonify(state = "unavailable")
 
 def schedulePass(pk):
     Onemin = timedelta(seconds=60)

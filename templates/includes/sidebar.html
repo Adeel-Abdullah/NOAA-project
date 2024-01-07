@@ -173,11 +173,25 @@
     newWindow = window.open('spectrum.html','spectrum_dashboard','height=960px,width=940px');
   }
 
+
   document.getElementById("acu").onclick = function launchACU(e){
     // Command `launch sdrangel`
     // Command `toggle open rotor control`
-   newWindow = window.open('acu.html','acu_dashboard','height=960px,width=940px');
-  }
+    let smallstatus = document.body.querySelectorAll("#status2 > small");
+    if (smallstatus[0].textContent == "Online"){
+      newWindow = window.open('acu.html','acu_dashboard','height=960px,width=940px');
+    }
+    else{
+      swalWithBootstrapButtons.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'SDR Server is Unavailable!',
+        showConfirmButton: true,
+        timer: 2000
+    });
+    
+    }
+  } 
 
 </script>
 {% endblock javascripts %}  

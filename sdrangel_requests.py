@@ -120,6 +120,14 @@ def set_rotatorAngle(Azimuth = 0, Elevation = 0 ):
     response = requests.request("PATCH", url, headers=headers, data=payload)
     return(response.json())
 
+def get_rotatorStatus():
+    url = "http://127.0.0.1:8091/sdrangel/featureset/feature/1/run"
+    payload = {}
+    headers = {}
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    return(response.json())
+
 
 def get_satellitetracker_settings():
     url = "http://127.0.0.1:8091/sdrangel/featureset/feature/0/settings"

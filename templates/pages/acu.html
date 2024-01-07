@@ -36,6 +36,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-top: 10px;
         }
         .left-group, .right-group {
             flex: 1;
@@ -100,6 +101,9 @@
             <div class="control-group">
                 <button type="button" id="move-button" class="control-button">Move Antenna</button>
             </div>
+            <div class="control-group">
+                <button type="button" id="start-controller" class="control-button">Start Controller</button>
+            </div>
         </form>
         <div class="row mt-4">
             <div class="col">
@@ -116,9 +120,14 @@
               </div>
         <div class="col">
             
-            <div class="d-flex align-items-center">
+            <div id= status class="d-flex align-items-center">
+                {% if status == "running" %}
+                <div class="bg-success dot rounded-circle me-1"></div>
+                <small>Online</small>                
+                {% else %}
                 <div class="bg-danger dot rounded-circle me-1"></div>
                 <small>Offline</small>
+                {% endif %}
             </div>
         </div>
         
@@ -186,6 +195,32 @@
                     document.getElementById("current-elevation").textContent = currentElevation;
                   });
             }, 500);
+        });
+
+        document.getElementById("start-controller").addEventListener("click", function() {
+            let smallstatus = $("#status > small")
+            console.log(smallstatus.text())
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:8091/sdrangel/featureset/feature/1/run",
+                success: function(data) {
+                    $(smallstatus[0]).text("Online");
+                    let statusdiv = $("#status > div");
+                    $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
+                },
+                error: function(data){
+                    swalWithBootstrapButtons.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'SDR Server is Unavailable!',
+                        showConfirmButton: true,
+                        timer: 2000
+                })
+                    $(smallstatus[0]).text("Offline");
+                    let statusdiv = $("#status > div");
+                    $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
+                }
+            });
         });
     </script>
 </body>

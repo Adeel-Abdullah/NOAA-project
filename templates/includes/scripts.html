@@ -47,3 +47,13 @@
 
 <!-- slim-select -->
 <script src="{{ url_for('static', filename='assets/js/slimselect.min.js') }}"></script>
+
+<script>
+    let swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: 'btn btn-primary',
+            cancelButton: 'btn btn-gray'
+        },
+        buttonsStyling: false
+    });
+</script>

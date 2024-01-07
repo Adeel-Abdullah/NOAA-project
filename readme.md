@@ -20,5 +20,5 @@ python app.py
  * ~~api to set minimum pass elevation~~
  * ~~spectrum display to be added~~
  * ~~last update time of tle in api~~
- * Control the antenna through ACU
+ * ~~Control the antenna through ACU~~
 

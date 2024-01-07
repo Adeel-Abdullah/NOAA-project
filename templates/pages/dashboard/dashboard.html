@@ -217,7 +217,7 @@
                 </h4>
                 <div id="status2" class="d-flex align-items-center">
                     <div class="bg-success dot rounded-circle me-1"></div>
-                    <small>Busy</small>
+                    <small>Offline</small>
                 </div>
             </div>
         </div>
@@ -243,11 +243,11 @@
         <div class="card">
           <div class="card-body">
             <h4 class="h6 mb-0">
-                <a href="#">Rotor</a>
+                <a href="#">Rotator</a>
             </h4>
-            <div class="d-flex align-items-center">
+            <div id="status3" class="d-flex align-items-center">
                 <div class="bg-danger dot rounded-circle me-1"></div>
-                <small>Offline</small>
+                <small>Busy</small>
             </div>
           </div>
         </div>
@@ -1888,7 +1888,6 @@ function polarChart(){
 
             let smallstatus = document.body.querySelectorAll("#status1 > small");
             $(smallstatus[0]).text("Online");
-
           }
           else{
             let statusdiv = document.body.querySelectorAll("#status1 > div");
@@ -1917,7 +1916,6 @@ $("#status2").each(function CheckSDR() {
 
             let smallstatus = document.body.querySelectorAll("#status2 > small");
             $(smallstatus[0]).text("Online");
-
           }
           else{
             let statusdiv = document.body.querySelectorAll("#status2 > div");
@@ -1928,7 +1926,33 @@ $("#status2").each(function CheckSDR() {
           }
         }
     });
-    // setTimeout(CheckSDR, Timeout);
+     setTimeout(CheckSDR, Timeout);
+});
+
+$("#status3").each(function CheckROT() {
+  var $this = $(this);
+  $.ajax({
+      type: "GET",
+      url: "/statusROT",
+      success: function(data) {
+        if(data['state']== "running")
+        {
+          let statusdiv = document.body.querySelectorAll("#status3 > div");
+          $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
+
+          let smallstatus = document.body.querySelectorAll("#status3 > small");
+          $(smallstatus[0]).text("Online");
+        }
+        else{
+          let statusdiv = document.body.querySelectorAll("#status3 > div");
+          $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
+
+          let smallstatus = document.body.querySelectorAll("#status3 > small");
+          $(smallstatus[0]).text("Offline");
+        }
+      }
+  });
+  setTimeout(CheckROT, Timeout);
 });
 </script>
 {% endblock javascripts %}
