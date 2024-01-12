@@ -3,7 +3,7 @@ from models import Satellite, PassData, Reports
 from app import app
 from app import db, scheduler, cache
 from sdrangel_requests import *
-from scheduled_functions import AOS_macro, LOS_macro
+from scheduled_functions import AOS_macro, LOS_macro, launch_sdr, kill_sdr
 from datetime import datetime, timedelta
 from sqlalchemy import and_
 from jinja2  import TemplateNotFound
@@ -331,3 +331,13 @@ def play_audio(pk):
         <source src="http://127.0.0.1:5000/fetchData/{pk}" type="audio/wav">\
          </audio> </div> </body>'
     )
+
+@app.route('/launchsdr')
+def launchsdr():
+    launch_sdr()
+    return jsonify(message="launched successfully!")
+
+@app.route('/killsdr')
+def killsdr():
+    kill_sdr()
+    return jsonify(message="stopped successfully!")

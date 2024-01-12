@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acquisition...</title>
+    <link type="text/css" href="{{ url_for('static', filename='assets/css/volt.css') }}" rel="stylesheet">
+    <style>
+        html,
+        body {
+            height: 100%
+        }
+        .container {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="container" class="container">
+        <div class="spinner-grow text-primary" role="status">
+        
+        </div>
+      <div class="spinner-grow text-secondary" role="status">
+        
+      </div>
+      <div class="spinner-grow text-success" role="status">
+        
+      </div>
+    </div>
+    <div id="mapcontainer">
+        <canvas width="1" height="1"></canvas>
+      </div>
+    <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/d3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/satellite.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/topojson-client.min.js') }}"></script>
+    <script>
+        function createMap(){
+
+            
+      
+      const width = 600;
+      const height = 600;
+      const marginTop = 25;
+      const marginRight = 25;
+      const marginBottom = 25;
+      const marginLeft = 25;
+
+      d3.select("#mapcontainer canvas").remove();
+
+      let geojson = {}
+      let beijingCoordinates = [0,0];
+
+      let mapcanvas = d3.select('#mapcontainer')
+      .append('canvas')
+      .attr("width", (width+marginLeft+marginRight))
+      .attr("height", (height+marginTop+marginBottom));
+
+      let context = mapcanvas
+      .node()
+      .getContext('2d');
+
+      let projection = d3.geoOrthographic()
+        .scale(400)
+        .rotate([-120, -35]);
+
+      let geoGenerator = d3.geoPath()
+        .projection(projection)
+        .pointRadius(4)
+        .context(context);
+
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        const passid = urlParams.get('pid');
+        const sat = urlParams.get('sat');
+        const tle1 = urlParams.get('tle1');
+        const tle2 = urlParams.get('tle2');
+        const aosStr = urlParams.get('aos');
+        const losStr = urlParams.get('los');
+
+        let aos = new Date(aosStr);
+        let los = new Date(losStr);
+        
+        console.log(passid);
+        console.log(sat);
+        console.log(tle1);
+        console.log(tle2);
+        console.log(aosStr);
+        console.log(losStr);
+
+        const satrec = satellite.twoline2satrec(
+              tle1.trim(), 
+              tle2.trim()
+            );
+        const aos_positionAndVelocity = satellite.propagate(satrec, aos);
+        const aos_gmst = satellite.gstime(aos);
+        const aos_position = satellite.eciToGeodetic(aos_positionAndVelocity.position, aos_gmst);
+        let aos_sat_coordinates = [satellite.degreesLong(aos_position.longitude), satellite.degreesLong(aos_position.latitude)];
+        
+        const los_positionAndVelocity = satellite.propagate(satrec, los);
+        const los_gmst = satellite.gstime(los);
+        const los_position = satellite.eciToGeodetic(los_positionAndVelocity.position, los_gmst);
+        let los_sat_coordinates = [satellite.degreesLong(los_position.longitude), satellite.degreesLong(los_position.latitude)];
+
+      function update() {
+        context.clearRect(0, 0, 800, 600);
+
+        context.lineWidth = 0.5;
+        context.strokeStyle = '#333';
+        
+
+        context.beginPath();
+        context.fillStyle = '#1F2937';
+        context.strokeStyle = 'white';
+        geoGenerator({type: 'FeatureCollection', features: topojson.feature(geojson, geojson.objects.countries).features});
+        context.fill();
+        context.stroke();
+
+        // Graticule
+        let graticule = d3.geoGraticule();
+        context.beginPath();
+        context.strokeStyle = '#ccc';
+        geoGenerator(graticule());
+        context.stroke();
+
+        // AOS - LOS line
+        context.beginPath();
+        context.strokeStyle = 'orange';
+        context.lineWidth = '2';
+        geoGenerator({type: 'Feature', geometry: {type: 'LineString', coordinates: [aos_sat_coordinates, los_sat_coordinates]}});
+        context.stroke();
+
+        // AOS Label
+        const aoscoord = projection(aos_sat_coordinates);
+        context.font = "14px sans-serif";
+        context.textAlign = "start";
+        context.fillStyle ="orange";
+        context.fillText(" ↑ AOS", aoscoord[0] + 2, (aoscoord[1])); 
+
+        // LOS Label
+        const loscoord = projection(los_sat_coordinates);
+        context.font = "14px sans-serif";
+        context.textAlign = "start";
+        context.fillStyle ="orange";
+        context.fillText(" ↓ LOS", loscoord[0] + 2, (loscoord[1])); 
+
+
+        now = new Date()
+        const positionAndVelocity = satellite.propagate(satrec, now);
+        const gmst = satellite.gstime(now);
+        const position = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
+        let sat_coordinates = [satellite.degreesLong(position.longitude), satellite.degreesLong(position.latitude)];
+
+        // Point
+        context.beginPath();
+        context.fillStyle = 'orange';
+        geoGenerator({
+          type: 'Feature',
+          geometry: {
+            type: 'Point', 
+            coordinates: sat_coordinates
+          },
+        //   properties: {
+        //   subType: "Circle",
+        //   radius: 2000
+        // }
+        });
+        context.fill();
+
+        // Circle
+        context.beginPath();
+        context.strokeStyle = 'orange';
+        geoGenerator({
+          type: 'Feature',
+          geometry: {
+            type: 'Point', 
+            coordinates: sat_coordinates
+          },
+          properties: {
+          subType: "Circle",
+          radius: 5000
+        }
+        });
+        context.stroke();
+
+
+         // Observer (Ground Station)
+        context.beginPath();
+        context.fillStyle = '#36AEBB';
+        geoGenerator({type: 'Feature', geometry: {type: 'Point', coordinates: beijingCoordinates}});
+        context.fill();
+
+        // Observer Label
+        const obsrlabelCoord = projection(beijingCoordinates);// Fetch from DB
+        context.font = "12px sans-serif";
+        context.textAlign = "start";
+        context.fillText("Penghuan", obsrlabelCoord[0], (obsrlabelCoord[1]+14)); 
+
+        // x Speed
+        // const durationSeconds = Math.abs((los - aos)/1000);
+        // let speed = Math.abs(durationSeconds/5); //~ Rough estimate
+        // context.font = "15px sans-serif";
+        // context.fillStyle = 'red';
+        // context.fillText(speed + 'x faster', 75, height-10); 
+      }
+
+      // REQUEST DATA
+      d3.json("{{ url_for('static', filename='assets/json/countries-110m.json') }}")
+        .then(function(json) {
+          geojson = json;
+          $.ajax({type: "GET",
+                  url: "/location",
+                  success: function(coord) {
+                    beijingCoordinates = [coord.longitude, coord.latitude];
+                  }
+                });
+          window.setInterval(update, 1000);
+        });
+            
+    }
+    setTimeout(function () {
+                d3.select('#container').remove();
+                createMap();
+            }, 10000);
+    </script>
+
+</body>
+</html>

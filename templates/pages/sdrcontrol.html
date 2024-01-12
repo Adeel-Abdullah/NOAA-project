@@ -1,0 +1,164 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} SDR Server {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+
+<style>
+    .modal-dialog { position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto; width: 500px; height: 300px; }
+</style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+<div class="d-block mb-4 mb-md-0">
+<nav aria-label="breadcrumb" class="d-none d-md-inline-block">
+              <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+                  <li class="breadcrumb-item">
+                      <a href="#">
+                          <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                      </a>
+                  </li>
+                  <li class="breadcrumb-item"><a href="#">Volt</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">SDR Server</li>
+              </ol>
+          </nav>
+          <h1 class="text-center">Control</h1>
+</div>
+</div>
+<div class="col-sm-10">
+  <p class="text-danger mb-0">SDR server can be turned on or off from here</p>
+</div>
+  <div class="container mt-4 mb-4">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card" id="card1">
+          <div class="card-body">
+            <h4 class="card-title">SDR Server</h4>
+            <div id="status2" class="d-flex align-items-center">
+                <div class="bg-danger dot rounded-circle me-1"></div>
+                <small>Offline</small>
+            </div>
+            <div class="d-flex align-items-end flex-column mb-1 mt-4">
+            <div class="dropdown me-1">
+                <div class="form-check form-switch"> <input class="form-check-input" type="checkbox" id="flexSwitchCheck" unchecked=""> <label class="form-check-label" for="flexSwitchCheckChecked"></label> </div>
+                
+                <!-- <button type="button" class="btn btn-danger dropdown-toggle" id="dropdownMenuOffset" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="10,20">
+                Switch
+                </button>
+                <ul class="dropdown-menu py-0" aria-labelledby="dropdownMenuOffset">
+                    <li><a class="dropdown-item rounded-top"  id="successAlert">Launch</a></li>
+                    <li><a class="dropdown-item" href="#">Off</a></li>
+                    
+                </ul> -->
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+    <!-- <div class="d-flex align-items-end flex-column mb-4 mt-4"> -->
+    
+        <!-- <small class="text-muted">** Click to apply changes</small> -->
+     
+    <!-- <button class="btn btn-lg btn-primary" type="button">Apply Changes</button> -->
+  <!-- </div> -->
+  </div>
+
+  
+
+</html>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+{{ super() }}
+<script>
+
+$(function() {
+
+    let x = document.cookie;
+    if (x.includes("online")){
+        document.getElementById("flexSwitchCheck").checked = true;
+    }else{
+        document.getElementById("flexSwitchCheck").checked = false;
+    }
+
+    $('#flexSwitchCheck').change(function() {
+        if(this.checked) {
+            var returnVal = confirm("This will Launch SDR Server!");
+            $(this).prop("checked", returnVal);
+            showPleaseWait();
+            $.ajax({type: "GET",
+                url: "/launchsdr",
+                success: function(data) {
+                    console.log(data);
+                    $('#flexSwitchCheck').val(this.checked);
+                }
+            });
+            console.log('launching it...');
+        }else{
+            $.ajax({type: "GET",
+                url: "/killsdr",
+                success: function(data) {
+                    console.log(data);
+                    $('#flexSwitchCheck').val(this.unchecked);
+                }
+            });
+            console.log('killing it...');
+        }
+
+    });
+
+  function showPleaseWait() {
+
+    if (document.querySelector("#pleaseWaitDialog") == null) {
+        var modalLoading = '<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false" role="dialog">\
+            <div class="modal-dialog">\
+                <div class="modal-content">\
+                    <div class="modal-header">\
+                        <h4 class="modal-title">This may take time, Please wait...</h4>\
+                    </div>\
+                    <div class="modal-body">\
+                        <div class="progress">\
+                          <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"\
+                          aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%; height: 40px">\
+                          </div>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>\
+        </div>';
+        $(document.body).append(modalLoading);
+    }
+  
+    $("#pleaseWaitDialog").modal("show");
+    setTimeout(hidePleaseWait, 30000);
+ }
+
+/**
+ * Hides "Please wait" overlay. See function showPleaseWait().
+ */
+function hidePleaseWait() {
+    $("#pleaseWaitDialog").modal("hide");
+    swalWithBootstrapButtons.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Operation Successful!',
+        showConfirmButton: true,
+        timer: 2000
+    })
+}
+});
+       
+</script>
+{% endblock javascripts %}
