@@ -132,7 +132,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-
+{{ super() }}
 <script>
 $("#user-notification-1").on('change', function(e){
     e.preventDefault();

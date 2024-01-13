@@ -216,7 +216,7 @@
                     <a href="#">SDR Server</a>
                 </h4>
                 <div id="status2" class="d-flex align-items-center">
-                    <div class="bg-success dot rounded-circle me-1"></div>
+                    <div class="bg-danger dot rounded-circle me-1"></div>
                     <small>Offline</small>
                 </div>
             </div>
@@ -359,6 +359,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
+{{ super() }}
 <!-- <script src="{{ url_for('static', filename='assets/js/chart.js') }}"></script> -->
 <script src="{{ url_for('static', filename='assets/js/jquery.countdown.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/d3.min.js') }}"></script>
@@ -1011,7 +1012,7 @@ $.ajax({type: "GET",
           // Pass time animation
 
           const passes = $("#defaultCountdown").data('passes');
-          console.log(passes[0]);
+          // console.log(passes[0]);
           if (passes != null){
             if (new Date(passes[0].AOS) < new Date() ){
               const index = satellites.findIndex(p => p.name == passes[0].SatetlliteName);
@@ -1902,32 +1903,32 @@ function polarChart(){
     setTimeout(CheckRTL, Timeout);
 });
 
-$("#status2").each(function CheckSDR() {
-    var $this = $(this);
-    $.ajax({
-        type: "GET",
-        url: "/statusSDR",
-        success: function(data) {
-          if(data['SDRstatus']== "OK")
-          {
-            let statusdiv = document.body.querySelectorAll("#status2 > div");
+// $("#status2").each(function CheckSDR() {
+//     var $this = $(this);
+//     $.ajax({
+//         type: "GET",
+//         url: "/statusSDR",
+//         success: function(data) {
+//           if(data['SDRstatus']== "OK")
+//           {
+//             let statusdiv = document.body.querySelectorAll("#status2 > div");
             
-            $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
+//             $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
 
-            let smallstatus = document.body.querySelectorAll("#status2 > small");
-            $(smallstatus[0]).text("Online");
-          }
-          else{
-            let statusdiv = document.body.querySelectorAll("#status2 > div");
-            $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
+//             let smallstatus = document.body.querySelectorAll("#status2 > small");
+//             $(smallstatus[0]).text("Online");
+//           }
+//           else{
+//             let statusdiv = document.body.querySelectorAll("#status2 > div");
+//             $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
 
-            let smallstatus = document.body.querySelectorAll("#status2 > small");
-            $(smallstatus[0]).text("Offline");
-          }
-        }
-    });
-     setTimeout(CheckSDR, Timeout);
-});
+//             let smallstatus = document.body.querySelectorAll("#status2 > small");
+//             $(smallstatus[0]).text("Offline");
+//           }
+//         }
+//     });
+//      setTimeout(CheckSDR, Timeout);
+// });
 
 $("#status3").each(function CheckROT() {
   var $this = $(this);

@@ -53,7 +53,6 @@
     });
 
     const queryString = window.location.search;
-    console.log(queryString);
     const urlParams = new URLSearchParams(queryString);
     const passid = urlParams.get('passid');
 
@@ -62,6 +61,7 @@
     elem.setAttribute("height", "100");
     elem.setAttribute("width", "100");
     elem.setAttribute("alt", "~");
+    elem.setAttribute("id", "moving-image");
     document.getElementById("float").appendChild(elem);
 
 </script>

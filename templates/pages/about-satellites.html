@@ -85,7 +85,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-
+{{ super() }}
 <script>
     function changeSatellite() {
       const dropdown = document.getElementById("satellite-dropdown");

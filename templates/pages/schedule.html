@@ -6,7 +6,8 @@
 {% block stylesheets %}
 
 
-<link href="https://unpkg.com/slim-select@latest/dist/slimselect.css" rel="stylesheet"></link>
+<!-- <link href="https://unpkg.com/slim-select@latest/dist/slimselect.css" rel="stylesheet"></link> -->
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/slimselect.css') }}">
 
 <style>
 
@@ -123,7 +124,7 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-
+{{ super() }}
 <!-- For Tags -->
 
 <!-- <script src="https://unpkg.com/slim-select@latest/dist/slimselect.min.js"></script> -->

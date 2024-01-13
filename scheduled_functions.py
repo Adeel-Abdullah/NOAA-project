@@ -269,4 +269,16 @@ def LOS_macro(pk):
     create_report(dpath, Impath, pk)
     
     # stop_satellitetracker()
+
+def launch_sdr():
+    if get_instance()['status'] == 'OK':
+       pass
+    else:
+        subprocess.Popen(sdrangel_path)
+        time.sleep(30)
+
+def kill_sdr():
+    pid = get_instance()['pid']
+    p = psutil.Process(pid)
+    p.kill()
     
