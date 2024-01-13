@@ -373,4 +373,36 @@ def launch_apps_to_virtual_desktops(desktops=2):
     time.sleep(30) # Wait for apps to open their windows
     
 
-launch_apps_to_virtual_desktops()
+#%%
+
+import subprocess
+import os
+import sys
+import time
+from sdrangel_requests import *
+
+# Use triple quotes string literal to span PowerShell command multiline
+STR_CMD = """
+$action = New-ScheduledTaskAction -Execute "C:\Program Files\SDRangel\sdrangel.exe"
+$description = "Using PowerShell's Scheduled Tasks in Python"
+$settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Seconds 2)
+$taskName = "sdr"
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(10)
+$trigger.EndBoundary = (Get-Date).AddSeconds(30).ToString("s")
+Register-ScheduledTask -TaskName $taskName -Description $description -Action $action -Settings $settings -Trigger $trigger -AsJob | Out-Null
+"""
+
+# Use a list to make it easier to pass argument to subprocess
+listProcess = [
+    "powershell.exe",
+    "-NoExit",
+    "-NoProfile",
+    "-Command",
+    STR_CMD
+]
+path = os.getcwd()
+# Enjoy the magic
+a = subprocess.run(listProcess, check=True, capture_output=True)
+time.sleep(30)
+b = subprocess.Popen(['powershell.exe', os.path.join(path,"hide.ps1")],cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+get_instance()
