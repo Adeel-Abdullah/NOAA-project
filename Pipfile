@@ -16,6 +16,7 @@ waitress = "*"
 intervaltree = "*"
 flask-wtf = "*"
 pillow = "*"
+selenium = "*"
 
 [dev-packages]
 
