@@ -538,7 +538,6 @@ $.ajax({type: "GET",
     // Function to create the responsive chart
     function createChart() {
 
-
         svgchart.selectAll("*").remove();
         const passes = $("#defaultCountdown").data('passes');
         // console.log(passes);
@@ -912,7 +911,7 @@ $.ajax({type: "GET",
                   url: "/location",
                   success: function(coord) {
                     let beijingCoordinates = [coord.longitude, coord.latitude]; // Changsha's coordinates
-
+                    let gsname = coord.GStationName;
                 // Calculate the projected coordinates for Beijing
                 let beijingProjected = projection(beijingCoordinates);
 
@@ -936,7 +935,7 @@ $.ajax({type: "GET",
                   .attr("text-anchor", "start")
                   .attr("font-family", "sans-serif")
                   .attr("font-size", "6px")
-                  .text("Penghuan");
+                  .text(gsname);
                     
                   }
                 
