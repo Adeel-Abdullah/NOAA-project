@@ -460,19 +460,19 @@ $.ajax({type: "GET",
             });
         }
           
-        function highlightLast(periods) { 
-        // console.log('highlightLast');
+      function highlightLast(periods) { 
+      // console.log('highlightLast');
         if ($.countdown.periodsToSeconds(periods) === 60) {
             $(this).addClass('highlight'); 
             showNotyfAOS('Commencing Acquisition From NOAA');
         } 
-    }
+      }
         function startHiddenCountdown(){
-        // console.log('startHiddenCountdown');
-        let austDay = new Date(data[0].LOS);
-        $("#hiddenCountdown").show();
-        $('#hiddenCountdown').countdown('option', {until: austDay});
-    }
+          // console.log('startHiddenCountdown');
+          let austDay = new Date(data[0].LOS);
+          $("#hiddenCountdown").show();
+          $('#hiddenCountdown').countdown('option', {until: austDay, onExpiry: resetAllCountdownTimers,});
+      }
     
             
     function resetAllCountdownTimers() {
@@ -490,6 +490,7 @@ $.ajax({type: "GET",
                 description: 'To the <i>next pass</i> of <a href="#">'+ data[0].SatetlliteName +'</a>!',
                 expiryText: 'Receiving '+data[0].SatetlliteName+' '
             });
+            location.reload();
     }
     $this.data('passes', data);
       
