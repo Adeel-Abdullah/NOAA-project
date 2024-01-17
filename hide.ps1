@@ -25,5 +25,7 @@ public class API {
 '@
 
 $Process = Get-Process -Name "SDRangel"
+$Process
 $window = $Process.MainWindowHandle
+$window
 [API]::ShowWindow($window,'Hide')

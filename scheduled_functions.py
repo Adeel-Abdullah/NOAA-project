@@ -1,11 +1,11 @@
 from models import Satellite, PassData, Reports
 from extensions import scheduler, db, cache
-import subprocess
-import requests
+import subprocess, requests, os, time
 from sdrangel_requests import *
 from datetime import datetime, timedelta
-from sqlalchemy import and_, func
+from sqlalchemy import and_
 from intervaltree import Interval, IntervalTree
+from fire_on_aos import fire_on_aos, fire_on_los
 
 
 # %% adding new passes only after checking that they are not already present
@@ -55,11 +55,7 @@ def toDateTime(time):
 
 @scheduler.task(trigger='cron', id='updateDB', hour='1,13')
 def updateDB():
-    if get_instance()['status'] == 'OK':
-        pass
-    else:
-        subprocess.Popen(sdrangel_path)
-        time.sleep(30)
+    launch_sdr
     start_satellitetracker()
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()
@@ -215,18 +211,54 @@ def start_SpectrumServer():
     print(f"Spectrum server started with ID {p.pid}!")
     return p.pid
 
-
-
-def AOS_macro(pk):
+def launch_sdr():
     if get_instance()['status'] == 'OK':
        pass
     else:
-        subprocess.Popen(sdrangel_path)
-        time.sleep(30)
+    #     subprocess.Popen(sdrangel_path)
+    #     time.sleep(30)
+        STR_CMD = """
+        $action = New-ScheduledTaskAction -Execute "C:\Program Files\SDRangel\sdrangel.exe"
+        $description = "Using PowerShell's Scheduled Tasks in Python"
+        $settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Seconds 2)
+        $taskName = "sdr"
+        $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(10)
+        $trigger.EndBoundary = (Get-Date).AddSeconds(30).ToString("s")
+        Register-ScheduledTask -TaskName $taskName -Description $description -Action $action -Settings $settings -Trigger $trigger -AsJob | Out-Null
+        Start-ScheduledTask -TaskName "sdr"
+        """
+        # Use a list to make it easier to pass argument to subprocess
+        listProcess = [
+            "powershell.exe",
+            "-NoExit",
+            "-NoProfile",
+            "-Command",
+            STR_CMD
+        ]
+        path = os.getcwd()
+        a = subprocess.Popen(listProcess, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        time.sleep(25)
+        b = subprocess.Popen(['powershell.exe', os.path.join(path,"hide.ps1")],cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        outs, errs = b.communicate()
+        print("outs=",outs)
+        print("errs=",errs)
 
+def kill_sdr():
+    pid = get_instance()['pid']
+    p = psutil.Process(pid)
+    p.kill()
+    
+
+def AOS_macro(pk):
+    launch_sdr()
     with scheduler.app.app_context():
         p = db.get_or_404(PassData, pk)
         SatelliteName = p.SatetlliteName
+        aos = p.AOS
+        los = p.LOS
+        sat = Satellite.query.filter_by(Name=SatelliteName).first()
+        tle1 = sat.TLERow1
+        tle2 = sat.TLERow2
     start_satellitetracker()
     start_rotator()
     set_preset(SatelliteName)
@@ -235,6 +267,7 @@ def AOS_macro(pk):
     start_SpectrumBroadcast()
     spectrum_pid = start_SpectrumServer()
     cache.set('spectrum_pid', spectrum_pid)
+    fire_on_aos(SatelliteName, str(pk), tle1, tle2, aos.isoformat(), los.isoformat())
         
     
 def LOS_macro(pk):
@@ -267,18 +300,5 @@ def LOS_macro(pk):
             print(f"Commit Failed. Error: {e}")
             
     create_report(dpath, Impath, pk)
-    
+    fire_on_los(str(pk))
     # stop_satellitetracker()
-
-def launch_sdr():
-    if get_instance()['status'] == 'OK':
-       pass
-    else:
-        subprocess.Popen(sdrangel_path)
-        time.sleep(30)
-
-def kill_sdr():
-    pid = get_instance()['pid']
-    p = psutil.Process(pid)
-    p.kill()
-    
