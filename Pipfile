@@ -17,6 +17,7 @@ intervaltree = "*"
 flask-wtf = "*"
 pillow = "*"
 selenium = "*"
+screeninfo = "*"
 
 [dev-packages]
 

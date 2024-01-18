@@ -374,35 +374,54 @@ def launch_apps_to_virtual_desktops(desktops=2):
     
 
 #%%
+def launch_sdr():
+    if get_instance()['status'] == 'OK':
+       pass
+    else:
+    #     subprocess.Popen(sdrangel_path)
+    #     time.sleep(30)
+        STR_CMD = """
+        $action = New-ScheduledTaskAction -Execute "C:\Program Files\SDRangel\sdrangel.exe"
+        $description = "Using PowerShell's Scheduled Tasks in Python"
+        $settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Seconds 2)
+        $taskName = "sdr"
+        $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(10)
+        $trigger.EndBoundary = (Get-Date).AddSeconds(30).ToString("s")
+        Register-ScheduledTask -TaskName $taskName -Description $description -Action $action -Settings $settings -Trigger $trigger -AsJob | Out-Null
+        """
+        # Use a list to make it easier to pass argument to subprocess
+        listProcess = [
+            "powershell.exe",
+            "-NoExit",
+            "-NoProfile",
+            "-Command",
+            STR_CMD
+        ]
+        path = os.getcwd()
+        a = subprocess.Popen(listProcess, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        time.sleep(25)
+        b = subprocess.Popen(['powershell.exe', os.path.join(path,"hide.ps1")],cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        outs, errs = b.communicate()
+
+#%%
 
 import subprocess
 import os
-import sys
-import time
-from sdrangel_requests import *
+from app import app, db
+from models import PassData, Satellite
+pk = 1327
+with app.app_context():
+    p = db.get_or_404(PassData,pk)
+    SatelliteName = p.SatetlliteName
+    aos = p.AOS
+    los = p.LOS
+    a = Satellite.query.filter_by(Name=SatelliteName).first()
+    tle1 = a.TLERow1
+    tle2 = a.TLERow2
 
-# Use triple quotes string literal to span PowerShell command multiline
-STR_CMD = """
-$action = New-ScheduledTaskAction -Execute "C:\Program Files\SDRangel\sdrangel.exe"
-$description = "Using PowerShell's Scheduled Tasks in Python"
-$settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Seconds 2)
-$taskName = "sdr"
-$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddSeconds(10)
-$trigger.EndBoundary = (Get-Date).AddSeconds(30).ToString("s")
-Register-ScheduledTask -TaskName $taskName -Description $description -Action $action -Settings $settings -Trigger $trigger -AsJob | Out-Null
-"""
-
-# Use a list to make it easier to pass argument to subprocess
-listProcess = [
-    "powershell.exe",
-    "-NoExit",
-    "-NoProfile",
-    "-Command",
-    STR_CMD
-]
-path = os.getcwd()
-# Enjoy the magic
-a = subprocess.run(listProcess, check=True, capture_output=True)
-time.sleep(30)
-b = subprocess.Popen(['powershell.exe', os.path.join(path,"hide.ps1")],cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-get_instance()
+#python fire_on_aos.py -p 1440 -s 'NOAA 18' -a '2024-01-13 6:33:45.125351' -l '2024-01-13 6:43:45.125351' -t1 '1 25338U 98030A   24009.94849596  .00000237  00000+0  11646-3 0  9992' -t2 '2 25338  98.5865  40.2731 0011332  72.3051 287.9365 14.26468234334481'
+a = subprocess.Popen(['python', 'fire_on_aos.py', '-p', str(pk), '-s', SatelliteName, '-a', aos.isoformat() , '-l', los.isoformat(), '-t1', tle1, '-t2', tle2], cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+outs, errs = a.communicate()
+print(outs)
+print("error=",errs)
+# %%
