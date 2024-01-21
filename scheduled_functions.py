@@ -55,7 +55,7 @@ def toDateTime(time):
 
 @scheduler.task(trigger='cron', id='updateDB', hour='1,13')
 def updateDB():
-    launch_sdr
+    launch_sdr()
     start_satellitetracker()
     with scheduler.app.app_context():
         Satellites = Satellite.query.all()

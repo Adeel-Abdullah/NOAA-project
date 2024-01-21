@@ -332,6 +332,27 @@ def play_audio(pk):
          </audio> </div> </body>'
     )
 
+@app.route("/overlayMap/<int:pk>")
+def overlay_map(pk):
+    import subprocess
+    import os
+    noaaApt_path = "C:\\Users\\DELL\\Documents\\noaa-apt-1.4.1-x86_64-windows-gnu"
+    p = db.get_or_404(Reports, pk)
+    SatelliteName = p.PassData.SatetlliteName
+    aos = p.PassData.AOS.astimezone().strftime('%Y-%m-%dT%H:%M:%S%z')
+    aos = '{0}:{1}'.format(aos[:-2], aos[-2:])
+    dataPath = p.dataPath
+    tle1 = p.TLELine1
+    tle2 = p.TLELine2
+    print(p, SatelliteName, aos, dataPath, tle1, tle2)
+    a = subprocess.Popen([os.path.join(noaaApt_path,"map_overlay.bat"),dataPath, SatelliteName, aos, tle1, tle2], cwd=noaaApt_path)
+    try:
+        a.wait(timeout=30)
+        return jsonify("success")
+    except Exception as e:
+        return jsonify("Error!", 500)
+
+
 @app.route('/launchsdr')
 def launchsdr():
     launch_sdr()
