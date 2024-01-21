@@ -436,16 +436,16 @@ $.ajax({type: "GET",
           let nowPlus1s = new Date();
           nowPlus1s.setMilliseconds(now.getMilliseconds() + 1000);
           // console.log(nowPlus1s.toLocaleString());
-            $this.countdown({
-                format: 'dHMS', 
-                until: (AOSdate > now? AOSdate : nowPlus1s),
-                alwaysExpire: false,
-                tickInterval: 1,
-                onTick: highlightLast,
-                onExpiry: startHiddenCountdown,
-                description: 'To the <i>next pass</i> of <a href="#">'+ data[0].SatetlliteName +'</a>!',
-                expiryText: 'Receiving '+data[0].SatetlliteName+' '
-            });
+          $this.countdown({
+              format: 'dHMS',
+              until: (AOSdate > now? AOSdate : nowPlus1s),
+              alwaysExpire: false,
+              tickInterval: 1,
+              onTick: highlightLast,
+              onExpiry: startHiddenCountdown,
+              description: 'To the <i>next pass</i> of <a href="#">'+ data[0].SatetlliteName +'</a>!',
+              expiryText: 'Receiving '+data[0].SatetlliteName+' '
+          });
             $('#hiddenCountdown').hide();
 
             $('#hiddenCountdown').countdown({
@@ -455,59 +455,63 @@ $.ajax({type: "GET",
                 alwaysExpire: false,
                 tickInterval: 1,
                 onTick: null,
-                onExpiry: resetAllCountdownTimers,
+                onExpiry: null,
                 description: 'until the pass ends'
             });
         }
           
-        function highlightLast(periods) { 
-        // console.log('highlightLast');
+      function highlightLast(periods) { 
+      // console.log('highlightLast');
         if ($.countdown.periodsToSeconds(periods) === 60) {
             $(this).addClass('highlight'); 
             showNotyfAOS('Commencing Acquisition From NOAA');
         } 
-    }
+      }
         function startHiddenCountdown(){
-        // console.log('startHiddenCountdown');
-        let austDay = new Date(data[0].LOS);
-        $("#hiddenCountdown").show();
-        $('#hiddenCountdown').countdown('option', {until: austDay});
-    }
+          // console.log('startHiddenCountdown');
+          let austDay = new Date(data[0].LOS);
+          $("#hiddenCountdown").show();
+          $('#hiddenCountdown').countdown('option', {until: austDay, onExpiry: reloadpage});
+      }
     
             
-    function resetAllCountdownTimers() {
-      let data = $("#defaultCountdown").data('passes');
-      // console.log("resetcountdowntimer");
-      // console.log(data);
-        data.shift();
-        // console.log('Satellite name '+data[0].SatetlliteName);
-        $("#hiddenCountdown").hide();
-        let austDay = new Date(data[0].AOS);
-        $('#defaultCountdown')
-            .removeClass('highlight')
-            .countdown('option', {
-                until: austDay, 
-                description: 'To the <i>next pass</i> of <a href="#">'+ data[0].SatetlliteName +'</a>!',
-                expiryText: 'Receiving '+data[0].SatetlliteName+' '
-            });
-    }
-    $this.data('passes', data);
+      function reloadpage(){
+        location.reload()
+      }
+    // function resetAllCountdownTimers() {
+    //   let data = $("#defaultCountdown").data('passes');
+    //   // console.log("resetcountdowntimer");
+    //   // console.log(data);
+    //     data.shift();
+    //     // console.log('Satellite name '+data[0].SatetlliteName);
+    //     $("#hiddenCountdown").hide();
+    //     let austDay = new Date(data[0].AOS);
+    //     $('#defaultCountdown')
+    //         .removeClass('highlight')
+    //         .countdown('option', {
+    //             until: austDay, 
+    //             description: 'To the <i>next pass</i> of <a href="#">'+ data[0].SatetlliteName +'</a>!',
+    //             expiryText: 'Receiving '+data[0].SatetlliteName+' '
+    //         });
+    //         location.reload();
+    // }
+        $this.data('passes', data);
       
-       // Polar icon 
-       if (data.length > 0){
-        $("#polaricon").show();
-        $("#globeicon").show();
-        $("#infoicon").show();
-        $("#polaricon").click(function(){
-          showPolarChart();
-        }); 
-        $("#globeicon").click(function(){
-          showMapModal();
-        });
-        $("#infoicon").click(function(){
-          showInfoModal();
-        });
-       }  
+        // Polar icon 
+        if (data.length > 0){
+            $("#polaricon").show();
+            $("#globeicon").show();
+            $("#infoicon").show();
+            $("#polaricon").click(function(){
+              showPolarChart();
+            }); 
+            $("#globeicon").click(function(){
+              showMapModal();
+            });
+            $("#infoicon").click(function(){
+              showInfoModal();
+            });
+          }  
         }
     });  
   });
