@@ -11,8 +11,8 @@
     --burger-line-width: 1.0em;
     --burger-line-height: 0.125em;
     --burger-offset: 0.625em;
-    --burger-bg: rgba(0, 0, 0, .15);
-    --burger-color: #333;
+    --burger-bg: rgba(0, 0, 0, 0.75);
+    --burger-color: #b6b5b5;
     --burger-line-border-radius: 0.1875em;
     --burger-diameter: 2.0em;
     --burger-btn-border-radius: calc(var(--burger-diameter) / 2);
@@ -240,6 +240,11 @@
     z-index: 99;
     max-width: 100%;
 }
+.table th {
+  font-weight: bold;
+  background-color: #151515;
+}
+
 
 </style>
 
@@ -283,7 +288,7 @@
       <div class="card-body">
           <div class="table-responsive">
               <table class="table table-centered table-nowrap mb-0 rounded">
-                  <thead class="thead-light">
+                  <thead>
                       <tr>
                           <th class="border-0 rounded-start">#</th>
                           <th class="border-0">Satellite</th>
@@ -299,9 +304,10 @@
                       <!-- Item -->
                       {% for passes in reportdata %}
                       <tr>
-                            <td><a href="#" class="text-primary fw-bold">
-                                {{ passes.id }}
-                            </a> 
+                            <td>
+                            <span><strong>
+                              {{passes.id}}
+                            </strong></span>
                             </td>
                             <td>
                               {{ passes.PassData.SatetlliteName }}
@@ -328,7 +334,7 @@
                           </td>
                           <td>
                               <div class="d-flex align-items-center"><span class="fw-bold">{{ passes.PassData.maxElevation }}</span>
-                                  <svg class="icon icon-xs text-primary" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" clip-rule="evenodd"></path></svg>
+                                  <svg class="icon icon-xs text-secondary" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" clip-rule="evenodd"></path></svg>
                               </div>
                           </td>
                           <td>
@@ -379,7 +385,7 @@
                                             <svg viewBox="0 0 102.524 89.222" xmlns="http://www.w3.org/2000/svg" width="15" height="15" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" ><path d="M46.217,73.057a1,1,0,0,0-1.405-.154l-1.071.859c-.015-.179-.044-.352-.044-.537A6.307,6.307,0,0,1,54,68.349,1,1,0,0,0,55.258,66.8,8.307,8.307,0,0,0,41.7,73.225c0,.041,0,.08,0,.12L41.219,73a1,1,0,0,0-1.168,1.624L42.5,76.383a.975.975,0,0,0,.112.056.717.717,0,0,0,.1.048,1,1,0,0,0,.375.084h0a.98.98,0,0,0,.352-.069h.007c.015-.006.025-.018.039-.024a.886.886,0,0,0,.1-.058.87.87,0,0,0,.123-.068l2.353-1.889A1,1,0,0,0,46.217,73.057Z" transform="matrix(1, 0, 0, 1, 1.7763568394002505e-15, 0)"/>
                                               <g transform="matrix(1.0499839782714846, 0, 0, 1.1014759540557861, -1.9045191094952667, -9.527496479861384)">
                                                 <g>
-                                                  <path d="M 46.633 63.426 C 47.92 63.426 49.206 62.913 50.107 61.888 L 67.481 43.172 C 69.284 41.248 69.154 38.3 67.224 36.505 C 65.294 34.711 62.334 34.839 60.532 36.761 L 46.633 51.632 L 40.841 45.35 C 39.039 43.428 36.079 43.3 34.149 45.094 C 32.218 46.889 32.089 49.838 33.891 51.76 L 43.287 61.76 C 44.058 62.913 45.345 63.426 46.633 63.426 Z" style=""/>
+                                                  <path d="M 46.633 63.426 C 47.92 63.426 49.206 62.913 50.107 61.888 L 67.481 43.172 C 69.284 41.248 69.154 38.3 67.224 36.505 C 65.294 34.711 62.334 34.839 60.532 36.761 L 46.633 51.632 L 40.841 45.35 C 39.039 43.428 36.079 43.3 34.149 45.094 C 32.218 46.889 32.089 49.838 33.891 51.76 L 43.287 61.76 C 44.058 62.913 45.345 63.426 46.633 63.426 Z" />
                                                   <path d="M70.7,74.5c-5.8,4.9-13.1,7.6-20.7,7.6c-17.7,0-32.1-14.4-32.1-32.1v-2h4.6c1.2,0,2.3-0.7,2.9-1.7     c0.6-1.1,0.5-2.4-0.1-3.4l-8.3-13c-1.2-1.9-4.4-1.9-5.6,0L3,42.9c-0.7,1-0.7,2.3-0.1,3.4C3.5,47.3,4.6,48,5.8,48h4.6v2     c0,21.8,17.7,39.5,39.5,39.5c9.3,0,18.4-3.3,25.5-9.3c1.6-1.3,1.8-3.7,0.4-5.2C74.6,73.4,72.3,73.2,70.7,74.5z"/>
                                                   <path d="M97.1,53.7c-0.6-1.1-1.7-1.7-2.9-1.7h-4.6v-2c0-21.8-17.7-39.5-39.5-39.5c-9.3,0-18.4,3.3-25.5,9.3     c-1.6,1.3-1.8,3.7-0.4,5.2c1.3,1.6,3.7,1.8,5.2,0.4c5.8-4.9,13.1-7.6,20.7-7.6c17.7,0,32.1,14.4,32.1,32.1v2h-4.6     c-1.2,0-2.3,0.7-2.9,1.7c-0.6,1.1-0.5,2.4,0.1,3.4l8.3,13c0.6,1,1.7,1.5,2.8,1.5c1.1,0,2.2-0.6,2.8-1.5l8.3-13     C97.6,56.1,97.7,54.8,97.1,53.7z"/>
                                                 </g>
