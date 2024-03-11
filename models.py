@@ -1,5 +1,6 @@
-from extensions import db
+from extensions import db, login_manager
 from datetime import datetime
+from flask_login import UserMixin
 
 
 class Satellite(db.Model):
@@ -59,3 +60,17 @@ class Reports(db.Model):
     def __repr__(self):
         return f'{self.PassData.SatetlliteName} {self.PassData.AOS.strftime("%d-%m-%y %H:%M:%S")} {self.status}'
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    # username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    # image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
+    password = db.Column(db.String(60), nullable=False)
+    # posts = db.relationship('Post', backref='author', lazy=True)
+
+    def __repr__(self):
+        return f"User( '{self.email}')"

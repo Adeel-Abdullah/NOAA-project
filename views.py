@@ -1,13 +1,14 @@
-from flask import render_template, jsonify, request, send_file
-from models import Satellite, PassData, Reports
+from flask import render_template, jsonify, request, send_file, redirect, url_for, flash
+from models import Satellite, PassData, Reports, User
 from app import app
-from app import db, scheduler, cache
+from app import db, scheduler, cache, bcrypt
 from sdrangel_requests import *
 from scheduled_functions import AOS_macro, LOS_macro, launch_sdr, kill_sdr
 from datetime import datetime, timedelta
 from sqlalchemy import and_
 from jinja2  import TemplateNotFound
-from forms import SettingsForm
+from forms import SettingsForm, RegistrationForm, LoginForm
+from flask_login import login_user, current_user, logout_user, login_required
 
 per_page = 10
 
@@ -24,10 +25,50 @@ if not cache.get("location"):
 if not cache.get("minEL"):
     cache.set("minEL", 15)
 
+@app.route('/accounts/sign-up/', methods=['GET', 'POST'])
+def accounts_sign_up():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(email=form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        flash('Your account has been created! You are now able to log in', 'success')
+        return redirect(url_for('accounts_sign_in'))
+    return render_template('accounts/sign-up.html', title='Register', form=form, segment='sign_up', parent='accounts')
+
+#   form = RegistrationForm()
+#   return render_template('accounts/sign-up.html', form=form, segment='sign_up', parent='accounts')
+
+@app.route('/accounts/login/', methods=['GET', 'POST'])
+def accounts_sign_in():
+    if current_user.is_authenticated:
+        return redirect(url_for('pages_dashboard'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('pages_dashboard'))
+        else:
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+    return render_template('accounts/sign-in.html', title='Login', form=form, segment='sign_in', parent='accounts')
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('accounts_sign_in'))
+
+#   form = LoginForm()
+#   return render_template('accounts/sign-in.html', form=form, segment='sign_in', parent='accounts')
 
 @app.route('/dashboard.html')
 @app.route('/', defaults={'path': 'index.html'})
 @app.route('/')
+@login_required
 def pages_dashboard():
     try:
         return render_template('pages/dashboard/dashboard.html', segment='dashboard', parent='pages')
@@ -35,11 +76,13 @@ def pages_dashboard():
         return render_template('pages/index.html'), 404
 
 @app.route('/pages/tables/bootstrap-tables/')
+@login_required
 def pages_tables_bootstrap_tables():
   return render_template('pages/tables/bootstrap-tables.html', segment='bootstrap_tables', parent='tables')
 
 @app.route('/pages/settings/', methods=['GET', 'POST'])
 @app.route('/settings.html', methods=['GET', 'POST'])
+@login_required
 def pages_settings():
     form = SettingsForm()
     toggle1 = cache.get("user-notification-1")
@@ -61,6 +104,7 @@ def updateSettings():
 
 @app.route('/schedule.html', methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/schedule.html/<int:page>", methods=['GET', 'POST'])
+@login_required
 def page_schedule(page):
     # data = str(data.decode())
     segment = get_segment(request)
@@ -71,6 +115,7 @@ def page_schedule(page):
 
 @app.route('/table', methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/table/<int:page>", methods=['POST'])
+@login_required
 def table(page):
     data = request.data
     data = json.loads(data)
@@ -83,6 +128,7 @@ def table(page):
 
 @app.route('/received-passes-table.html', methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/received-passes-table.html/<int:page>", methods=['GET', 'POST'])
+@login_required
 def page_report(page):
     # data = str(data.decode())
     segment = get_segment(request)
@@ -93,6 +139,7 @@ def page_report(page):
 
 
 @app.route('/<template>')
+@login_required
 def route_template(template):
     try:
         if not template.endswith('.html'):
@@ -119,6 +166,7 @@ def get_segment(request):
 
 @app.route("/NOAA15", methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/NOAA15/<int:page>", methods=['GET', 'POST'])
+@login_required
 def popNOAA15(page):
     page = page
     data = PassData.query.filter(
@@ -130,6 +178,7 @@ def popNOAA15(page):
 
 @app.route("/NOAA18", methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/NOAA18/<int:page>", methods=['GET', 'POST'])
+@login_required
 def popNOAA18(page):
     page = page
     data = PassData.query.filter(
@@ -141,6 +190,7 @@ def popNOAA18(page):
 
 @app.route("/NOAA19", methods=['GET', 'POST'], defaults={"page": 1})
 @app.route("/NOAA19/<int:page>", methods=['GET', 'POST'])
+@login_required
 def popNOAA19(page):
     page = page
     data = PassData.query.filter(

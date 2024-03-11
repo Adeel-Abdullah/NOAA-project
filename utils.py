@@ -420,7 +420,7 @@ with app.app_context():
     tle2 = a.TLERow2
 
 #python fire_on_aos.py -p 1440 -s 'NOAA 18' -a '2024-01-13 6:33:45.125351' -l '2024-01-13 6:43:45.125351' -t1 '1 25338U 98030A   24009.94849596  .00000237  00000+0  11646-3 0  9992' -t2 '2 25338  98.5865  40.2731 0011332  72.3051 287.9365 14.26468234334481'
-a = subprocess.Popen(['python', 'fire_on_aos.py', '-p', str(pk), '-s', SatelliteName, '-a', aos.isoformat() , '-l', los.isoformat(), '-t1', tle1, '-t2', tle2], cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+# a = subprocess.Popen(['python', 'fire_on_aos.py', '-p', str(pk), '-s', SatelliteName, '-a', aos.isoformat() , '-l', los.isoformat(), '-t1', tle1, '-t2', tle2], cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 outs, errs = a.communicate()
 print(outs)
 print("error=",errs)

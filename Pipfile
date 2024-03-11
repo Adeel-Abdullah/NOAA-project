@@ -18,6 +18,9 @@ flask-wtf = "*"
 pillow = "*"
 selenium = "*"
 screeninfo = "*"
+flask-login = "*"
+flask-bcrypt = "*"
+email-validator = "*"
 
 [dev-packages]
 
