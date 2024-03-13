@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SelectField, IntegerField, DecimalField
-from wtforms.validators import Length, ValidationError, optional
+from wtforms import StringField, BooleanField, SelectField, IntegerField, DecimalField, PasswordField, SubmitField
+from wtforms.validators import Length, ValidationError, optional, DataRequired, Email, EqualTo
 import datetime
+from models import User
 
 def ValidateDirectory(form, field):
         from pathlib import Path
@@ -48,5 +49,26 @@ class SettingsForm(FlaskForm):
                                  render_kw={"placeholder": r"C:\Users\DELL\Documents\NOAA-Images"})
 
         
-    
+class RegistrationForm(FlaskForm):
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()],
+                        render_kw={"placeholder":"example@company.com"})
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[DataRequired(), EqualTo('password')])
+    TnC = BooleanField('Terms and Conditions')
+    submit = SubmitField('Sign Up')
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError('That email is taken. Please choose a different one.')
+        
+
+class LoginForm(FlaskForm):
+    email = StringField('Email',
+                        validators=[DataRequired(), Email()],
+                        render_kw={"placeholder":"example@company.com"})
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember = BooleanField('Remember Me')
+    submit = SubmitField('Login')
 

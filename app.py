@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from extensions import migrate, scheduler, db, cache
+from extensions import migrate, scheduler, db, cache, bcrypt, login_manager
 import os
 from scheduled_functions import updateDB, update_tle
 from flask.helpers import get_debug_flag
@@ -42,6 +42,10 @@ def create_app(config_class):
     cache.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = '/accounts/login/'
+    login_manager.login_message_category = 'info'
 
     with app.app_context():
         if not is_werkzeug_reloader_process():
