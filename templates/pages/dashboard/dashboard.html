@@ -10,13 +10,13 @@
 #defaultCountdown { display: inline-block; background: rgba(0, 0, 0, 0); border-color: rgba(0, 0, 0, 0)}
 
 .axis-label-elevation {
-        writing-mode: vertical-lr;
-      }
+      writing-mode: vertical-lr;
+    }
 #defaultCountdown { display: inline-block; background: rgba(0, 0, 0, 0); border-color: rgba(0, 0, 0, 0)}
 
 .axis-label-elevation {
-        writing-mode: vertical-lr;
-      }
+      writing-mode: vertical-lr;
+    }
 
 .highlight {
     color: #b00;
@@ -98,7 +98,8 @@
 
 @font-face{
  font-family:'digital-clock-font';
- src: url('static/assets/fonts/14SegmentLEDRegular.ttf');
+ size-adjust: 70%;
+ src: url('static/assets/fonts/digital-7.ttf');
 }
 #polaricon{
   animation: rotmove 3s ;
@@ -168,7 +169,7 @@
         </button>
         </div>
         <div id="geocontent" class="mt-4 d-flex justify-content-center border"></div>
-        <h1 class="mt-2 h5">Timeline</h1>
+        <h1 class="mt-2 h5" data-i18n="timeline"></h1>
         
              
           
@@ -190,7 +191,7 @@
         </div>  
     </div>
 
-  <h1 class="h5 mt-2">Status</h1>
+  <h1 class="h5 mt-2" data-i18n="status"></h1>
   <div class="flex-row flex-0 b-2 align-items-center">
     <div class="row">
       <!-- First card -->
@@ -198,11 +199,11 @@
         <div class="card">
           <div class="card-body">
             <h4 class="h6 mb-0">
-                <a href="#">RTL SDR</a>
+                <a href="#" data-i18n="rtl_sdr"></a>
             </h4>
             <div id="status1" class="d-flex align-items-center">
                 <div class="bg-success dot rounded-circle me-1"></div>
-                <small>Online</small>
+                <small data-i18n="online"></small>
             </div>
           </div>
         </div>
@@ -213,11 +214,11 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="h6 mb-0">
-                    <a href="#">SDR Server</a>
+                    <a href="#" data-i18n="sdr_server"></a>
                 </h4>
                 <div id="status2" class="d-flex align-items-center">
                     <div class="bg-danger dot rounded-circle me-1"></div>
-                    <small>Offline</small>
+                    <small data-i18n="online"></small>
                 </div>
             </div>
         </div>
@@ -228,11 +229,11 @@
         <div class="card">
           <div class="card-body">
             <h4 class="h6 mb-0">
-                <a href="#">Database</a>
+                <a href="#" data-i18n="database"></a>
             </h4>
             <div class="d-flex align-items-center">
                 <div class="bg-success dot rounded-circle me-1"></div>
-                <small>Online</small>
+                <small data-i18n="online"></small>
             </div>
           </div>
         </div>
@@ -243,11 +244,11 @@
         <div class="card">
           <div class="card-body">
             <h4 class="h6 mb-0">
-                <a href="#">Rotator</a>
+                <a href="#" data-i18n="rotator"></a>
             </h4>
             <div id="status3" class="d-flex align-items-center">
                 <div class="bg-danger dot rounded-circle me-1"></div>
-                <small>Busy</small>
+                <small data-i18n="online"></small>
             </div>
           </div>
         </div>
@@ -261,7 +262,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document"> 
       <div class="modal-content"> 
         <div class="modal-header"> 
-          <h2 class="h6 modal-title">Polar Chart</h2> 
+          <h2 class="h6 modal-title" data-i18n="polar_chart"></h2> 
           <button type="button" class="btn-close" data-bs-dismiss="modal" 
             aria-label="Close">
           </button> 
@@ -270,8 +271,8 @@
           <div id="polarcontainer"></div>
         </div> 
         <div class="modal-footer"> 
-          <button type="button" class="btn btn-link text-gray-600 ms-auto" 
-            data-bs-dismiss="modal">Close</button> 
+          <!-- <button type="button" class="btn btn-link text-gray-600 ms-auto" 
+            data-bs-dismiss="modal">Close</button>  -->
         </div> 
       </div> 
     </div> 
@@ -284,7 +285,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document"> 
       <div class="modal-content"> 
         <div class="modal-header"> 
-          <h2 class="h6 modal-title">Geographic Depiction</h2> 
+          <h2 class="h6 modal-title" data-i18n="geo_depiction"></h2> 
           <button type="button" class="btn-close" data-bs-dismiss="modal" 
             aria-label="Close">
           </button> 
@@ -295,8 +296,8 @@
           </div>
         </div> 
         <div class="modal-footer"> 
-          <button type="button" class="btn btn-link text-gray-600 ms-auto" 
-            data-bs-dismiss="modal">Close</button> 
+          <!-- <button type="button" class="btn btn-link text-gray-600 ms-auto" 
+            data-bs-dismiss="modal">Close</button>  -->
         </div> 
       </div> 
     </div> 
@@ -310,7 +311,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document"> 
     <div class="modal-content"> 
       <div class="modal-header"> 
-        <h2 class="h6 modal-title">Pass Details</h2> 
+        <h2 class="h6 modal-title" data-i18n="pass_details"></h2> 
         <button type="button" class="btn-close" data-bs-dismiss="modal" 
           aria-label="Close">
         </button> 
@@ -321,23 +322,23 @@
         <table class="table">
         <tbody>
           <tr>
-            <td>AOS</td>
+            <td data-i18n="aos"></td>
             <td id="aos_modal"></td>
           </tr>
           <tr>
-            <td>In Azimuth</td>
+            <td data-i18n="in_azimuth"></td>
             <td id="in_azimuth_modal"></td>
           </tr>
           <tr>
-            <td>Max Elevation</td>
+            <td data-i18n="max_elevation"></td>
             <td id="maxel_modal"></td>
           </tr>
           <tr>
-            <td>LOS</td>
+            <td data-i18n="los"></td>
             <td id="los_modal"></td>
           </tr>
           <tr>
-            <td>Out Azimuth</td>
+            <td data-i18n="out_azimuth"></td>
             <td id="out_azimuth_modal"></td>
           </tr>
           </tbody>
@@ -347,8 +348,8 @@
         </div>
       </div> 
       <div class="modal-footer"> 
-        <button type="button" class="btn btn-link text-gray-600 ms-auto" 
-          data-bs-dismiss="modal">Close</button> 
+        <!-- <button type="button" class="btn btn-link text-gray-600 ms-auto" 
+          data-bs-dismiss="modal">Close</button>  -->
       </div> 
     </div> 
   </div> 
@@ -360,8 +361,8 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 {{ super() }}
-<!-- <script src="{{ url_for('static', filename='assets/js/chart.js') }}"></script> -->
 <script src="{{ url_for('static', filename='assets/js/jquery.countdown.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='assets/js/jquery.countdown-zh-CN.js') }}"></script> -->
 <script src="{{ url_for('static', filename='assets/js/d3.min.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/satellite.min.js') }}"></script>
 <script src="{{ url_for('static', filename='assets/js/topojson-client.min.js') }}"></script>
@@ -375,6 +376,11 @@ document.getElementById('clock_local').style.fontFamily = 'digital-clock-font';
     var hl = today.getHours();
     var ml = today.getMinutes();
     var sl = today.getSeconds();
+
+    let day = today.getDate();
+    let month = today.getMonth() + 1;
+    let year = today.getFullYear();
+
     // h = h + offset;
     if (hl > 24) {
       hl = hl - 24;
@@ -385,7 +391,7 @@ document.getElementById('clock_local').style.fontFamily = 'digital-clock-font';
     hl = checkTime(hl);
     ml = checkTime(ml);
     sl = checkTime(sl);
-    document.getElementById('clock_local').innerHTML = hl + "." + ml + "." + sl;
+    document.getElementById('clock_local').innerHTML = year + "-" + checkTime(month) + "-" + checkTime(day) +" -- "+ hl + ":" + ml + ":" + sl;
     var t = setTimeout(function() {
       startTime()
     }, 500);
@@ -443,8 +449,10 @@ $.ajax({type: "GET",
               tickInterval: 1,
               onTick: highlightLast,
               onExpiry: startHiddenCountdown,
-              description: 'To the <i>next pass</i> of <a href="#">'+ data[0].SatetlliteName +'</a>!',
-              expiryText: 'Receiving '+data[0].SatetlliteName+' '
+              // description: 'To the <i>next pass</i> of <a href="#">'+ data[0].SatetlliteName +'</a>!',
+              description: '距离下一颗卫星 '+ data[0].SatetlliteName +' 进入接收范围倒计时',
+              // expiryText: 'Receiving '+data[0].SatetlliteName+' '
+              expiryText: '接收 '+data[0].SatetlliteName+' '
           });
             $('#hiddenCountdown').hide();
 
@@ -456,7 +464,8 @@ $.ajax({type: "GET",
                 tickInterval: 1,
                 onTick: null,
                 onExpiry: null,
-                description: 'until the pass ends'
+                // description: 'until the pass ends'
+                description: '直到通行证结束'
             });
         }
           
@@ -466,6 +475,9 @@ $.ajax({type: "GET",
             $(this).addClass('highlight'); 
             showNotyfAOS('Commencing Acquisition From NOAA');
         } 
+        if ($.countdown.periodsToSeconds(periods) === 90) {
+          reloadpage();
+        }
       }
         function startHiddenCountdown(){
           // console.log('startHiddenCountdown');
@@ -594,7 +606,10 @@ $.ajax({type: "GET",
         .domain(extent)
         .range([0, width]);
 
-        // console.log(newPasses);
+        // xScale.ticks().tickFormat("%Y-%m-%d ");
+
+        // console.log(xScale.ticks());
+      
       // Create y-scale
       var yScale = d3.scaleLinear()
         .domain([0, 95])
@@ -617,7 +632,7 @@ $.ajax({type: "GET",
         .call(yAxisGrid);
 
       // Create x-axis
-      var xAxis = d3.axisTop(xScale);
+      var xAxis = d3.axisTop(xScale).tickFormat(d3.timeFormat("%-H:%M"));
 
       // Create y-axis
       var yAxis = d3.axisLeft(yScale);
@@ -646,17 +661,19 @@ $.ajax({type: "GET",
       .attr("text-anchor", "start")
       .attr("font-family", "sans-serif")
       .attr("font-size", "10px")
-      .text("↑ Max Elevation");
+      // .text("↑ Max Elevation");
+      .text("↑ 卫星过站最大仰角");
 
         // X-axis title
     svgchart.append("text")
-      .attr("x", width - 74)
+      .attr("x", width - 100)
       .attr("y", 18)
       .attr("fill", "grey")
       .attr("text-anchor", "start")
       .attr("font-family", "sans-serif")
       .attr("font-size", "10px")
-      .text("Time (AOS) →");
+      // .text("Time (AOS) →");
+      .text("时间 (卫星进站时间) →");
 
       // Create rectangles
       svgchart.selectAll("rect")
@@ -715,7 +732,8 @@ $.ajax({type: "GET",
       svgchart.append("text")
       .attr("x", xScale(new Date()))
       .attr("y", yScale(95))
-      .text("now")
+      // .text("now")
+      .text("现在")
       .style("font-size", "12px")
       .style("fill", "red")
       .style("text-anchor", "end")
@@ -788,9 +806,15 @@ $.ajax({type: "GET",
         var tooltip = d3.select('.tooltip');
         // Tooltip content
         d3.select("#satname").text(d.SatetlliteName);
-        d3.select("#maxel").text("Max. Elevation: " + d.maxElevation);
-        d3.select("#aos").text("AOS: " + d.AOS);
-        d3.select("#los").text("LOS: " + d.LOS);
+        // d3.select("#maxel").text("Max. Elevation: " + d.maxElevation);
+        d3.select("#maxel").text("卫星过站最大仰角: " + d.maxElevation);
+
+        // d3.select("#aos").text("AOS: " + d.AOS);
+        d3.select("#aos").text("卫星进站时间: " + d.AOS);
+
+        // d3.select("#los").text("LOS: " + d.LOS);
+        d3.select("#los").text("卫星出站时间: " + d.LOS);
+
         tooltip.transition().duration(500).style("opacity", 1);
         tooltip.style("left", (event.pageX -30) + "px");    // Fix
         tooltip.style("top", (event.pageY -30) + "px");     // Fix
@@ -1397,7 +1421,8 @@ function polarChart(){
             .attr("text-anchor", "start")
             .attr("font-family", "sans-serif")
             .attr("font-size", "10px")
-            .text("← AOS")
+            // .text("← AOS")
+            .text("← 卫星进站时间")
             .attr("class", "axis-label-elevation")
             .attr("transform", "rotate("+(path[0].azimuth-90)+")");
 
@@ -1409,7 +1434,8 @@ function polarChart(){
             .attr("text-anchor", "start")
             .attr("font-family", "sans-serif")
             .attr("font-size", "10px")
-            .text("← LOS")
+            // .text("← LOS")
+            .text("← 卫星出站时间")
             .attr("class", "axis-label-elevation")
             .attr("transform", "rotate("+(path[path.length-1].azimuth-90)+")");
 
@@ -1617,7 +1643,9 @@ function polarChart(){
         let speed = Math.abs(durationSeconds/5); //~ Rough estimate
         context.font = "15px sans-serif";
         context.fillStyle = 'red';
-        context.fillText(speed + 'x faster', 75, height-10); 
+        // context.fillText(speed + 'x faster', 75, height-10); 
+        context.fillText('卫星'+speed + '倍速度模拟', 75, height-10); 
+        
 
 
         u += 0.01
@@ -1794,7 +1822,8 @@ function polarChart(){
       .attr("text-anchor", "middle")
       .attr("font-family", "sans-serif")
       .attr("font-size", "8px")
-      .text("AOS")
+      // .text("AOS")
+      .text("卫星进站时间")
       .attr('transform', 'translate('+margin.left +','+ margin.top +')');
 
 
@@ -1805,7 +1834,8 @@ function polarChart(){
       .attr("text-anchor", "middle")
       .attr("font-family", "sans-serif")
       .attr("font-size", "8px")
-      .text("LOS")
+      // .text("LOS")
+      .text("卫星出站时间")
       .attr('transform', 'translate('+margin.left +','+ margin.top +')');
 
         svg.append('text')
@@ -1815,7 +1845,8 @@ function polarChart(){
         .attr("text-anchor", "start")
         .attr("font-family", "sans-serif")
         .attr("font-size", "12px")
-        .text("↑ Elevation ");
+        // .text("↑ Elevation ");
+        .text("↑ 仰角");
 
         svg.append('text')
         .attr('x', width-30)
@@ -1824,8 +1855,8 @@ function polarChart(){
         .attr("text-anchor", "start")
         .attr("font-family", "sans-serif")
         .attr("font-size", "12px")
-        .text("Azimuth →");
-
+        // .text("Azimuth →");
+        .text("方位角 →");
           myModal.show();
         }
       });
@@ -1891,15 +1922,18 @@ function polarChart(){
             $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
 
             let smallstatus = document.body.querySelectorAll("#status1 > small");
-            $(smallstatus[0]).text("Online");
+            // $(smallstatus[0]).text("Online");
+            $(smallstatus[0]).attr("data-i18n", "online" );
           }
           else{
             let statusdiv = document.body.querySelectorAll("#status1 > div");
             $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
-            showNotyfAOS('RTL SDR is Offline!');
+            // showNotyfAOS('RTL SDR is Offline!');
+            showNotyfAOS('RTL SDR 离线！');
 
             let smallstatus = document.body.querySelectorAll("#status1 > small");
-            $(smallstatus[0]).text("Offline");
+            // $(smallstatus[0]).text("Offline");
+            $(smallstatus[0]).attr("data-i18n", "offline" );
           }
         }
     });
@@ -1919,14 +1953,16 @@ function polarChart(){
 //             $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
 
 //             let smallstatus = document.body.querySelectorAll("#status2 > small");
-//             $(smallstatus[0]).text("Online");
+//             // $(smallstatus[0]).text("Online");
+//             $(smallstatus[0]).attr("data-i18n", "online" );
 //           }
 //           else{
 //             let statusdiv = document.body.querySelectorAll("#status2 > div");
 //             $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
 
 //             let smallstatus = document.body.querySelectorAll("#status2 > small");
-//             $(smallstatus[0]).text("Offline");
+//             // $(smallstatus[0]).text("Offline");
+//             $(smallstatus[0]).attr("data-i18n", "offline" );
 //           }
 //         }
 //     });
@@ -1945,14 +1981,16 @@ $("#status3").each(function CheckROT() {
           $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
 
           let smallstatus = document.body.querySelectorAll("#status3 > small");
-          $(smallstatus[0]).text("Online");
+          // $(smallstatus[0]).text("Online");
+          $(smallstatus[0]).attr("data-i18n", "online" );
         }
         else{
           let statusdiv = document.body.querySelectorAll("#status3 > div");
           $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
 
           let smallstatus = document.body.querySelectorAll("#status3 > small");
-          $(smallstatus[0]).text("Offline");
+          // $(smallstatus[0]).text("Offline");
+          $(smallstatus[0]).attr("data-i18n", "offline" );
         }
       }
   });

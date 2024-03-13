@@ -3,13 +3,13 @@
 <table  class="table table-hover">
     <thead>
         <tr>
-            <th class="border-gray-200">#</th>
-            <th class="border-gray-200">Satellite</th>						
-            <th class="border-gray-200">AOS</th>
-            <th class="border-gray-200">TOP</th>
-            <th class="border-gray-200">LOS</th>
-            <th class="border-gray-200">Max El</th>
-            <th class="border-gray-200">Action</th>
+            <th class="border-gray-200" data-i18n="#"></th>
+            <th class="border-gray-200" data-i18n="satellite"></th>						
+            <th class="border-gray-200" data-i18n="aos"></th>
+            <!-- <th class="border-gray-200" hidden>TOP</th> -->
+            <th class="border-gray-200" data-i18n="los"></th>
+            <th class="border-gray-200" data-i18n="maxel"></th>
+            <th class="border-gray-200" data-i18n="action"></th>
         </tr>
     </thead>
     <tbody>
@@ -25,7 +25,7 @@
                 <span class="fw-normal">{{passes.SatetlliteName}}</span>
             </td>
             <td><span class="fw-normal">{{passes.AOS}}</span></td>
-            <td><span class="fw-normal">{{(passes.AOS + (passes.LOS - passes.AOS)/2).replace(microsecond=0)}}</span></td>
+            <!-- <td><span class="fw-normal">{{(passes.AOS + (passes.LOS - passes.AOS)/2).replace(microsecond=0)}}</span></td> -->
             <td><span class="fw-normal">{{passes.LOS}}</span></td>
             {% if passes.maxElevation < 20 %}
             <td><span class="fw-bold text-danger">{{passes.maxElevation}}</span><svg class="icon icon-xs text-danger" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z" clip-rule="evenodd"></path></svg></td>
@@ -53,7 +53,8 @@
         <ul class="pagination mb-0">
               {% if passdata.has_prev%}
               <li class="page-item">
-                  <a class="page-link" href="{{ url_for(request.endpoint, page=passdata.prev_num) }}">Previous</a>
+                  <!-- <a class="page-link" href="{{ url_for(request.endpoint, page=passdata.prev_num) }}">Previous</a> -->
+                  <a class="page-link" href="{{ url_for(request.endpoint, page=passdata.prev_num) }}">以前的</a>
               </li>                    
               {% endif %}
             
@@ -70,11 +71,13 @@
               {% endfor %}
               {% if passdata.has_next  %}
               <li class="page-item">
-                  <a class="page-link" href="{{ url_for(request.endpoint, page=passdata.next_num) }}">Next</a>
+                  <!-- <a class="page-link" href="{{ url_for(request.endpoint, page=passdata.next_num) }}">Next</a> -->
+                  <a class="page-link" href="{{ url_for(request.endpoint, page=passdata.next_num) }}">下一个</a>
               </li>
               {% endif %}
         </ul>
     </nav>
-    <div class="fw-normal small mt-4 mt-lg-0">Showing <b>{{ passdata.items|length }}</b> out of <b>{{ passdata.total }}</b> entries</div>
+    <!-- <div class="fw-normal small mt-4 mt-lg-0">Showing <b>{{ passdata.items|length }}</b> out of <b>{{ passdata.total }}</b> entries</div> -->
+    <div class="fw-normal small mt-4 mt-lg-0">显示 <b>{{ passdata.items|length }}</b>/<b>{{ passdata.total }}</b> 条目</div>
 </div>
 </div>

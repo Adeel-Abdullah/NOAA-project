@@ -19,7 +19,7 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
 <div class="d-block mb-4 mb-md-0">
 <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
-              <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+              <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent" hidden>
                   <li class="breadcrumb-item">
                       <a href="#">
                           <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
@@ -29,18 +29,18 @@
                   <li class="breadcrumb-item active" aria-current="page">SDR Server</li>
               </ol>
           </nav>
-          <h1 class="text-center">Control</h1>
+          <h1 class="text-center" data-i18n="control"></h1>
 </div>
 </div>
 <div class="col-sm-10">
-  <p class="text-danger mb-0">SDR server can be turned on or off from here</p>
+  <p class="text-danger mb-0" data-i18n="sdr_server_control"></p>
 </div>
   <div class="container mt-4 mb-4">
     <div class="row">
       <div class="col-md-4">
         <div class="card" id="card1">
           <div class="card-body">
-            <h4 class="card-title">SDR Server</h4>
+            <h4 class="card-title" data-i18n="sdr_server"></h4>
             <div id="status2" class="d-flex align-items-center">
                 <div class="bg-danger dot rounded-circle me-1"></div>
                 <small>Offline</small>
@@ -95,7 +95,8 @@ $(function() {
 
     $('#flexSwitchCheck').change(function() {
         if(this.checked) {
-            var returnVal = confirm("This will Launch SDR Server!");
+            // var returnVal = confirm("This will Launch SDR Server!");
+            var returnVal = confirm("这将启动 SDR 服务器！");
             $(this).prop("checked", returnVal);
             showPleaseWait();
             $.ajax({type: "GET",
@@ -105,7 +106,7 @@ $(function() {
                     $('#flexSwitchCheck').val(this.checked);
                 }
             });
-            console.log('launching it...');
+            // console.log('launching it...');
         }else{
             $.ajax({type: "GET",
                 url: "/killsdr",
@@ -114,19 +115,19 @@ $(function() {
                     $('#flexSwitchCheck').val(this.unchecked);
                 }
             });
-            console.log('killing it...');
+            // console.log('killing it...');
         }
 
     });
 
   function showPleaseWait() {
-
+    // This may take time, Please wait...
     if (document.querySelector("#pleaseWaitDialog") == null) {
         var modalLoading = '<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false" role="dialog">\
             <div class="modal-dialog">\
                 <div class="modal-content">\
                     <div class="modal-header">\
-                        <h4 class="modal-title">This may take time, Please wait...</h4>\
+                        <h4 class="modal-title">这可能需要一些时间，请稍等...</h4>\
                     </div>\
                     <div class="modal-body">\
                         <div class="progress">\

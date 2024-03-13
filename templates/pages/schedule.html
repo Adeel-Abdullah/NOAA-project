@@ -60,7 +60,7 @@
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
       <div class="d-block mb-4 mb-md-0">
           <nav aria-label="breadcrumb" class="d-none d-md-inline-block">
-              <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent">
+              <ol class="breadcrumb breadcrumb-dark breadcrumb-transparent" hidden>
                   <li class="breadcrumb-item">
                       <a href="#">
                           <svg class="icon icon-xxs" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
@@ -70,15 +70,15 @@
                   <li class="breadcrumb-item active" aria-current="page">Schedule</li>
               </ol>
           </nav>
-          <h2 class="h4">All Passes</h2>
-          <p class="mb-0">Starting from now, all upcoming passes</p>
+          <h2 class="h4" data-i18n="all_passes"></h2>
+          <p class="mb-0" data-i18n="starting_from_now"></p>
       </div>
-      <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-toolbar mb-2 mb-md-0" hidden>
           <a href="#" id="btn_get_val" class="btn btn-sm btn-gray-800 d-inline-flex align-items-center">
               <svg class="icon icon-xs me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
               Schedule
           </a>
-          <div class="btn-group ms-2 ms-lg-3">
+          <div class="btn-group ms-2 ms-lg-3" >
               <button type="button" class="btn btn-sm btn-outline-gray-600">Share</button>
               <button type="button" class="btn btn-sm btn-outline-gray-600">Export</button>
           </div>
@@ -89,9 +89,11 @@
       <div class="row align-items-center justify-content-between">
           <div class="col col-md-6 col-lg-3 col-xl-4">
             <form method="post">
-            <label class="form-label">Choose a Satellite...</label>
-                <select name="Satellite" id="multiple" multiple>
-                <optgroup label="Satellites" data-selectall="true" data-selectalltext="Select them all!">
+            <label class="form-label" data-i18n="choose_a_satellite"></label>
+                <!-- <select name="Satellite" id="multiple" multiple> -->
+                  <select name="卫星介绍" id="multiple" multiple>
+                <!-- <optgroup label="Satellites" data-selectall="true" data-selectalltext="Select them all!"> -->
+                  <optgroup label="卫星介绍" data-selectall="true" data-selectalltext="全部选择！">
                   <option value="NOAA 15">NOAA-15</option>
                   <option value="NOAA 18">NOAA-18</option>
                   <option value="NOAA 19">NOAA-19</option>
@@ -128,7 +130,7 @@
 <!-- For Tags -->
 
 <!-- <script src="https://unpkg.com/slim-select@latest/dist/slimselect.min.js"></script> -->
-
+<script src="{{ config.ASSETS_ROOT }}/static/assets/js/language.js"></script>
 <script>
     var select = new SlimSelect({
     select: '#multiple',
@@ -175,6 +177,7 @@
         success: function(response) {
             //table = response.document.getelementbyID("Pass_table");
             $("#Pass_table").replaceWith(response);
+            changeLanguage('cn');
           }
         });
 });  

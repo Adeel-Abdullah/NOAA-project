@@ -12,7 +12,7 @@
         
         
         <div >
-            <h2 class="h5 mb-4">General Settings</h2>
+            <h2 class="h5 mb-4" data-i18n="general_settings"></h2>
             <div class="card card-body border-0 shadow mb-4">
                 <form method="post">
                     <div class="row">
@@ -77,21 +77,21 @@
                         </div>
                     </div>
                         <div class="mt-3">
-                            <button id="Save-all" class="btn btn-gray-800 mt-2 animate-up-2" type="submit">Save all</button>
+                            <button id="Save-all" class="btn btn-gray-800 mt-2 animate-up-2" type="submit" data-i18n="save_all"></button>
                         </div>
                     </div>
                 </form>
             </div>
             
-            <h2 class="h5 mb-4">Alerts & Notifications</h2>
+            <h2 class="h5 mb-4" data-i18n="alerts_notifications"></h2>
             <div class="card card-body border-0 shadow mb-4 mb-xl-0">
                 
                 
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex align-items-center justify-content-between px-0 border-bottom">
                         <div>
-                            <h3 class="h6 mb-1">Enable AOS/LOS Notifications</h3>
-                            <p class="small pe-4">Notifications will be issued before, during and after pass reception.</p>
+                            <h3 class="h6 mb-1" data-i18n="enable_aos_los_notifications"></h3>
+                            <p class="small pe-4" data-i18n="notifications_description"></p>
                         </div>
                         <div>
                             <div class="form-check form-switch">
@@ -106,8 +106,9 @@
                     </li>
                     <li class="list-group-item d-flex align-items-center justify-content-between px-0 border-bottom">
                         <div>
-                            <h3 class="h6 mb-1">Enable System Status Notifications</h3>
-                            <p class="small pe-4">Get system related notifications i.e, RTL-SDR offline etc.,</p>
+    
+                            <h3 class="h6 mb-1" data-i18n="enable_status_notifications"></h3>
+                            <p class="small pe-4" data-i18n="status_notifications_description"></p>
                         </div>
                         <div>
                             <div class="form-check form-switch">
@@ -198,6 +199,10 @@ $("#Save-all").on('click', function(e){
     
   });
 });
+$( document ).ready(function() {
+    $("#theme-settings-expand").hide();
+});
+
 
 //let swalWithBootstrapButtons = Swal.mixin({
 //    customClass: {

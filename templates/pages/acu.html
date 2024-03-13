@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antenna Control Dashboard</title>
+    <!-- <title>Antenna Control Dashboard</title> -->
+    <title>天线控制仪表板</title>
     <link type="text/css" href="{{ url_for('static', filename='assets/css/volt.css') }}" rel="stylesheet">
     {% include 'includes/scripts.html' %}
     <style>
@@ -78,31 +79,31 @@
 <body>
     
     <div class="container">
-        <h1>Antenna Control Unit</h1>
+        <h1 data-i18n="antenna_control_unit"></h1>
         <form id="acu-form">
             <div class="control-group">
                 <div class="left-group">
-                    <h6 class="mt-4" for="azimuth">Azimuth (degrees)</h6>
+                    <h6 class="mt-4" for="azimuth" data-i18n="azimuth_degrees"></h6>
                     <input type="number" id="azimuth" placeholder="Enter azimuth angle" min="0" max="360">
-                    <h6 class="mt-4" for="commanded-azimuth" >Command Azimuth</h6>
+                    <h6 class="mt-4" for="commanded-azimuth" data-i18n="command_azimuth"></h6>
                     <span id="commanded-azimuth" class="display">N/A</span>
-                    <h6 class="mt-4" for="current-azimuth" >Current Azimuth</h6>
+                    <h6 class="mt-4" for="current-azimuth" data-i18n="current_azimuth"></h6>
                     <span id="current-azimuth" class="display">N/A</span>
                 </div>
                 <div class="right-group">
-                    <h6 class="mt-4" for="elevation">Elevation (degrees)</h6>
+                    <h6 class="mt-4" for="elevation" data-i18n="elevation_degrees"></h6>
                     <input type="number" id="elevation" placeholder="Enter elevation angle" min="0" max="90">
-                    <h6 class="mt-4" for="commanded-elevation" >Command Elevation</h6>
+                    <h6 class="mt-4" for="commanded-elevation" data-i18n="command_elevation"></h6>
                     <span id="commanded-elevation" class="display">N/A</span>
-                    <h6 class="mt-4" for="current-elevation" >Current Elevation</h6>
+                    <h6 class="mt-4" for="current-elevation" data-i18n="current_elevation"></h6>
                     <span id="current-elevation" class="display">N/A</span>
                 </div>
             </div>
             <div class="control-group">
-                <button type="button" id="move-button" class="control-button">Move Antenna</button>
+                <button type="button" id="move-button" class="control-button" data-i18n="move_antenna"></button>
             </div>
             <div class="control-group">
-                <button type="button" id="start-controller" class="control-button">Start Controller</button>
+                <button type="button" id="start-controller" class="control-button" data-i18n="start_controller"></button>
             </div>
         </form>
         <div class="row mt-4">
@@ -123,17 +124,17 @@
             <div id= status class="d-flex align-items-center">
                 {% if status == "running" %}
                 <div class="bg-success dot rounded-circle me-1"></div>
-                <small>Online</small>                
+                <small data-i18n="online"></small>                
                 {% else %}
                 <div class="bg-danger dot rounded-circle me-1"></div>
-                <small>Offline</small>
+                <small data-i18n="offline"></small>
                 {% endif %}
             </div>
         </div>
         
     </div>
     </div>
-
+    <script src="{{ config.ASSETS_ROOT }}/static/assets/js/language.js"></script>
     <script>
         // JavaScript code to handle ACU functionality goes here
         var currentAzimuth = 0;
@@ -197,6 +198,8 @@
             }, 500);
         });
 
+
+        
         document.getElementById("start-controller").addEventListener("click", function() {
             let smallstatus = $("#status > small")
             console.log(smallstatus.text())
@@ -204,24 +207,29 @@
                 type: "POST",
                 url: "http://127.0.0.1:8091/sdrangel/featureset/feature/1/run",
                 success: function(data) {
-                    $(smallstatus[0]).text("Online");
+                    // $(smallstatus[0]).text("Online");
+                    $(smallstatus[0]).text("在线");
                     let statusdiv = $("#status > div");
                     $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
                 },
                 error: function(data){
                     swalWithBootstrapButtons.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: 'SDR Server is Unavailable!',
+                        // title: 'Error',
+                        title: '错误',
+                        // text: 'SDR Server is Unavailable!',
+                        text: 'SDR 服务器不可用！',
                         showConfirmButton: true,
                         timer: 2000
                 })
-                    $(smallstatus[0]).text("Offline");
+                    // $(smallstatus[0]).text("Offline");
+                    $(smallstatus[0]).text("离线");
                     let statusdiv = $("#status > div");
                     $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
                 }
             });
         });
+        changeLanguage('cn');
     </script>
 </body>
 </html>

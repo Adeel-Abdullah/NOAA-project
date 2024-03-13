@@ -98,7 +98,8 @@
               $(statusdiv[0]).removeClass('bg-danger').addClass('bg-success');
 
               let smallstatus = document.body.querySelectorAll("#status2 > small");
-              $(smallstatus[0]).text("Online");
+              // $(smallstatus[0]).text("Online");
+              $(smallstatus[0]).attr("data-i18n", "online" );
               document.cookie = "sdr=online;SameSite=None;Secure=false";
             }
             else{
@@ -106,7 +107,8 @@
               $(statusdiv[0]).removeClass('bg-success').addClass('bg-danger');
 
               let smallstatus = document.body.querySelectorAll("#status2 > small");
-              $(smallstatus[0]).text("Offline");
+              // $(smallstatus[0]).text("Offline");
+              $(smallstatus[0]).attr("data-i18n", "offline" );
               document.cookie = "sdr=offline;SameSite=None;Secure=false";
             }
           }
@@ -114,6 +116,11 @@
       setTimeout(CheckSDR, 15000);
     }
       CheckSDR();
+
+      
+        setTimeout(function (){
+        location.reload();
+        }, 7200000);
   
     </script>
   {% endblock javascripts %}  
