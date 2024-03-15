@@ -473,7 +473,8 @@ $.ajax({type: "GET",
       // console.log('highlightLast');
         if ($.countdown.periodsToSeconds(periods) === 60) {
             $(this).addClass('highlight'); 
-            showNotyfAOS('Commencing Acquisition From NOAA');
+            // showNotyfAOS('Commencing Acquisition From NOAA');
+            showNotyfAOS('开始从 NOAA 收购');
         } 
         if ($.countdown.periodsToSeconds(periods) === 90) {
           reloadpage();

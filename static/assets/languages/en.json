@@ -118,6 +118,21 @@
     "from_msl":"From Mean Sea Level",
     "minimum_elevation_pass":"Minimum Elevation Pass to Recieve",
     "default_timezone":"Default Timezone",
-    "default_tle_source":"Default TLE Source"
+    "default_tle_source":"Default TLE Source",
+    "create_account":"Create Account",
+    "email":"Email",
+    "password":"Password",
+    "confirm_password":"Confirm Password",
+    "i_agree":"I agree to the terms and conditions",
+    "signup":"Sign Up",
+    "already_have_acc":"Already have an account?",
+    "login_here":"Login here",
+    "sign_in":"Sign in",
+    "remember_me":"Remember Me",
+    "login":"Login",
+    "not_registered":"Not registered?",
+    "invalid_email":"Invalid email address.",
+    "field_equal_pass":"Field must be equal to password.",
+    "field_required":"This field is required."
 
 }

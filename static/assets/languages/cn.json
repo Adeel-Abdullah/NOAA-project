@@ -118,5 +118,21 @@
     "from_msl":"从平均海平面出发",
     "minimum_elevation_pass":"接收的最低海拔通行证",
     "default_timezone":"默认时区",
-    "default_tle_source":"默认 TLE 源"
+    "default_tle_source":"默认 TLE 源",
+    "create_account":"创建账户",
+    "email":"电子邮件",
+    "password":"密码",
+    "confirm_password":"确认密码",
+    "i_agree":"我同意这条款和条件",
+    "signup":"报名",
+    "already_have_acc":"已经有帐户？",
+    "login_here":"在此登录",
+    "sign_in":"登入",
+    "remember_me":"记住账号",
+    "login":"登录",
+    "not_registered":"未注册？",
+    "invalid_email":"无效的邮件地址。",
+    "field_equal_pass":"字段必须等于密码。",
+    "field_required":"此字段是必需的。"
+
 }

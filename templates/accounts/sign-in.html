@@ -6,7 +6,7 @@
 <!-- Section -->
 <section class="vh-lg-100 mt-5 mt-lg-0 bg-soft d-flex align-items-center">
   <div class="container">
-    <p class="text-center">
+    <p class="text-center" hidden>
       <a href="{{url_for('pages_dashboard')}}" class="d-flex align-items-center justify-content-center">
         <svg class="icon icon-xs me-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd"
@@ -16,12 +16,12 @@
         Back to homepage
       </a>
     </p>
-    <div class="row justify-content-center form-bg-image"
-      data-background-lg="{{ url_for('static' , filename = 'assets/img/illustrations/signin.svg' )}}">
+    <div class="row justify-content-center form-bg-image">
+      <!-- data-background-lg="{{ url_for('static' , filename = 'assets/img/illustrations/pngegg.png' )}}"> -->
       <div class="col-12 d-flex align-items-center justify-content-center">
         <div class="bg-white shadow border-0 rounded border-light p-4 p-lg-5 w-100 fmxw-500">
           <div class="text-center text-md-center mb-4 mt-md-0">
-            <h1 class="mb-0 h3">Sign in to our platform</h1>
+            <h1 class="mb-0 h3" data-i18n="sign_in"></h1>
           </div>
           <form method="POST" action="" class="mt-4" novalidate>
             <!-- Form -->
@@ -42,7 +42,7 @@
                   {{ form.email(class="form-control form-control-md is-invalid") }}
                   <div class="invalid-feedback">
                       {% for error in form.email.errors %}
-                          <span>{{ error }}</span>
+                          <span data-i18n="invalid_email">{{ error }}</span>
                       {% endfor %}
                   </div>
                   {% else %}
@@ -95,18 +95,18 @@
                     {{form.remember.label }}
                   </label>
                 </div>
-                <div><a href="#" class="small text-right">Lost password?</a></div>
+                <div><a href="#" class="small text-right" hidden>Lost password?</a></div>
               </div>
             </div>
             <div class="d-grid">
               {{ form.submit(class_="btn btn-gray-800") }}
             </div>
           </form>
-          <div class="mt-3 mb-4 text-center">
+          <div class="mt-3 mb-4 text-center" hidden>
             <span class="fw-normal">or login with</span>
           </div>
           <div class="d-flex justify-content-center my-4">
-            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2" aria-label="facebook button"
+            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2" aria-label="facebook button" hidden
               title="facebook button">
               <svg class="icon icon-xxs" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="facebook-f"
                 role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
@@ -115,7 +115,7 @@
                 </path>
               </svg>
             </a>
-            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2" aria-label="twitter button"
+            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500 me-2" aria-label="twitter button" hidden
               title="twitter button">
               <svg class="icon icon-xxs" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="twitter"
                 role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -124,7 +124,7 @@
                 </path>
               </svg>
             </a>
-            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500" aria-label="github button"
+            <a href="#" class="btn btn-icon-only btn-pill btn-outline-gray-500" aria-label="github button" hidden
               title="github button">
               <svg class="icon icon-xxs" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="github"
                 role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
@@ -135,10 +135,10 @@
             </a>
           </div>
           <div class="d-flex justify-content-center align-items-center mt-4">
-            <span class="fw-normal">
-              Not registered?
-              <a href="{{url_for('accounts_sign_up')}}" class="fw-bold">Create account</a>
+            <span class="fw-normal" data-i18n="not_registered">
             </span>
+              <a href="{{url_for('accounts_sign_up')}}" class="fw-bold" data-i18n="create_account"></a>
+            
           </div>
         </div>
       </div>

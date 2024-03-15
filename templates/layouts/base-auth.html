@@ -30,5 +30,13 @@
   </main>
 
   {% include 'includes/scripts.html' %}
-  {% block extra_js %}{% endblock extra_js %}
+  {% block extra_js %}
+  <script src="{{ config.ASSETS_ROOT }}/static/assets/js/language.js"></script>
+  <script>
+    $(function() {
+      changeLanguage('cn');
+    });
+    
+  </script>
+  {% endblock extra_js %}
 <body>
