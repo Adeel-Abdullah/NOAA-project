@@ -1637,7 +1637,8 @@ function polarChart(){
         const obsrlabelCoord = projection(beijingCoordinates);// Fetch from DB
         context.font = "12px sans-serif";
         context.textAlign = "center";
-        context.fillText("You", obsrlabelCoord[0], (obsrlabelCoord[1]-10)); 
+        // context.fillText("You", obsrlabelCoord[0], (obsrlabelCoord[1]-10)); 
+        context.fillText("你", obsrlabelCoord[0], (obsrlabelCoord[1]-10)); 
 
         // x Speed
         const durationSeconds = Math.abs((new Date(pass.LOS) - new Date(pass.AOS))/1000);
