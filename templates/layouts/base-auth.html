@@ -16,10 +16,11 @@
 
 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 
 <head> 
   {% include 'includes/head.html' %}
+  <link type="text/css" href="{{ url_for('static', filename='/vendor/bootstrap/dist/css/bootstrap.css') }}" rel="stylesheet">
   {% block extrastyle %}{% endblock extrastyle %}
 </head>
 
