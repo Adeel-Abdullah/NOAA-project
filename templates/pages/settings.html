@@ -6,11 +6,16 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
+
+{% macro printPlaceholder(field, setting) %}
+    {% if setting is none %}
+        {{field(class_="form-control", placeholder="")}}
+    {% else %}
+        {{field(class_="form-control", placeholder=setting)}}
+    {% endif %}
+{% endmacro %}
         
-    <div class="row">
-        
-        
-        
+    <div class="row">     
         <div >
             <h2 class="h5 mb-4">General Settings</h2>
             <div class="card card-body border-0 shadow mb-4">
@@ -22,7 +27,7 @@
                                 {% include "pages/errors.html" %}
 
                                 <label for="ground_station_name">{{form.GStationName.label}}</label>
-                                {{form.GStationName(class_="form-control")}}
+                                {{ printPlaceholder(form.GStationName, settings.GStationName) }}
                             </div>
                         </div>
                     </div>
@@ -33,47 +38,47 @@
                         <div class="col-md-3 mb-3">
                             <div>
                                 <label for="lat">{{form.latitude.label}}</label>
-                                {{form.latitude(class_="form-control")}}
+                                {{ printPlaceholder(form.latitude, settings.latitude) }}
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
                             <div>
                                 <label for="lng">{{form.longitude.label}}</label>
-                                {{form.longitude(class_="form-control")}}
+                                {{ printPlaceholder(form.longitude, settings.longitude) }}
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="gender">{{form.altitude.label}}</label>
-                            {{form.altitude(class_="form-control")}}
+                            {{ printPlaceholder(form.altitude, settings.altitude) }}
                         </div>
                     </div>
                     <div class="row align-items-center">
                         
                             <div class="col-md-12 mb-3">
                                 <label for="timezone">{{form.Timezone.label}}</label>
-                                {{form.Timezone(class_="form-control")}}
+                                {{ printPlaceholder(form.Timezone, settings.Timezone) }}
                             </div>
                             <div class="col-md-12 mb-3">
                                 <label for="tlesource">{{form.TLESource.label}}</label>
-                                {{form.TLESource(class_="form-control")}}
+                                {{ printPlaceholder(form.TLESource, settings.TLESource) }}
                             </div>
                     </div>
                         <div class="row">
                         <div class="col-md-3 mb-3">
                             <div>
                                 <label for="lat">{{form.AudioDirectory.label}}</label>
-                                {{form.AudioDirectory(class_="form-control")}}
+                                {{ printPlaceholder(form.AudioDirectory, settings.AudioDirectory) }}
                             </div>
                         </div>
                         <div class="col-md-3 mb-3">
                             <div>
                                 <label for="lat">{{form.ImageDirectory.label}}</label>
-                                {{form.ImageDirectory(class_="form-control")}}
+                                {{ printPlaceholder(form.ImageDirectory, settings.ImageDirectory) }}
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="gender">{{form.minElevation.label}}</label>
-                            {{form.minElevation(class_="form-control")}}
+                            {{ printPlaceholder(form.minElevation, settings.minElevation) }}
                         </div>
                     </div>
                         <div class="mt-3">

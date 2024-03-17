@@ -18,6 +18,6 @@ env/*
 
 New folder/
 
-instance/
+instance/db.sqlite3
 
 ffmpeg.exe

@@ -10,7 +10,7 @@ def ValidateDirectory(form, field):
             raise ValidationError("invalid directory!")
 
 class SettingsForm(FlaskForm):
-    GStationName = StringField("Ground Station Name", validators=[Length(max=20)], render_kw={"placeholder": "Earth Station"})
+    GStationName = StringField("Ground Station Name", validators=[Length(max=20)])#, render_kw={"placeholder": "Earth Station"}
     latitude = DecimalField("Latitude", places=6, description='Latitude', render_kw={"placeholder": "Latitude"}, validators=[optional()])
     longitude = DecimalField("Longitude", places=6, description='Longitude', render_kw={"placeholder": "Longitude"}, validators=[optional()])
     altitude = IntegerField("Altitude", description="From Mean Sea Level", render_kw={"placeholder": "From Mean Sea Level"}, validators=[optional()])
