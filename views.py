@@ -80,14 +80,29 @@ def pages_dashboard():
 def pages_tables_bootstrap_tables():
   return render_template('pages/tables/bootstrap-tables.html', segment='bootstrap_tables', parent='tables')
 
+def getSettings():
+    Settings={}
+    Settings['GStationName'] = cache.get('GStationName')
+    Settings['latitude'] = cache.get('latitude')
+    Settings['longitude'] = cache.get('longitude')
+    Settings['altitude'] = cache.get('altitude')
+    Settings['minElevation'] = cache.get('minElevation')
+    Settings['Timezone'] = cache.get('Timezone')
+    Settings['TLESource'] = cache.get('TLESource')
+    Settings['AudioDirectory'] = cache.get('AudioDirectory')
+    Settings['ImageDirectory'] = cache.get('ImageDirectory')
+    return Settings
+
+
 @app.route('/pages/settings/', methods=['GET', 'POST'])
 @app.route('/settings.html', methods=['GET', 'POST'])
 @login_required
 def pages_settings():
-    form = SettingsForm()
+    settings = getSettings()
+    form = SettingsForm(obj=settings)
     toggle1 = cache.get("user-notification-1")
     toggle2 = cache.get("user-notification-2")
-    return render_template('pages/settings.html', segment='settings', parent='pages', form= form, S1= toggle1, S2 = toggle2)
+    return render_template('pages/settings.html', segment='settings', parent='pages', form= form, S1= toggle1, S2 = toggle2, settings=settings)
 
 @app.route('/updateSettings', methods=['POST'])
 def updateSettings():
@@ -288,6 +303,14 @@ def schedulePasses():
     for pk in request.json['unchecked']:
         unschedulePass(pk)
     return jsonify(message="Scheduling Successful!")
+
+@app.route("/getUser")
+def get_user():
+    if current_user.is_authenticated:
+        user = current_user._get_current_object()
+        return jsonify({"email":user.email})
+    else:
+        return jsonify("Unauthorized!"), 400
 
 
 @app.route('/location')

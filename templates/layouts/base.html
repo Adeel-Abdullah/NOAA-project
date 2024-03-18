@@ -124,6 +124,14 @@
         setTimeout(function (){
         location.reload();
         }, 7200000);
+
+        $.ajax({
+      type: "GET",
+      url: "/getUser",
+      success: function(data) {
+        $("#user").text(data['email']);
+        
+  }});
   
     </script>
   {% endblock javascripts %}  
