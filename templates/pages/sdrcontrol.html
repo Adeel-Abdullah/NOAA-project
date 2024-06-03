@@ -7,6 +7,22 @@
 
 <style>
     .modal-dialog { position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto; width: 500px; height: 300px; }
+    .overlay{
+        /* From https://css.glass */
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5.3px);
+            -webkit-backdrop-filter: blur(5.3px);
+            border: 1px solid rgba(255, 255, 255, 0.26);
+            height:560px;
+            width:640px;
+            left: 37%;
+            /*width: 80%;
+            height: 100%;*/
+            position: absolute;
+            z-index:10;
+    }
 </style>
 
 {% endblock stylesheets %}
@@ -37,7 +53,7 @@
 </div>
   <div class="container mt-4 mb-4">
     <div class="row">
-      <div class="col-md-4">
+      <div class="col-md-4 mx-auto">
         <div class="card" id="card1">
           <div class="card-body">
             <h4 class="card-title" data-i18n="sdr_server"></h4>
@@ -64,6 +80,12 @@
       </div>
       
     </div>
+    <div class="row pt-3">
+        <div class="col-md-12 mx-auto">
+        <div class = "overlay"style=""></div>
+        <iframe src="acu.html" style="position: absolute; height:560px; width:640px; border: none; left: 37%; z-index:1" frameborder="0"></iframe>
+        </div>
+    </div>
     <!-- <div class="d-flex align-items-end flex-column mb-4 mt-4"> -->
     
         <!-- <small class="text-muted">** Click to apply changes</small> -->
@@ -89,8 +111,14 @@ $(function() {
     let x = document.cookie;
     if (x.includes("online")){
         document.getElementById("flexSwitchCheck").checked = true;
+        let small = $('#status2').children('small');
+        small.text("Online");
+        $('.overlay').css({zIndex:0});
     }else{
         document.getElementById("flexSwitchCheck").checked = false;
+        let small = $('#status2').children('small');
+        small.text("Offline");
+        $('.overlay').css({zIndex:10});
     }
 
     $('#flexSwitchCheck').change(function() {
@@ -104,6 +132,7 @@ $(function() {
                 success: function(data) {
                     console.log(data);
                     $('#flexSwitchCheck').val(this.checked);
+                    $('.overlay').css({zIndex:0});
                 }
             });
             // console.log('launching it...');
@@ -113,6 +142,7 @@ $(function() {
                 success: function(data) {
                     console.log(data);
                     $('#flexSwitchCheck').val(this.unchecked);
+                    $('.overlay').css({zIndex:10});
                 }
             });
             // console.log('killing it...');

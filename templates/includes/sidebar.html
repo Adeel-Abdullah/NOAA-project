@@ -106,7 +106,7 @@
        <span class="sidebar-text" data-i18n="spectrum"></span>
       </a>
     </li> 
-  <li class="nav-item" id="acu">
+  <!-- <li class="nav-item" id="acu">
     <a class="nav-link" >  
     <span class="sidebar-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dpad text-secondary me-2" viewBox="0 0 16 16">
@@ -116,7 +116,7 @@
     </span>
     <span class="sidebar-text" data-i18n="acu"></span>
     </a>
-  </li> 
+  </li>  -->
     <li class="nav-item">
          <a href="/logout" class="nav-link">  <!-- {#{{ url_for('authentication_blueprint.logout') }} #} -->
           <span class="sidebar-icon">
@@ -144,26 +144,26 @@
   }
 
 
-  document.getElementById("acu").onclick = function launchACU(e){
+//  document.getElementById("acu").onclick = function launchACU(e){
     // Command `launch sdrangel`
     // Command `toggle open rotor control`
     // let smallstatus = document.body.querySelectorAll("#status2 > small");
-    let xcookie = document.cookie;
-    console.log(xcookie);
-    if (xcookie.includes("online")){
-      newWindow = window.open('acu.html','acu_dashboard','height=960px,width=940px');
-    }else{
-      swalWithBootstrapButtons.fire({
-      icon: 'error',
-      title: 'Error',
+//    let xcookie = document.cookie;
+//    console.log(xcookie);
+//    if (xcookie.includes("online")){
+//     newWindow = window.open('acu.html','acu_dashboard','height=960px,width=940px');
+//    }else{
+//      swalWithBootstrapButtons.fire({
+//      icon: 'error',
+//      title: 'Error',
       // text: 'SDR Server Unavailable! Goto { Dashboard -> Control } & turn on!',
-      text: 'SDR 服务器不可用！转到 { 仪表板 -> 控制 } 并打开！',
-      showConfirmButton: true,
-      timer: 6000
-    });
+//      text: 'SDR 服务器不可用！转到 { 仪表板 -> 控制 } 并打开！',
+//      showConfirmButton: true,
+//      timer: 6000
+//    });
     
-    }
-  } 
+//    }
+//  } 
 
 changeLanguage('cn');
 
