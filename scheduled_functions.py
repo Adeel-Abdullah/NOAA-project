@@ -156,14 +156,20 @@ def getmfile(search_dir, pk):
     return files[0]
 
 
-def create_report(dpath, Impath, pk):
+def create_report(dpath, default_dir, pk, Impath=None):
+    import shutil, os, pathlib
+
     with scheduler.app.app_context():
         p = db.get_or_404(PassData, pk)
-        Imfile = getmfile(Impath, pk)
+        Imfile = getmfile(default_dir, pk)
+        Imfilename = os.path.split(Imfile)[1]
+        if Impath:
+            shutil.move(Imfile,Impath)
+            Imfile = os.path.join(Impath, Imfilename)
         dfile = getmfile(dpath,pk)
         twomins = timedelta(seconds=120)
         dmtime = datetime.fromtimestamp(dfile.stat().st_mtime)
-        Imtime = datetime.fromtimestamp(Imfile.stat().st_mtime)
+        Imtime = datetime.fromtimestamp(pathlib.Path(Imfile).stat().st_mtime)
         time = p.LOS## - timedelta(hours=3)
         ## The timedelta is added for timzone correction
         ## must be removed!
@@ -176,7 +182,7 @@ def create_report(dpath, Impath, pk):
             dfsize = None
             
         if (time - Imtime) < twomins:
-            Imfilepath = Imfile.path
+            Imfilepath = Imfile
         else:
             Imfilepath = None
             
@@ -271,6 +277,7 @@ def AOS_macro(pk):
         
     
 def LOS_macro(pk):
+    default_dir = "C:/Users/DELL/Documents/NOAA-Images/"
     try:
         with scheduler.app.app_context():
             p = db.get_or_404(PassData, pk)
@@ -281,12 +288,7 @@ def LOS_macro(pk):
         else:
             dpath = "D:/NOAA-wav/"
 
-        path = cache.get("ImageDirectory")
-        if path:
-            Impath = path
-        else:
-            Impath = "C:/Users/DELL/Documents/NOAA-Images/"
-                
+        Impath = cache.get("ImageDirectory")                              
         stop_audioRecording(SatelliteName)
         stop_rotator()
         stop_SpectrumBroadcast()
@@ -299,6 +301,6 @@ def LOS_macro(pk):
     except Exception as e:
             print(f"Commit Failed. Error: {e}")
             
-    create_report(dpath, Impath, pk)
+    create_report(dpath, default_dir, pk, Impath)
     fire_on_los(str(pk))
     # stop_satellitetracker()
